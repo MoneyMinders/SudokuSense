@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -34,28 +37,10 @@ class _CameraScreenState extends State<CameraScreen> {
 
     if (image == null || !mounted) return;
 
-    // Let the user crop to just the grid area for better OCR accuracy.
-    final colors = context.read<ThemeProvider>().config;
-    final cropped = await ImageCropper().cropImage(
-      sourcePath: image.path,
-      aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
-      uiSettings: [
-        AndroidUiSettings(
-          toolbarTitle: 'Crop to grid',
-          toolbarColor: colors.background,
-          toolbarWidgetColor: colors.fixedText,
-          activeControlsWidgetColor: colors.accent,
-          initAspectRatio: CropAspectRatioPreset.square,
-        ),
-        IOSUiSettings(
-          title: 'Crop to grid',
-          aspectRatioLockEnabled: false,
-          resetAspectRatioEnabled: true,
-        ),
-      ],
-    );
-
-    if (cropped == null || !mounted) return;
+    // On native platforms, let the user crop to just the grid area.
+    // On web, skip cropping (image_cropper has no web support).
+    final bytes = await _getProcessedBytes(image);
+    if (bytes == null || !mounted) return;
 
     setState(() {
       _processing = true;
@@ -63,15 +48,13 @@ class _CameraScreenState extends State<CameraScreen> {
     });
 
     try {
-      final board = await OcrService().recognizeFromImage(cropped.path);
+      final board = await OcrService().recognizeFromBytes(bytes);
 
       if (!mounted) return;
 
       if (board != null) {
-        // Load in setup mode so user can correct any OCR errors
         final provider = context.read<PuzzleProvider>();
         provider.startSetupMode(fromOcr: true);
-        // Pre-fill the board with OCR results
         final grid = board.toGrid();
         for (int r = 0; r < 9; r++) {
           for (int c = 0; c < 9; c++) {
@@ -97,6 +80,37 @@ class _CameraScreenState extends State<CameraScreen> {
         _errorMessage = 'Recognition failed. Try entering the puzzle manually.';
       });
     }
+  }
+
+  /// On native: crop then read bytes. On web: read bytes directly.
+  Future<Uint8List?> _getProcessedBytes(XFile image) async {
+    if (kIsWeb) {
+      return await image.readAsBytes();
+    }
+
+    // Native: offer crop UI
+    final colors = context.read<ThemeProvider>().config;
+    final cropped = await ImageCropper().cropImage(
+      sourcePath: image.path,
+      aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Crop to grid',
+          toolbarColor: colors.background,
+          toolbarWidgetColor: colors.fixedText,
+          activeControlsWidgetColor: colors.accent,
+          initAspectRatio: CropAspectRatioPreset.square,
+        ),
+        IOSUiSettings(
+          title: 'Crop to grid',
+          aspectRatioLockEnabled: false,
+          resetAspectRatioEnabled: true,
+        ),
+      ],
+    );
+
+    if (cropped == null) return null;
+    return await XFile(cropped.path).readAsBytes();
   }
 
   @override
@@ -127,7 +141,9 @@ class _CameraScreenState extends State<CameraScreen> {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    'Processing image...',
+                    kIsWeb
+                        ? 'Running OCR... This may take a moment.'
+                        : 'Processing image...',
                     style: TextStyle(
                       fontStyle: FontStyle.italic,
                       fontFamily: 'Serif',
@@ -150,7 +166,9 @@ class _CameraScreenState extends State<CameraScreen> {
                     ),
                     const SizedBox(height: 28),
                     Text(
-                      'Take a photo of a Sudoku puzzle\nor pick one from your gallery.',
+                      kIsWeb
+                          ? 'Take a photo of a Sudoku puzzle\nor upload one from your device.'
+                          : 'Take a photo of a Sudoku puzzle\nor pick one from your gallery.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 15,
@@ -215,7 +233,7 @@ class _CameraScreenState extends State<CameraScreen> {
                           color: colors.fixedText,
                         ),
                         label: Text(
-                          'Pick from Gallery',
+                          kIsWeb ? 'Upload Image' : 'Pick from Gallery',
                           style: TextStyle(
                             fontSize: 15,
                             color: colors.fixedText,
