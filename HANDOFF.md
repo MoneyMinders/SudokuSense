@@ -216,6 +216,37 @@ lib/
 
 ---
 
+## Deploy Checklist
+
+Every time code changes, deploy to all three targets:
+
+```bash
+# 1. Phone (via USB)
+flutter build apk --release
+adb install -r build/app/outputs/flutter-apk/app-release.apk
+adb shell am force-stop com.sahilgakhar.sudoku_sense
+adb shell am start -n com.sahilgakhar.sudoku_sense/.MainActivity
+
+# 2. VPS (http://187.127.131.123:3001/)
+flutter build web --release
+rsync -az --delete build/web/ root@187.127.131.123:/home/apps/SudokuSense/web-dist/
+ssh root@187.127.131.123 "cd /home/apps/SudokuSense && ./scripts/vps-deploy.sh web-restart"
+
+# 3. GitHub Pages (https://moneyminders.github.io/SudokuSense/)
+flutter build web --release --base-href="/SudokuSense/"
+git checkout gh-pages
+rm -rf docs && cp -r build/web docs
+git add docs && git commit -m "deploy: update web build" && git push
+git checkout main
+
+# 4. Git (always push code)
+git add -A && git commit -m "description" && git push
+```
+
+**IMPORTANT**: GitHub Pages needs `--base-href="/SudokuSense/"` but VPS does NOT (it serves from root). So you need two separate web builds — one for VPS (no base-href) and one for GitHub Pages (with base-href).
+
+---
+
 ## App Icon
 Generated via Google Gemini — pencil on a Sudoku grid on aged paper. Cropped square from `Screenshot 2026-04-14 at 2.22.26 AM.png`. Processed with `flutter_launcher_icons` with adaptive icon background `#CCC7BF`.
 
