@@ -1,19 +1,19 @@
-import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 import 'package:image/image.dart' as img;
 
 /// Preprocesses a Sudoku photo for better OCR accuracy.
-/// Pipeline: load → grayscale → contrast boost → adaptive threshold → save.
+/// Pipeline: load → grayscale → contrast boost → adaptive threshold → encode.
+/// Works on all platforms (no dart:io dependency).
 class ImagePreprocessor {
-  /// Process the image and return the path to the cleaned version.
+  /// Process raw image bytes and return cleaned PNG bytes.
   /// Returns null if processing fails.
-  static Future<String?> preprocess(String imagePath) async {
+  static Uint8List? preprocessBytes(Uint8List inputBytes) {
     try {
-      final bytes = await File(imagePath).readAsBytes();
-      var image = img.decodeImage(bytes);
+      var image = img.decodeImage(inputBytes);
       if (image == null) return null;
 
-      // Resize if too large (ML Kit works better with reasonable sizes)
+      // Resize if too large (OCR works better with reasonable sizes)
       if (image.width > 1500 || image.height > 1500) {
         final scale = 1500 / max(image.width, image.height);
         image = img.copyResize(
@@ -43,12 +43,7 @@ class ImagePreprocessor {
       // Adaptive threshold — handles shadows and uneven lighting
       image = _adaptiveThreshold(image, blockSize: 15, c: 10);
 
-      // Save processed image to temp file
-      final tempDir = Directory.systemTemp;
-      final outputPath = '${tempDir.path}/sudoku_preprocessed.png';
-      await File(outputPath).writeAsBytes(img.encodePng(image));
-
-      return outputPath;
+      return Uint8List.fromList(img.encodePng(image));
     } catch (e) {
       return null;
     }
@@ -81,7 +76,6 @@ class ImagePreprocessor {
 
     for (int y = 0; y < h; y++) {
       for (int x = 0; x < w; x++) {
-        // Block boundaries (clamped to image edges)
         final y1 = max(0, y - half);
         final y2 = min(h - 1, y + half);
         final x1 = max(0, x - half);
@@ -92,16 +86,15 @@ class ImagePreprocessor {
             integral[y1][x2 + 1] -
             integral[y2 + 1][x1] +
             integral[y1][x1];
-        final mean = blockSum ~/ count;
+        final meanVal = blockSum ~/ count;
 
         final pixel = src.getPixel(x, y);
         final gray = pixel.r.toInt();
 
-        // If pixel is darker than local mean minus constant, it's "ink"
-        if (gray < mean - c) {
-          result.setPixelRgb(x, y, 0, 0, 0); // Black
+        if (gray < meanVal - c) {
+          result.setPixelRgb(x, y, 0, 0, 0);
         } else {
-          result.setPixelRgb(x, y, 255, 255, 255); // White
+          result.setPixelRgb(x, y, 255, 255, 255);
         }
       }
     }
