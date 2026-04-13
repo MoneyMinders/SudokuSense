@@ -1,141 +1,57 @@
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'dart:typed_data';
 
 import '../models/board.dart';
 import '../utils/grid_parser.dart';
 import 'image_preprocessor.dart';
-import 'cell_ocr_service.dart';
+import 'ocr_strategy.dart';
 
 class OcrService {
-  static const double _minConfidence = 0.3;
+  final OcrStrategy _strategy = OcrStrategy();
 
-  /// Recognize a Sudoku grid from a photo.
-  /// Runs three strategies in parallel and picks the best result:
-  /// 1. Whole-image ML Kit on original
-  /// 2. Whole-image ML Kit on preprocessed image
-  /// 3. Cell-by-cell ML Kit (crop each of 81 cells individually)
-  Future<Board?> recognizeFromImage(String imagePath) async {
-    // Run all three strategies
-    final results = await Future.wait([
-      _wholeImageOcr(imagePath),
-      _preprocessedOcr(imagePath),
-      CellOcrService().recognizeFromImage(imagePath),
-    ]);
+  /// Recognize a Sudoku grid from raw image bytes.
+  /// Runs OCR on both the original and a preprocessed version,
+  /// then picks whichever detects more valid digits.
+  Future<Board?> recognizeFromBytes(Uint8List imageBytes) async {
+    // Run OCR on original image
+    final originalDigits = await _strategy.extractDigits(imageBytes);
 
-    // Pick the board with the most filled cells
-    Board? best;
-    int bestCount = 0;
-
-    for (final board in results) {
-      if (board == null) continue;
-      final count = _countFilled(board);
-      if (count > bestCount) {
-        bestCount = count;
-        best = board;
-      }
+    // Preprocess and run OCR on cleaned image
+    final preprocessedBytes = ImagePreprocessor.preprocessBytes(imageBytes);
+    List<RecognizedDigit>? preprocessedDigits;
+    if (preprocessedBytes != null) {
+      preprocessedDigits = await _strategy.extractDigits(preprocessedBytes);
     }
 
-    return best;
-  }
+    // Pick the result with more digits detected
+    final digits = _pickBest(originalDigits, preprocessedDigits);
+    if (digits == null || digits.isEmpty) return null;
 
-  int _countFilled(Board board) {
-    int count = 0;
-    for (int r = 0; r < 9; r++) {
-      for (int c = 0; c < 9; c++) {
-        if (board.getCell(r, c).value != null) count++;
-      }
-    }
-    return count;
-  }
-
-  /// Strategy 1: Run ML Kit on the original image.
-  Future<Board?> _wholeImageOcr(String imagePath) async {
-    final digits = await _extractDigits(imagePath);
-    if (digits.isEmpty) return null;
     final grid = GridParser.toGrid(digits);
     if (grid == null) return null;
+
     return Board.fromGrid(grid);
   }
 
-  /// Strategy 2: Preprocess then run ML Kit.
-  Future<Board?> _preprocessedOcr(String imagePath) async {
-    final preprocessedPath = await ImagePreprocessor.preprocess(imagePath);
-    if (preprocessedPath == null) return null;
-    final digits = await _extractDigits(preprocessedPath);
-    if (digits.isEmpty) return null;
-    final grid = GridParser.toGrid(digits);
-    if (grid == null) return null;
-    return Board.fromGrid(grid);
-  }
+  /// Pick the digit list that produces a more valid sudoku grid.
+  List<RecognizedDigit>? _pickBest(
+    List<RecognizedDigit>? a,
+    List<RecognizedDigit>? b,
+  ) {
+    if (a == null || a.isEmpty) return b;
+    if (b == null || b.isEmpty) return a;
 
-  /// Extract digits from an image using ML Kit text recognition.
-  Future<List<RecognizedDigit>> _extractDigits(String imagePath) async {
-    final inputImage = InputImage.fromFilePath(imagePath);
-    final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
+    final gridA = GridParser.toGrid(a);
+    final gridB = GridParser.toGrid(b);
 
-    try {
-      final recognizedText = await textRecognizer.processImage(inputImage);
-      final digits = <RecognizedDigit>[];
-      final digitPattern = RegExp(r'[1-9]');
+    if (gridA == null) return b;
+    if (gridB == null) return a;
 
-      for (final block in recognizedText.blocks) {
-        for (final line in block.lines) {
-          for (final element in line.elements) {
-            if (element.symbols.isNotEmpty) {
-              for (final symbol in element.symbols) {
-                final text = symbol.text.trim();
-                if (text.length == 1 && digitPattern.hasMatch(text)) {
-                  if (symbol.confidence != null &&
-                      symbol.confidence! < _minConfidence) {
-                    continue;
-                  }
-                  final box = symbol.boundingBox;
-                  digits.add(RecognizedDigit(
-                    value: int.parse(text),
-                    centerX: box.center.dx,
-                    centerY: box.center.dy,
-                    confidence: symbol.confidence,
-                  ));
-                }
-              }
-            } else {
-              final text = element.text.trim();
-              if (text.length == 1 && digitPattern.hasMatch(text)) {
-                if (element.confidence != null &&
-                    element.confidence! < _minConfidence) {
-                  continue;
-                }
-                final box = element.boundingBox;
-                digits.add(RecognizedDigit(
-                  value: int.parse(text),
-                  centerX: box.center.dx,
-                  centerY: box.center.dy,
-                  confidence: element.confidence,
-                ));
-              } else if (text.length > 1) {
-                final box = element.boundingBox;
-                final charWidth = box.width / text.length;
-                for (int i = 0; i < text.length; i++) {
-                  final ch = text[i];
-                  if (digitPattern.hasMatch(ch)) {
-                    digits.add(RecognizedDigit(
-                      value: int.parse(ch),
-                      centerX: box.left + charWidth * (i + 0.5),
-                      centerY: box.center.dy,
-                      confidence: element.confidence,
-                    ));
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+    final countA = gridA.expand((r) => r).where((v) => v != 0).length;
+    final countB = gridB.expand((r) => r).where((v) => v != 0).length;
 
-      return digits;
-    } catch (_) {
-      return [];
-    } finally {
-      textRecognizer.close();
-    }
+    if (countA > 35 && countB <= 35) return b;
+    if (countB > 35 && countA <= 35) return a;
+
+    return countA >= countB ? a : b;
   }
 }
