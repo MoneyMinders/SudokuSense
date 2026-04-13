@@ -604,7 +604,7 @@ class PuzzleProvider extends ChangeNotifier {
     _solution = result.solution;
     _solutionCount = result.solutionCount;
 
-    CandidateService().calculateAllCandidates(_board);
+    // Don't auto-fill candidates — user does it manually via Fill Notes
     notifyListeners();
   }
 

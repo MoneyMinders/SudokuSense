@@ -136,7 +136,7 @@ class HintSheet extends StatelessWidget {
                         backgroundColor: colors.fixedText,
                         foregroundColor: colors.background,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(24),
                         ),
                         elevation: 0,
                       ),
@@ -153,7 +153,7 @@ class HintSheet extends StatelessWidget {
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(color: colors.gridBorderThin),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(24),
                         ),
                       ),
                       child: Text(
