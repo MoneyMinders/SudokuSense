@@ -22,8 +22,8 @@ class UniqueRectangleStrategy extends Strategy {
       }
     }
 
-    // Type 1: Find 3 bi-value cells with same 2 candidates forming 3 corners of a rectangle
-    // The 4th corner must contain those candidates (plus possibly others)
+    // Type 1: Find 3 bi-value cells with same 2 candidates forming 3 corners
+    // of a rectangle. The 4th corner must contain those candidates plus others.
     for (var i = 0; i < biValueCells.length; i++) {
       for (var j = i + 1; j < biValueCells.length; j++) {
         for (var k = j + 1; k < biValueCells.length; k++) {
@@ -63,7 +63,7 @@ class UniqueRectangleStrategy extends Strategy {
 
           // Rectangle must span exactly 2 boxes
           final boxIndices = allCorners
-              .map((c) => board.getBoxIndex(c.$1, c.$2))
+              .map((c) => Board.boxIndexOf(c.$1, c.$2))
               .toSet();
           if (boxIndices.length != 2) continue;
 
@@ -77,11 +77,15 @@ class UniqueRectangleStrategy extends Strategy {
           if (!fourthCell.candidates.containsAll(pair)) continue;
 
           // Eliminate the pair candidates from the 4th cell
-          final eliminations = <(int, int), Set<int>>{
-            missingCorner: Set<int>.from(pair),
-          };
+          final eliminations = pair
+              .map((v) => Elimination(
+                    row: missingCorner.$1,
+                    col: missingCorner.$2,
+                    value: v,
+                  ))
+              .toList();
 
-          final highlightCells = [
+          final highlightedCells = [
             ...existingCorners,
             missingCorner,
           ];
@@ -98,7 +102,7 @@ class UniqueRectangleStrategy extends Strategy {
                 'R${missingCorner.$1 + 1}C${missingCorner.$2 + 1} '
                 'cannot have only {${pairList.join(', ')}} (would create a deadly pattern). '
                 '${pairList.join(' and ')} can be eliminated from that cell.',
-            highlightCells: highlightCells,
+            highlightedCells: highlightedCells,
             eliminations: eliminations,
           );
         }

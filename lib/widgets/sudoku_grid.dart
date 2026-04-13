@@ -16,8 +16,9 @@ class SudokuGrid extends StatelessWidget {
         final selectedRow = provider.selectedRow;
         final selectedCol = provider.selectedCol;
         final hintCells = <(int, int)>{};
-        for (final hint in provider.activeHints) {
-          hintCells.addAll(hint.highlightedCells);
+        final activeHint = provider.activeHint;
+        if (activeHint != null) {
+          hintCells.addAll(activeHint.highlightedCells);
         }
 
         return Center(

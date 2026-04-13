@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/puzzle_provider.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -53,10 +55,29 @@ class HomeScreen extends StatelessWidget {
                   width: double.infinity,
                   height: 56,
                   child: OutlinedButton.icon(
-                    onPressed: () => Navigator.pushNamed(context, '/puzzle'),
+                    onPressed: () {
+                      context.read<PuzzleProvider>().startSetupMode();
+                      Navigator.pushNamed(context, '/puzzle');
+                    },
                     icon: const Icon(Icons.grid_3x3_rounded),
                     label: const Text(
                       'Enter Manually',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: FilledButton.tonalIcon(
+                    onPressed: () {
+                      context.read<PuzzleProvider>().loadRandomPuzzle();
+                      Navigator.pushNamed(context, '/puzzle');
+                    },
+                    icon: const Icon(Icons.shuffle_rounded),
+                    label: const Text(
+                      'Random Puzzle',
                       style: TextStyle(fontSize: 16),
                     ),
                   ),

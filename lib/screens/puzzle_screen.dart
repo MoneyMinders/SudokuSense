@@ -20,6 +20,24 @@ class PuzzleScreen extends StatelessWidget {
             onPressed: () => context.read<PuzzleProvider>().undo(),
           ),
           IconButton(
+            icon: const Icon(Icons.redo_rounded),
+            tooltip: 'Redo',
+            onPressed: () => context.read<PuzzleProvider>().redo(),
+          ),
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'clear') {
+                context.read<PuzzleProvider>().clearGrid();
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'clear',
+                child: Text('Clear Grid'),
+              ),
+            ],
+          ),
+          IconButton(
             icon: const Icon(Icons.check_circle_outline_rounded),
             tooltip: 'Validate',
             onPressed: () {
@@ -41,15 +59,32 @@ class PuzzleScreen extends StatelessWidget {
       ),
       body: Consumer<PuzzleProvider>(
         builder: (context, provider, _) {
+          final isSetup = provider.setupMode;
+
           return Column(
             children: [
-              // Progress indicator
-              LinearProgressIndicator(
-                value: provider.progress,
-                minHeight: 3,
-                backgroundColor:
-                    Theme.of(context).colorScheme.surfaceContainerHighest,
-              ),
+              // Progress indicator (hide in setup mode)
+              if (!isSetup)
+                LinearProgressIndicator(
+                  value: provider.progress,
+                  minHeight: 3,
+                  backgroundColor:
+                      Theme.of(context).colorScheme.surfaceContainerHighest,
+                )
+              else
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  child: Text(
+                    'Enter the puzzle clues, then tap Done',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               const SizedBox(height: 8),
 
               // Sudoku grid
@@ -64,45 +99,67 @@ class PuzzleScreen extends StatelessWidget {
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _ToolbarButton(
-                      icon: Icons.lightbulb_outline_rounded,
-                      label: 'Hint',
-                      onPressed: () {
-                        final hint = provider.getHint();
-                        if (hint != null) {
-                          showModalBottomSheet<void>(
-                            context: context,
-                            builder: (_) => HintSheet(hint: hint),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('No hints available.'),
-                              behavior: SnackBarBehavior.floating,
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
-                        }
-                      },
-                    ),
-                    _ToolbarButton(
-                      icon: Icons.auto_fix_high_rounded,
-                      label: 'Solve',
-                      onPressed: () => provider.autoSolve(),
-                    ),
-                    _ToolbarButton(
-                      icon: provider.pencilMode
-                          ? Icons.edit_rounded
-                          : Icons.edit_outlined,
-                      label: 'Pencil',
-                      isActive: provider.pencilMode,
-                      onPressed: () => provider.togglePencilMode(),
-                    ),
-                  ],
-                ),
+                child: isSetup
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          FilledButton.icon(
+                            onPressed: () {
+                              final error = provider.finishSetup();
+                              if (error != null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(error),
+                                    behavior: SnackBarBehavior.floating,
+                                    duration: const Duration(seconds: 3),
+                                  ),
+                                );
+                              }
+                            },
+                            icon: const Icon(Icons.check_rounded),
+                            label: const Text('Done'),
+                          ),
+                        ],
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _ToolbarButton(
+                            icon: Icons.lightbulb_outline_rounded,
+                            label: 'Hint',
+                            onPressed: () {
+                              final hint = provider.getHint();
+                              if (hint != null) {
+                                showModalBottomSheet<void>(
+                                  context: context,
+                                  builder: (_) => HintSheet(hint: hint),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('No hints available.'),
+                                    behavior: SnackBarBehavior.floating,
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                          _ToolbarButton(
+                            icon: Icons.auto_fix_high_rounded,
+                            label: 'Solve',
+                            onPressed: () => provider.autoSolve(),
+                          ),
+                          _ToolbarButton(
+                            icon: provider.pencilMode
+                                ? Icons.edit_rounded
+                                : Icons.edit_outlined,
+                            label: 'Pencil',
+                            isActive: provider.pencilMode,
+                            onPressed: () => provider.togglePencilMode(),
+                          ),
+                        ],
+                      ),
               ),
 
               // Number pad

@@ -11,7 +11,6 @@ class XYZWingStrategy extends Strategy {
 
   @override
   HintResult? apply(Board board) {
-    // Find tri-value cells (pivots) and bi-value cells (pincers)
     final triCells = <(int, int)>[];
     final biCells = <(int, int)>[];
 
@@ -34,7 +33,6 @@ class XYZWingStrategy extends Strategy {
         final x = others[0];
         final y = others[1];
 
-        // Find pincers: one with {x,z}, one with {y,z}, both see pivot
         final pincersXZ = <(int, int)>[];
         final pincersYZ = <(int, int)>[];
 
@@ -53,8 +51,7 @@ class XYZWingStrategy extends Strategy {
           for (final p2 in pincersYZ) {
             if (p1 == p2) continue;
 
-            // z can be eliminated from cells that see ALL THREE
-            final eliminations = <(int, int), Set<int>>{};
+            final eliminations = <Elimination>[];
             for (var r = 0; r < 9; r++) {
               for (var c = 0; c < 9; c++) {
                 final pos = (r, c);
@@ -66,7 +63,7 @@ class XYZWingStrategy extends Strategy {
                 if (_seeEachOther(pos, pivot) &&
                     _seeEachOther(pos, p1) &&
                     _seeEachOther(pos, p2)) {
-                  eliminations[pos] = {z};
+                  eliminations.add(Elimination(row: r, col: c, value: z));
                 }
               }
             }
@@ -81,7 +78,7 @@ class XYZWingStrategy extends Strategy {
                     'Pincer R${p1.$1 + 1}C${p1.$2 + 1} has {$x, $z}, '
                     'Pincer R${p2.$1 + 1}C${p2.$2 + 1} has {$y, $z}. '
                     'Candidate $z can be eliminated from cells seeing all three.',
-                highlightCells: [pivot, p1, p2],
+                highlightedCells: [pivot, p1, p2],
                 eliminations: eliminations,
               );
             }

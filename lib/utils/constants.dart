@@ -23,6 +23,8 @@ class AppColors {
         return Colors.orange;
       case Difficulty.expert:
         return Colors.red;
+      case Difficulty.evil:
+        return Colors.purple;
     }
   }
 
@@ -36,6 +38,8 @@ class AppColors {
         return 'Hard';
       case Difficulty.expert:
         return 'Expert';
+      case Difficulty.evil:
+        return 'Evil';
     }
   }
 }

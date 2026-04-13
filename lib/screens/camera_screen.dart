@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../providers/puzzle_provider.dart';
+import '../services/ocr_service.dart';
 
 class CameraScreen extends StatefulWidget {
   const CameraScreen({super.key});
@@ -12,19 +13,7 @@ class CameraScreen extends StatefulWidget {
 
 class _CameraScreenState extends State<CameraScreen> {
   bool _processing = false;
-
-  // Sample puzzle for testing until OCR is wired up.
-  static const List<List<int>> _samplePuzzle = [
-    [5, 3, 0, 0, 7, 0, 0, 0, 0],
-    [6, 0, 0, 1, 9, 5, 0, 0, 0],
-    [0, 9, 8, 0, 0, 0, 0, 6, 0],
-    [8, 0, 0, 0, 6, 0, 0, 0, 3],
-    [4, 0, 0, 8, 0, 3, 0, 0, 1],
-    [7, 0, 0, 0, 2, 0, 0, 0, 6],
-    [0, 6, 0, 0, 0, 0, 2, 8, 0],
-    [0, 0, 0, 4, 1, 9, 0, 0, 5],
-    [0, 0, 0, 0, 8, 0, 0, 7, 9],
-  ];
+  String? _errorMessage;
 
   Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
@@ -32,16 +21,32 @@ class _CameraScreenState extends State<CameraScreen> {
 
     if (image == null || !mounted) return;
 
-    setState(() => _processing = true);
+    setState(() {
+      _processing = true;
+      _errorMessage = null;
+    });
 
-    // Simulate OCR processing delay.
-    await Future<void>.delayed(const Duration(seconds: 1));
+    try {
+      final board = await OcrService().recognizeFromImage(image.path);
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    context.read<PuzzleProvider>().loadPuzzle(_samplePuzzle);
-
-    Navigator.pushReplacementNamed(context, '/puzzle');
+      if (board != null) {
+        context.read<PuzzleProvider>().loadPuzzle(board.toGrid());
+        Navigator.pushReplacementNamed(context, '/puzzle');
+      } else {
+        setState(() {
+          _processing = false;
+          _errorMessage = 'Could not detect a Sudoku puzzle. Try again with a clearer image.';
+        });
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _processing = false;
+        _errorMessage = 'OCR failed: $e. Try entering the puzzle manually.';
+      });
+    }
   }
 
   @override
@@ -78,6 +83,16 @@ class _CameraScreenState extends State<CameraScreen> {
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodyLarge,
                     ),
+                    if (_errorMessage != null) ...[
+                      const SizedBox(height: 16),
+                      Text(
+                        _errorMessage!,
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.error,
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 48),
                     SizedBox(
                       width: double.infinity,

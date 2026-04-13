@@ -53,11 +53,11 @@ class XYWingStrategy extends Strategy {
           final p2Cands = board.getCell(p2.$1, p2.$2).candidates;
           final z2 = p2Cands.firstWhere((c) => c != y);
 
-          if (z1 != z2) continue; // z must be the same
+          if (z1 != z2) continue;
           final z = z1;
 
           // Eliminate z from cells that see both pincers
-          final eliminations = <(int, int), Set<int>>{};
+          final eliminations = <Elimination>[];
           for (var r = 0; r < 9; r++) {
             for (var c = 0; c < 9; c++) {
               final pos = (r, c);
@@ -65,7 +65,7 @@ class XYWingStrategy extends Strategy {
               final cell = board.getCell(r, c);
               if (cell.value != null || !cell.candidates.contains(z)) continue;
               if (_seeEachOther(pos, p1) && _seeEachOther(pos, p2)) {
-                eliminations[pos] = {z};
+                eliminations.add(Elimination(row: r, col: c, value: z));
               }
             }
           }
@@ -79,7 +79,7 @@ class XYWingStrategy extends Strategy {
                   'Pincer R${p1.$1 + 1}C${p1.$2 + 1} has {$x, $z}, '
                   'Pincer R${p2.$1 + 1}C${p2.$2 + 1} has {$y, $z}. '
                   'Candidate $z can be eliminated from cells that see both pincers.',
-              highlightCells: [pivot, p1, p2],
+              highlightedCells: [pivot, p1, p2],
               eliminations: eliminations,
             );
           }

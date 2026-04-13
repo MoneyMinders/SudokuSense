@@ -17,15 +17,14 @@ class SkyscraperStrategy extends Strategy {
   }
 
   bool _seeEachOther((int, int) a, (int, int) b) {
-    if (a.$1 == b.$1) return true; // same row
-    if (a.$2 == b.$2) return true; // same col
-    if ((a.$1 ~/ 3 == b.$1 ~/ 3) && (a.$2 ~/ 3 == b.$2 ~/ 3)) return true; // same box
+    if (a.$1 == b.$1) return true;
+    if (a.$2 == b.$2) return true;
+    if ((a.$1 ~/ 3 == b.$1 ~/ 3) && (a.$2 ~/ 3 == b.$2 ~/ 3)) return true;
     return false;
   }
 
   HintResult? _findSkyscraper(Board board, {required bool isRowBased}) {
     for (var digit = 1; digit <= 9; digit++) {
-      // Find lines where digit appears in exactly 2 cells
       final linesWithTwo = <int, List<int>>{};
 
       for (var line = 0; line < 9; line++) {
@@ -51,8 +50,6 @@ class SkyscraperStrategy extends Strategy {
           final pos1 = linesWithTwo[line1]!;
           final pos2 = linesWithTwo[line2]!;
 
-          // We need exactly one matching cross-position (the base)
-          // and one non-matching (the roofs)
           for (var swap = 0; swap < 2; swap++) {
             final a1 = swap == 0 ? pos1[0] : pos1[1];
             final a2 = swap == 0 ? pos1[1] : pos1[0];
@@ -61,10 +58,8 @@ class SkyscraperStrategy extends Strategy {
               final b1 = swap2 == 0 ? pos2[0] : pos2[1];
               final b2 = swap2 == 0 ? pos2[1] : pos2[0];
 
-              // a1 and b1 are the base (must be same cross-position)
-              // a2 and b2 are the roofs (must be different cross-positions)
               if (a1 != b1) continue;
-              if (a2 == b2) continue; // That would be an X-Wing
+              if (a2 == b2) continue;
 
               final roof1Row = isRowBased ? line1 : a2;
               final roof1Col = isRowBased ? a2 : line1;
@@ -73,8 +68,7 @@ class SkyscraperStrategy extends Strategy {
               final roof1 = (roof1Row, roof1Col);
               final roof2 = (roof2Row, roof2Col);
 
-              // Eliminate digit from cells that see both roof cells
-              final eliminations = <(int, int), Set<int>>{};
+              final eliminations = <Elimination>[];
               for (var r = 0; r < 9; r++) {
                 for (var c = 0; c < 9; c++) {
                   final pos = (r, c);
@@ -84,7 +78,9 @@ class SkyscraperStrategy extends Strategy {
                     continue;
                   }
                   if (_seeEachOther(pos, roof1) && _seeEachOther(pos, roof2)) {
-                    eliminations[pos] = {digit};
+                    eliminations.add(
+                      Elimination(row: r, col: c, value: digit),
+                    );
                   }
                 }
               }
@@ -95,7 +91,7 @@ class SkyscraperStrategy extends Strategy {
                 final base2Row = isRowBased ? line2 : b1;
                 final base2Col = isRowBased ? b1 : line2;
 
-                final highlightCells = [
+                final highlightedCells = [
                   (base1Row, base1Col),
                   roof1,
                   (base2Row, base2Col),
@@ -111,7 +107,7 @@ class SkyscraperStrategy extends Strategy {
                       'sharing a base at ${isRowBased ? "column" : "row"} ${a1 + 1}. '
                       'The roof cells at R${roof1.$1 + 1}C${roof1.$2 + 1} and '
                       'R${roof2.$1 + 1}C${roof2.$2 + 1} eliminate $digit from cells that see both.',
-                  highlightCells: highlightCells,
+                  highlightedCells: highlightedCells,
                   eliminations: eliminations,
                 );
               }

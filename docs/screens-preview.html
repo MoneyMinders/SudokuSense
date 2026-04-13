@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SudokuSense - Screen Previews</title>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1A237E;
+    --primary-light: #3949AB;
+    --primary-container: #E8EAF6;
+    --on-primary: #FFFFFF;
+    --surface: #FAFAFA;
+    --surface-variant: #E7E0EC;
+    --on-surface: #1C1B1F;
+    --on-surface-variant: #49454F;
+    --outline: #79747E;
+    --outline-variant: #CAC4D0;
+    --tertiary: #7D5260;
+    --error: #B3261E;
+    --success: #2E7D32;
+    --highlight: #BBDEFB;
+    --highlight-soft: #E3F2FD;
+    --user-entry: #1565C0;
+    --candidate-color: #78909C;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Roboto', 'Google Sans', sans-serif;
+    background: linear-gradient(135deg, #0D1B4A 0%, #1A237E 40%, #283593 100%);
+    min-height: 100vh;
+    padding: 40px 20px;
+    color: var(--on-surface);
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .page-header h1 {
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    font-size: 40px;
+    font-weight: 700;
+    color: #FFFFFF;
+    letter-spacing: -0.5px;
+  }
+  .page-header p {
+    font-size: 16px;
+    color: rgba(255,255,255,0.7);
+    margin-top: 8px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+    justify-items: center;
+  }
+
+  .mockup-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .mockup-label {
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.9);
+    letter-spacing: 0.2px;
+  }
+
+  .phone-frame {
+    width: 320px;
+    height: 640px;
+    background: #FFFFFF;
+    border-radius: 36px;
+    box-shadow: 0 0 0 3px #1a1a2e, 0 0 0 6px #333355, 0 20px 60px rgba(0,0,0,0.5);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .phone-frame::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 24px;
+    background: #1a1a2e;
+    border-radius: 0 0 16px 16px;
+    z-index: 10;
+  }
+
+  .status-bar {
+    height: 36px;
+    background: var(--primary);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 20px 4px;
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.9);
+    flex-shrink: 0;
+  }
+  .status-bar .time { font-weight: 600; }
+  .status-bar .icons { display: flex; gap: 4px; font-size: 10px; }
+
+  .app-bar {
+    height: 52px;
+    background: var(--primary);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    color: white;
+    flex-shrink: 0;
+    gap: 12px;
+  }
+  .app-bar .back-arrow { font-size: 22px; opacity: 0.9; cursor: pointer; }
+  .app-bar .title {
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    flex: 1;
+  }
+  .app-bar .actions { display: flex; gap: 8px; }
+  .app-bar .action-icon {
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  .app-bar .action-icon:hover { background: rgba(255,255,255,0.12); }
+
+  .screen-body {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ─── Screen 1: Home ─── */
+  .home-body {
+    flex: 1;
+    background: linear-gradient(180deg, var(--primary) 0%, #283593 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 32px;
+    gap: 8px;
+  }
+  .home-icon {
+    width: 88px; height: 88px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 24px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px;
+    border: 2px solid rgba(255,255,255,0.2);
+  }
+  .home-icon .grid-icon {
+    font-size: 48px;
+    color: white;
+  }
+  .home-title {
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.5px;
+  }
+  .home-subtitle {
+    font-size: 15px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 40px;
+  }
+  .home-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+  }
+  .btn-filled {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    background: white;
+    color: var(--primary);
+    border: none;
+    border-radius: 28px;
+    padding: 16px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .btn-outlined {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    background: transparent;
+    color: white;
+    border: 2px solid rgba(255,255,255,0.5);
+    border-radius: 28px;
+    padding: 14px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    cursor: pointer;
+  }
+  .btn-icon { font-size: 20px; }
+
+  /* ─── Screen 2: Camera ─── */
+  .camera-body {
+    flex: 1;
+    background: #F5F5F5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px;
+    gap: 24px;
+  }
+  .scanner-frame {
+    width: 180px; height: 180px;
+    border: 3px dashed var(--primary-light);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(26,35,126,0.04);
+    position: relative;
+  }
+  .scanner-frame::before,
+  .scanner-frame::after {
+    content: '';
+    position: absolute;
+    width: 28px; height: 28px;
+    border-color: var(--primary);
+    border-style: solid;
+  }
+  .scanner-frame::before {
+    top: -2px; left: -2px;
+    border-width: 4px 0 0 4px;
+    border-radius: 8px 0 0 0;
+  }
+  .scanner-frame::after {
+    bottom: -2px; right: -2px;
+    border-width: 0 4px 4px 0;
+    border-radius: 0 0 8px 0;
+  }
+  .scanner-icon { font-size: 56px; color: var(--primary-light); opacity: 0.6; }
+  .camera-text {
+    font-size: 14px;
+    color: var(--on-surface-variant);
+    text-align: center;
+    line-height: 1.5;
+    padding: 0 8px;
+  }
+  .camera-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+  .btn-filled-sm {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 24px;
+    padding: 14px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(26,35,126,0.3);
+  }
+  .btn-outlined-sm {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: transparent;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    border-radius: 24px;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    cursor: pointer;
+  }
+
+  /* ─── Corner accents for scanner ─── */
+  .corner-tl, .corner-tr, .corner-bl, .corner-br {
+    position: absolute;
+    width: 28px; height: 28px;
+    border-color: var(--primary);
+    border-style: solid;
+  }
+  .corner-tl { top: -2px; left: -2px; border-width: 4px 0 0 4px; border-radius: 8px 0 0 0; }
+  .corner-tr { top: -2px; right: -2px; border-width: 4px 4px 0 0; border-radius: 0 8px 0 0; }
+  .corner-bl { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; border-radius: 0 0 0 8px; }
+  .corner-br { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; border-radius: 0 0 8px 0; }
+
+  /* ─── Screen 3: Puzzle ─── */
+  .puzzle-body {
+    flex: 1;
+    background: #FAFAFA;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .progress-bar-container {
+    padding: 8px 16px 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 6px;
+    background: #E0E0E0;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    width: 42%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    border-radius: 3px;
+  }
+  .progress-text {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--primary);
+    min-width: 32px;
+    text-align: right;
+  }
+
+  .sudoku-grid-wrapper {
+    padding: 6px 12px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .sudoku-grid {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    grid-template-rows: repeat(9, 1fr);
+    width: 270px;
+    height: 270px;
+    border: 2.5px solid #1A237E;
+    background: white;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  }
+
+  .cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--on-surface);
+    border: 0.5px solid #BDBDBD;
+    position: relative;
+    background: white;
+  }
+  .cell.given { font-weight: 700; color: #212121; }
+  .cell.user-entered { color: var(--user-entry); font-weight: 500; }
+  .cell.selected { background: var(--highlight) !important; }
+  .cell.same-group { background: var(--highlight-soft); }
+
+  /* Thick borders for 3x3 boxes */
+  .cell.border-right { border-right: 2px solid #1A237E; }
+  .cell.border-bottom { border-bottom: 2px solid #1A237E; }
+  .cell.border-left { border-left: 2px solid #1A237E; }
+  .cell.border-top { border-top: 2px solid #1A237E; }
+
+  .cell .candidates {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0; left: 0;
+  }
+  .cell .candidates span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 7px;
+    color: var(--candidate-color);
+    font-weight: 400;
+  }
+
+  .toolbar-row {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 6px 16px;
+  }
+  .tool-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--primary-container);
+    color: var(--primary);
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    cursor: pointer;
+  }
+  .tool-btn .tool-icon { font-size: 18px; }
+
+  .numpad {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    padding: 8px 16px 12px;
+  }
+  .num-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    background: white;
+    border: 1.5px solid #E0E0E0;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--primary);
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    cursor: pointer;
+  }
+  .num-btn:hover { background: var(--primary-container); }
+  .num-btn.clear-btn {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--on-surface-variant);
+  }
+
+  /* ─── Screen 4: Hint Sheet ─── */
+  .hint-overlay {
+    flex: 1;
+    position: relative;
+    background: #FAFAFA;
+  }
+  .hint-puzzle-bg {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 100%;
+    opacity: 0.3;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 29px,
+      #E0E0E0 29px,
+      #E0E0E0 30px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 29px,
+      #E0E0E0 29px,
+      #E0E0E0 30px
+    );
+  }
+  .hint-scrim {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    top: 0;
+    background: rgba(0,0,0,0.32);
+    z-index: 1;
+  }
+  .hint-sheet {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: white;
+    border-radius: 24px 24px 0 0;
+    padding: 12px 24px 24px;
+    z-index: 2;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.12);
+  }
+  .hint-handle {
+    width: 40px; height: 4px;
+    background: #DDD;
+    border-radius: 2px;
+    margin: 0 auto 16px;
+  }
+  .hint-strategy {
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--on-surface);
+    margin-bottom: 8px;
+  }
+  .difficulty-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #E8F5E9;
+    color: var(--success);
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  .difficulty-badge .dot {
+    width: 6px; height: 6px;
+    background: var(--success);
+    border-radius: 50%;
+  }
+  .hint-explanation {
+    font-size: 13.5px;
+    color: var(--on-surface-variant);
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+  .hint-placement {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--primary-container);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--primary);
+  }
+  .hint-placement .place-icon { font-size: 18px; }
+  .hint-buttons {
+    display: flex;
+    gap: 12px;
+  }
+  .hint-btn-apply {
+    flex: 1;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 24px;
+    padding: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(26,35,126,0.3);
+  }
+  .hint-btn-dismiss {
+    flex: 1;
+    background: transparent;
+    color: var(--primary);
+    border: none;
+    padding: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    cursor: pointer;
+  }
+
+  .material-symbols-rounded {
+    font-family: 'Material Symbols Rounded';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  @media (max-width: 740px) {
+    .grid { grid-template-columns: 1fr; gap: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>SudokuSense</h1>
+  <p>App Screen Previews</p>
+</div>
+
+<div class="grid">
+
+  <!-- ════════════ Screen 1: Home ════════════ -->
+  <div class="mockup-container">
+    <div class="mockup-label">1. Home Screen</div>
+    <div class="phone-frame">
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <span class="icons">
+          <span class="material-symbols-rounded" style="font-size:13px">signal_cellular_alt</span>
+          <span class="material-symbols-rounded" style="font-size:13px">wifi</span>
+          <span class="material-symbols-rounded" style="font-size:13px">battery_full</span>
+        </span>
+      </div>
+      <div class="screen-body home-body">
+        <div class="home-icon">
+          <span class="material-symbols-rounded grid-icon">grid_on</span>
+        </div>
+        <div class="home-title">SudokuSense</div>
+        <div class="home-subtitle">Scan, solve, and learn</div>
+        <div class="home-buttons">
+          <button class="btn-filled">
+            <span class="material-symbols-rounded btn-icon">photo_camera</span>
+            Scan Puzzle
+          </button>
+          <button class="btn-outlined">
+            <span class="material-symbols-rounded btn-icon">grid_on</span>
+            Enter Manually
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Screen 2: Camera ════════════ -->
+  <div class="mockup-container">
+    <div class="mockup-label">2. Camera Screen</div>
+    <div class="phone-frame">
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <span class="icons">
+          <span class="material-symbols-rounded" style="font-size:13px">signal_cellular_alt</span>
+          <span class="material-symbols-rounded" style="font-size:13px">wifi</span>
+          <span class="material-symbols-rounded" style="font-size:13px">battery_full</span>
+        </span>
+      </div>
+      <div class="app-bar">
+        <span class="material-symbols-rounded back-arrow">arrow_back</span>
+        <span class="title">Scan Puzzle</span>
+      </div>
+      <div class="screen-body camera-body">
+        <div class="scanner-frame">
+          <div class="corner-tl"></div>
+          <div class="corner-tr"></div>
+          <div class="corner-bl"></div>
+          <div class="corner-br"></div>
+          <span class="material-symbols-rounded scanner-icon">document_scanner</span>
+        </div>
+        <div class="camera-text">Take a photo of a Sudoku puzzle or pick one from your gallery.</div>
+        <div class="camera-buttons">
+          <button class="btn-filled-sm">
+            <span class="material-symbols-rounded btn-icon">photo_camera</span>
+            Take Photo
+          </button>
+          <button class="btn-outlined-sm">
+            <span class="material-symbols-rounded btn-icon">photo_library</span>
+            Pick from Gallery
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Screen 3: Puzzle ════════════ -->
+  <div class="mockup-container">
+    <div class="mockup-label">3. Puzzle Screen</div>
+    <div class="phone-frame">
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <span class="icons">
+          <span class="material-symbols-rounded" style="font-size:13px">signal_cellular_alt</span>
+          <span class="material-symbols-rounded" style="font-size:13px">wifi</span>
+          <span class="material-symbols-rounded" style="font-size:13px">battery_full</span>
+        </span>
+      </div>
+      <div class="app-bar">
+        <span class="title">SudokuSense</span>
+        <div class="actions">
+          <span class="action-icon material-symbols-rounded" style="font-size:20px">undo</span>
+          <span class="action-icon material-symbols-rounded" style="font-size:20px">check_circle</span>
+        </div>
+      </div>
+      <div class="screen-body puzzle-body">
+        <div class="progress-bar-container">
+          <div class="progress-track"><div class="progress-fill"></div></div>
+          <span class="progress-text">42%</span>
+        </div>
+        <div class="sudoku-grid-wrapper">
+          <div class="sudoku-grid" id="puzzle-grid"></div>
+        </div>
+        <div class="toolbar-row">
+          <button class="tool-btn">
+            <span class="material-symbols-rounded tool-icon">lightbulb</span>
+            Hint
+          </button>
+          <button class="tool-btn">
+            <span class="material-symbols-rounded tool-icon">auto_fix_high</span>
+            Solve
+          </button>
+          <button class="tool-btn" style="background:var(--primary);color:white;">
+            <span class="material-symbols-rounded tool-icon">edit</span>
+            Pencil
+          </button>
+        </div>
+        <div class="numpad">
+          <button class="num-btn">1</button>
+          <button class="num-btn">2</button>
+          <button class="num-btn">3</button>
+          <button class="num-btn">4</button>
+          <button class="num-btn">5</button>
+          <button class="num-btn">6</button>
+          <button class="num-btn">7</button>
+          <button class="num-btn">8</button>
+          <button class="num-btn">9</button>
+          <button class="num-btn clear-btn">
+            <span class="material-symbols-rounded" style="font-size:18px;color:#78909C">backspace</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ Screen 4: Hint Sheet ════════════ -->
+  <div class="mockup-container">
+    <div class="mockup-label">4. Hint Bottom Sheet</div>
+    <div class="phone-frame">
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <span class="icons">
+          <span class="material-symbols-rounded" style="font-size:13px">signal_cellular_alt</span>
+          <span class="material-symbols-rounded" style="font-size:13px">wifi</span>
+          <span class="material-symbols-rounded" style="font-size:13px">battery_full</span>
+        </span>
+      </div>
+      <div class="app-bar">
+        <span class="title">SudokuSense</span>
+        <div class="actions">
+          <span class="action-icon material-symbols-rounded" style="font-size:20px">undo</span>
+          <span class="action-icon material-symbols-rounded" style="font-size:20px">check_circle</span>
+        </div>
+      </div>
+      <div class="screen-body">
+        <div class="hint-overlay">
+          <div class="hint-puzzle-bg"></div>
+          <div class="hint-scrim"></div>
+          <div class="hint-sheet">
+            <div class="hint-handle"></div>
+            <div class="hint-strategy">Naked Single</div>
+            <div class="difficulty-badge">
+              <span class="dot"></span>
+              Easy
+            </div>
+            <div class="hint-explanation">
+              Cell (3,5) can only be <strong>7</strong> &mdash; all other numbers are already present in its row, column, or box.
+            </div>
+            <div class="hint-placement">
+              <span class="material-symbols-rounded place-icon">place_item</span>
+              Place <strong>7</strong> at (3, 5)
+            </div>
+            <div class="hint-buttons">
+              <button class="hint-btn-apply">Apply Hint</button>
+              <button class="hint-btn-dismiss">Dismiss</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Build the Sudoku grid for Screen 3
+(function() {
+  const grid = document.getElementById('puzzle-grid');
+  // Realistic partial puzzle: 0 = empty, negative = user-entered, 'c' prefix = candidates
+  const puzzle = [
+    // Row 0
+    [{v:5,t:'g'},{v:3,t:'g'},{v:0,t:''},{v:0,t:''},{v:7,t:'g'},{v:0,t:''},{v:0,t:''},{v:0,t:''},{v:0,t:''}],
+    // Row 1
+    [{v:6,t:'g'},{v:0,t:''},{v:0,t:''},{v:1,t:'g'},{v:9,t:'g'},{v:5,t:'g'},{v:0,t:''},{v:0,t:''},{v:0,t:''}],
+    // Row 2
+    [{v:0,t:''},{v:9,t:'g'},{v:8,t:'g'},{v:0,t:''},{v:0,t:''},{v:0,t:''},{v:0,t:''},{v:6,t:'g'},{v:0,t:''}],
+    // Row 3
+    [{v:8,t:'g'},{v:0,t:''},{v:0,t:''},{v:0,t:''},{v:6,t:'g'},{v:0,t:''},{v:0,t:''},{v:0,t:''},{v:3,t:'g'}],
+    // Row 4
+    [{v:4,t:'g'},{v:0,t:''},{v:0,t:''},{v:8,t:'g'},{v:0,t:'s'},{v:3,t:'g'},{v:0,t:''},{v:0,t:''},{v:1,t:'g'}],
+    // Row 5
+    [{v:7,t:'g'},{v:0,t:''},{v:0,t:''},{v:0,t:''},{v:2,t:'g'},{v:0,t:''},{v:0,t:''},{v:0,t:''},{v:6,t:'g'}],
+    // Row 6
+    [{v:0,t:''},{v:6,t:'g'},{v:0,t:''},{v:0,t:''},{v:0,t:''},{v:0,t:''},{v:2,t:'u'},{v:8,t:'g'},{v:0,t:''}],
+    // Row 7
+    [{v:0,t:''},{v:0,t:''},{v:0,t:''},{v:4,t:'g'},{v:1,t:'g'},{v:9,t:'g'},{v:0,t:''},{v:0,t:''},{v:5,t:'g'}],
+    // Row 8
+    [{v:0,t:''},{v:0,t:''},{v:0,t:''},{v:0,t:''},{v:8,t:'g'},{v:0,t:''},{v:0,t:''},{v:7,t:'u'},{v:9,t:'g'}],
+  ];
+
+  // Candidates for some empty cells
+  const candidates = {
+    '0,2': [1,4],
+    '0,3': [2,6],
+    '1,1': [7],
+    '1,6': [3,4,8],
+    '3,1': [1,5],
+    '4,1': [2,5],
+    '5,3': [5,9],
+    '6,0': [1,3,9],
+    '8,0': [2,3],
+  };
+
+  // Selected cell: row 4, col 4
+  const selR = 4, selC = 4;
+
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 9; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      const data = puzzle[r][c];
+
+      // Box borders
+      if (c === 2 || c === 5) cell.classList.add('border-right');
+      if (r === 2 || r === 5) cell.classList.add('border-bottom');
+
+      // Highlight selected and same group
+      if (r === selR && c === selC) {
+        cell.classList.add('selected');
+      } else if (r === selR || c === selC ||
+        (Math.floor(r/3) === Math.floor(selR/3) && Math.floor(c/3) === Math.floor(selC/3))) {
+        cell.classList.add('same-group');
+      }
+
+      if (data.v > 0) {
+        if (data.t === 'g') cell.classList.add('given');
+        else if (data.t === 'u') cell.classList.add('user-entered');
+        cell.textContent = data.v;
+      } else {
+        // Check for candidates
+        const key = r + ',' + c;
+        if (candidates[key]) {
+          const cDiv = document.createElement('div');
+          cDiv.className = 'candidates';
+          for (let n = 1; n <= 9; n++) {
+            const s = document.createElement('span');
+            if (candidates[key].includes(n)) s.textContent = n;
+            cDiv.appendChild(s);
+          }
+          cell.appendChild(cDiv);
+        }
+      }
+
+      grid.appendChild(cell);
+    }
+  }
+})();
+</script>
+
+</body>
+</html>

@@ -58,15 +58,15 @@ class SwordfishStrategy extends Strategy {
             if (crossPositions.length != 3) continue;
 
             final crossList = crossPositions.toList()..sort();
-            final highlightCells = <(int, int)>[];
-            final eliminations = <(int, int), Set<int>>{};
+            final highlightedCells = <(int, int)>[];
+            final eliminations = <Elimination>[];
 
             // Highlight the swordfish cells
             for (final line in [line1, line2, line3]) {
               for (final cross in candidateLines[line]!) {
                 final row = isRowBased ? line : cross;
                 final col = isRowBased ? cross : line;
-                highlightCells.add((row, col));
+                highlightedCells.add((row, col));
               }
             }
 
@@ -78,7 +78,9 @@ class SwordfishStrategy extends Strategy {
                 final col = isRowBased ? cross : line;
                 final cell = board.getCell(row, col);
                 if (cell.value == null && cell.candidates.contains(digit)) {
-                  eliminations[(row, col)] = {digit};
+                  eliminations.add(
+                    Elimination(row: row, col: col, value: digit),
+                  );
                 }
               }
             }
@@ -95,7 +97,7 @@ class SwordfishStrategy extends Strategy {
                     '${[line1, line2, line3].map((l) => l + 1).join(', ')}, '
                     '$crossLabel ${crossList.map((c) => c + 1).join(', ')}. '
                     '$digit can be eliminated from other cells in those $crossLabel.',
-                highlightCells: highlightCells,
+                highlightedCells: highlightedCells,
                 eliminations: eliminations,
               );
             }

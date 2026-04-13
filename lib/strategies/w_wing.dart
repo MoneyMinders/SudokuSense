@@ -30,29 +30,21 @@ class WWingStrategy extends Strategy {
         final cell1 = board.getCell(cell1Pos.$1, cell1Pos.$2);
         final cell2 = board.getCell(cell2Pos.$1, cell2Pos.$2);
 
-        // Must have identical candidates
         if (!_setsEqual(cell1.candidates, cell2.candidates)) continue;
-
-        // Must NOT share a unit (otherwise simpler techniques apply)
         if (_seeEachOther(cell1Pos, cell2Pos)) continue;
 
         final cands = cell1.candidates.toList();
 
-        // Try each candidate as the strong link candidate (a),
-        // the other is the elimination candidate (b)
         for (var ci = 0; ci < 2; ci++) {
           final a = cands[ci];
           final b = cands[1 - ci];
 
-          // Find a strong link on candidate a that connects to both cells
-          // Strong link: a unit where candidate a appears in exactly 2 cells
           final strongLinks = _findStrongLinks(board, a);
 
           for (final link in strongLinks) {
             final linkEnd1 = link.$1;
             final linkEnd2 = link.$2;
 
-            // One end must see cell1, the other must see cell2
             final end1SeesCell1 = _seeEachOther(linkEnd1, cell1Pos);
             final end1SeesCell2 = _seeEachOther(linkEnd1, cell2Pos);
             final end2SeesCell1 = _seeEachOther(linkEnd2, cell1Pos);
@@ -69,8 +61,7 @@ class WWingStrategy extends Strategy {
 
             if (!connected) continue;
 
-            // Eliminate b from cells that see both bi-value cells
-            final eliminations = <(int, int), Set<int>>{};
+            final eliminations = <Elimination>[];
             for (var r = 0; r < 9; r++) {
               for (var c = 0; c < 9; c++) {
                 final pos = (r, c);
@@ -82,7 +73,7 @@ class WWingStrategy extends Strategy {
                 }
                 if (_seeEachOther(pos, cell1Pos) &&
                     _seeEachOther(pos, cell2Pos)) {
-                  eliminations[pos] = {b};
+                  eliminations.add(Elimination(row: r, col: c, value: b));
                 }
               }
             }
@@ -98,7 +89,7 @@ class WWingStrategy extends Strategy {
                     'strong link on $a between R${linkEnd1.$1 + 1}C${linkEnd1.$2 + 1} '
                     'and R${linkEnd2.$1 + 1}C${linkEnd2.$2 + 1}. '
                     'Candidate $b can be eliminated from cells seeing both bi-value cells.',
-                highlightCells: [cell1Pos, cell2Pos, linkEnd1, linkEnd2],
+                highlightedCells: [cell1Pos, cell2Pos, linkEnd1, linkEnd2],
                 eliminations: eliminations,
               );
             }
@@ -110,8 +101,6 @@ class WWingStrategy extends Strategy {
     return null;
   }
 
-  /// Find all strong links for a candidate: pairs of cells in a unit
-  /// where the candidate appears in exactly 2 cells.
   List<((int, int), (int, int))> _findStrongLinks(Board board, int digit) {
     final links = <((int, int), (int, int))>[];
     final seen = <String>{};
@@ -136,10 +125,8 @@ class WWingStrategy extends Strategy {
       checkUnit(board.getRowPositions(i));
       checkUnit(board.getColPositions(i));
     }
-    for (var br = 0; br < 9; br += 3) {
-      for (var bc = 0; bc < 9; bc += 3) {
-        checkUnit(board.getBoxPositions(br, bc));
-      }
+    for (var box = 0; box < 9; box++) {
+      checkUnit(board.getBoxPositions(box));
     }
 
     return links;
