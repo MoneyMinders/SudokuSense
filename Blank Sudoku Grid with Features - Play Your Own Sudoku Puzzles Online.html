@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<!-- saved from url=(0036)https://www.sudoku9x9.com/blankgrid/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>Blank Sudoku Grid with Features - Play Your Own Sudoku Puzzles Online</title>
+<meta name="description" content="Blank grid - Play your own Sudoku puzzles on our online Sudoku game interface with various features such as pencil marks, one key filling all candidates, background highlights, undo/redo functions and more.">
+<meta name="keywords" content="sudoku blank grid, blank grid, online sudoku game interface">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="stylesheet" type="text/css" href="./Blank Sudoku Grid with Features - Play Your Own Sudoku Puzzles Online_files/npstd3a.css">
+<style type="text/css">
+ins.adsbygoogle[data-ad-status="unfilled"] {display:none !important;}
+.adslot_2 {margin-bottom:1rem !important;}
+@media (min-aspect-ratio:3833/3137) and (max-height:450px) and (min-width:729px),
+       (min-aspect-ratio:3833/3137) and (min-height:451px) and (max-height:600px) and (min-width:729px),
+	   (min-aspect-ratio:3833/3137) and (min-height:601px),
+       (max-height:960px) {.adslot_2 {display:none !important;}}
+</style>
+<script async="" src="./Blank Sudoku Grid with Features - Play Your Own Sudoku Puzzles Online_files/f.txt" data-overlays="bottom" crossorigin="anonymous"></script><script type="text/javascript" src="./Blank Sudoku Grid with Features - Play Your Own Sudoku Puzzles Online_files/mgplay3b.html">
+</script>
+<script type="text/javascript" src="./Blank Sudoku Grid with Features - Play Your Own Sudoku Puzzles Online_files/mbpuzzle2.html">
+</script><script type="text/javascript" src="./Blank Sudoku Grid with Features - Play Your Own Sudoku Puzzles Online_files/mtimer2.js"> 
+</script>
+<script type="text/javascript">
+//<![CDATA[
+  function togglenavblk() {	
+    if (!navwait)
+	{
+	  navwait=true;
+	  if (document.getElementById('navcontent').clientHeight==0) {
+		 document.getElementById('navcontent').style.height=document.getElementById('navdetail').clientHeight+'px';
+		 setTimeout("document.getElementById('navcontent').style.height='auto';",115);
+	  }
+	  else {
+		document.getElementById('navcontent').style.height=document.getElementById('navdetail').clientHeight+'px';
+		setTimeout("document.getElementById('navcontent').style.height='';",15);
+	  }
+	  setTimeout("navwait=false;",250);
+	}
+  }
+  function expandtools() {	
+    if (!exptoolswait)
+	{
+	  exptoolswait=true;
+	  if (document.getElementById('pctrl2').clientHeight==0) {
+		 document.getElementById('pctrl2').style.height=document.getElementById('pctrl2dtl').clientHeight+'px';
+		 document.getElementById('tools').style.fontSize='0.65em';
+		 document.getElementById('tarrow').innerHTML='&#9650;';
+		 setTimeout("document.getElementById('pctrl2').style.height='auto';document.getElementById('pctrl2').style.overflow='visible';",165);
+	  }
+	  else {
+		document.getElementById('pctrl2').style.height=document.getElementById('pctrl2dtl').clientHeight+'px';
+		setTimeout("document.getElementById('pctrl2').style.height='';document.getElementById('tools').style.fontSize='';document.getElementById('pctrl2').style.overflow='';document.getElementById('tarrow').innerHTML='&#9660;';",15);
+	  }
+	  setTimeout("exptoolswait=false;",250);
+	}
+  }
+//]]> 
+</script>
+<link rel="icon" type="image/x-icon" href="https://www.sudoku9x9.com/favicon.ico" sizes="32x32">
+<link rel="icon" type="image/svg+xml" href="https://www.sudoku9x9.com/2i/icon.svg">
+<link rel="icon" type="image/png" href="https://www.sudoku9x9.com/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://www.sudoku9x9.com/favicon-48x48.png" sizes="48x48">
+<link rel="icon" type="image/png" href="https://www.sudoku9x9.com/favicon-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="https://www.sudoku9x9.com/favicon-192x192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="https://www.sudoku9x9.com/apple-touch-icon.png">
+</head>
+
+<body>
+<script type="text/javascript">
+  var orig=new Array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);  var solution=new Array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);</script>
+<script type="text/javascript" src="./Blank Sudoku Grid with Features - Play Your Own Sudoku Puzzles Online_files/msavepuzz2.js"> 
+</script>
+<script type="text/javascript">
+  hlcolor="#ffdd60";
+  chlcolor="#9aff67";
+  sbuttoncolor="#a0a033";
+  sbuttoncolorrgb="rgb(255, 255, 240)";
+  darkbuttoncolor="#ead8b3";
+  dbuttoncolor="#f0f6f0";
+  mobuttoncolor="#f2f299";
+  numberselected=0;
+  pmmode=false;
+  spmautomode=false;
+  hlmode=false;
+  dcmode="d";
+  rcmode=false;
+  rcmove=false;
+  cellselected=81;
+  finish=false;
+  navwait=false;
+  exptoolswait=false;
+  tapcolor=sbuttoncolor;
+  cfcolor="#0000ff";
+  dfcolor=tapcolor;
+  nobgclr="#fffff0";
+  clueclr="#e3e3e3";
+  green="#9aff67";
+  yellow="#ffff77";
+  red="#ff8945";
+  blue="#45bfff";
+  hnobgclr="#fff8bc";
+  hclueclr="#f3efcb";
+  hgreen="#d6fa9a";
+  hyellow="#fffaa0";
+  hred="#ffcb8c";
+  hblue="#ece1ec";
+  hhlcolor="#ffed97";
+</script>
+<div class="topad">
+<!-- main horizontal responsive -->
+<ins class="adsbygoogle adslot_2" style="display:block;min-width:300px;max-width:970px;width:100%;height:90px;" data-ad-client="ca-pub-1084572351617719" data-ad-slot="7203618197" data-adsbygoogle-status="done"><iframe id="aswift_0" style="height: 1px !important; max-height: 1px !important; max-width: 1px !important; width: 1px !important;" src="./Blank Sudoku Grid with Features - Play Your Own Sudoku Puzzles Online_files/saved_resource.html"><iframe id="google_ads_frame0" src="./Blank Sudoku Grid with Features - Play Your Own Sudoku Puzzles Online_files/saved_resource(1).html"></iframe></iframe></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</div><div id="gcontainer" class="container">
+  <div id="hdr">
+	 <div class="dlogo"><a href="https://www.sudoku9x9.com/" title="Sudoku"><img class="logo" src="./Blank Sudoku Grid with Features - Play Your Own Sudoku Puzzles Online_files/title1.svg" alt="Sudoku9x9.com" title="Sudoku9x9.com"></a></div>
+	 <div id="nvb">
+	  <div id="navborder" onclick="togglenavblk()">
+	   <div class="navimg"></div>
+	   <div class="navimg"></div>
+	   <div class="navimg"></div>
+	  </div> 
+	  <div id="navcntwrap">
+	   <div id="navcontent">
+	    <div id="navdetail"> 
+         <a href="https://www.sudoku9x9.com/" class="mainnav">Free&nbsp;Online&nbsp;Sudoku</a>
+         <a href="https://www.sudoku9x9.com/dailysudoku/" class="mainnav">Daily&nbsp;Sudoku</a>
+         <a href="https://www.sudoku9x9.com/blankgrid/" class="mainnav" id="active">Blank&nbsp;Grid</a>
+         <a href="https://www.sudoku9x9.com/sudokusolver/" class="mainnav">Sudoku&nbsp;Solver</a>
+         <a href="https://www.sudoku9x9.com/techniques/" class="mainnav">Techniques</a>	
+        </div>		 
+	   </div>
+	  </div>
+	 </div>
+  </div>
+  <div id="lyot">
+  <div class="buffer1"></div>
+  <div id="itf">
+    <div class="gameno"><h4>Blank Grid - Play Your Own Sudoku Puzzles</h4><div id="cdmsg">(Digit First: Select a digit from the digit panel first)</div></div>
+    <div id="bcmsg"><span id="broadcastmsg"></span></div>
+	<div id="playtable">
+	<div id="playarea" class="grid3x3o">
+	<div id="sgrid0" class="grid3x3i msgrid1"><div id="cell0" class="cbdr msgrid1" onclick="if (!finish) clickcell(0)"><p class="rp1" id="c0" name="c0"></p><div class="pmcellbx"><div id="pmc0d1" class="pmdp1">1</div><div id="pmc0d2" class="pmdp2">2</div><div id="pmc0d3" class="pmdp3">3</div><div id="pmc0d4" class="pmdp4">4</div><div id="pmc0d5" class="pmdp5">5</div><div id="pmc0d6" class="pmdp6">6</div><div id="pmc0d7" class="pmdp7">7</div><div id="pmc0d8" class="pmdp8">8</div><div id="pmc0d9" class="pmdp9">9</div></div></div><div id="cell1" class="cbdr msgrid2" onclick="if (!finish) clickcell(1)"><p class="rp1" id="c1" name="c1"></p><div class="pmcellbx"><div id="pmc1d1" class="pmdp1">1</div><div id="pmc1d2" class="pmdp2">2</div><div id="pmc1d3" class="pmdp3">3</div><div id="pmc1d4" class="pmdp4">4</div><div id="pmc1d5" class="pmdp5">5</div><div id="pmc1d6" class="pmdp6">6</div><div id="pmc1d7" class="pmdp7">7</div><div id="pmc1d8" class="pmdp8">8</div><div id="pmc1d9" class="pmdp9">9</div></div></div><div id="cell2" class="cbdr msgrid3" onclick="if (!finish) clickcell(2)"><p class="rp1" id="c2" name="c2"></p><div class="pmcellbx"><div id="pmc2d1" class="pmdp1">1</div><div id="pmc2d2" class="pmdp2">2</div><div id="pmc2d3" class="pmdp3">3</div><div id="pmc2d4" class="pmdp4">4</div><div id="pmc2d5" class="pmdp5">5</div><div id="pmc2d6" class="pmdp6">6</div><div id="pmc2d7" class="pmdp7">7</div><div id="pmc2d8" class="pmdp8">8</div><div id="pmc2d9" class="pmdp9">9</div></div></div><div id="cell9" class="cbdr msgrid4" onclick="if (!finish) clickcell(9)"><p class="rp1" id="c9" name="c9"></p><div class="pmcellbx"><div id="pmc9d1" class="pmdp1">1</div><div id="pmc9d2" class="pmdp2">2</div><div id="pmc9d3" class="pmdp3">3</div><div id="pmc9d4" class="pmdp4">4</div><div id="pmc9d5" class="pmdp5">5</div><div id="pmc9d6" class="pmdp6">6</div><div id="pmc9d7" class="pmdp7">7</div><div id="pmc9d8" class="pmdp8">8</div><div id="pmc9d9" class="pmdp9">9</div></div></div><div id="cell10" class="cbdr msgrid5" onclick="if (!finish) clickcell(10)"><p class="rp1" id="c10" name="c10"></p><div class="pmcellbx"><div id="pmc10d1" class="pmdp1">1</div><div id="pmc10d2" class="pmdp2">2</div><div id="pmc10d3" class="pmdp3">3</div><div id="pmc10d4" class="pmdp4">4</div><div id="pmc10d5" class="pmdp5">5</div><div id="pmc10d6" class="pmdp6">6</div><div id="pmc10d7" class="pmdp7">7</div><div id="pmc10d8" class="pmdp8">8</div><div id="pmc10d9" class="pmdp9">9</div></div></div><div id="cell11" class="cbdr msgrid6" onclick="if (!finish) clickcell(11)"><p class="rp1" id="c11" name="c11"></p><div class="pmcellbx"><div id="pmc11d1" class="pmdp1">1</div><div id="pmc11d2" class="pmdp2">2</div><div id="pmc11d3" class="pmdp3">3</div><div id="pmc11d4" class="pmdp4">4</div><div id="pmc11d5" class="pmdp5">5</div><div id="pmc11d6" class="pmdp6">6</div><div id="pmc11d7" class="pmdp7">7</div><div id="pmc11d8" class="pmdp8">8</div><div id="pmc11d9" class="pmdp9">9</div></div></div><div id="cell18" class="cbdr msgrid7" onclick="if (!finish) clickcell(18)"><p class="rp1" id="c18" name="c18"></p><div class="pmcellbx"><div id="pmc18d1" class="pmdp1">1</div><div id="pmc18d2" class="pmdp2">2</div><div id="pmc18d3" class="pmdp3">3</div><div id="pmc18d4" class="pmdp4">4</div><div id="pmc18d5" class="pmdp5">5</div><div id="pmc18d6" class="pmdp6">6</div><div id="pmc18d7" class="pmdp7">7</div><div id="pmc18d8" class="pmdp8">8</div><div id="pmc18d9" class="pmdp9">9</div></div></div><div id="cell19" class="cbdr msgrid8" onclick="if (!finish) clickcell(19)"><p class="rp1" id="c19" name="c19"></p><div class="pmcellbx"><div id="pmc19d1" class="pmdp1">1</div><div id="pmc19d2" class="pmdp2">2</div><div id="pmc19d3" class="pmdp3">3</div><div id="pmc19d4" class="pmdp4">4</div><div id="pmc19d5" class="pmdp5">5</div><div id="pmc19d6" class="pmdp6">6</div><div id="pmc19d7" class="pmdp7">7</div><div id="pmc19d8" class="pmdp8">8</div><div id="pmc19d9" class="pmdp9">9</div></div></div><div id="cell20" class="cbdr msgrid9" onclick="if (!finish) clickcell(20)"><p class="rp1" id="c20" name="c20"></p><div class="pmcellbx"><div id="pmc20d1" class="pmdp1">1</div><div id="pmc20d2" class="pmdp2">2</div><div id="pmc20d3" class="pmdp3">3</div><div id="pmc20d4" class="pmdp4">4</div><div id="pmc20d5" class="pmdp5">5</div><div id="pmc20d6" class="pmdp6">6</div><div id="pmc20d7" class="pmdp7">7</div><div id="pmc20d8" class="pmdp8">8</div><div id="pmc20d9" class="pmdp9">9</div></div></div></div><div id="sgrid1" class="grid3x3i msgrid2"><div id="cell3" class="cbdr msgrid1" onclick="if (!finish) clickcell(3)"><p class="rp1" id="c3" name="c3"></p><div class="pmcellbx"><div id="pmc3d1" class="pmdp1">1</div><div id="pmc3d2" class="pmdp2">2</div><div id="pmc3d3" class="pmdp3">3</div><div id="pmc3d4" class="pmdp4">4</div><div id="pmc3d5" class="pmdp5">5</div><div id="pmc3d6" class="pmdp6">6</div><div id="pmc3d7" class="pmdp7">7</div><div id="pmc3d8" class="pmdp8">8</div><div id="pmc3d9" class="pmdp9">9</div></div></div><div id="cell4" class="cbdr msgrid2" onclick="if (!finish) clickcell(4)"><p class="rp1" id="c4" name="c4"></p><div class="pmcellbx"><div id="pmc4d1" class="pmdp1">1</div><div id="pmc4d2" class="pmdp2">2</div><div id="pmc4d3" class="pmdp3">3</div><div id="pmc4d4" class="pmdp4">4</div><div id="pmc4d5" class="pmdp5">5</div><div id="pmc4d6" class="pmdp6">6</div><div id="pmc4d7" class="pmdp7">7</div><div id="pmc4d8" class="pmdp8">8</div><div id="pmc4d9" class="pmdp9">9</div></div></div><div id="cell5" class="cbdr msgrid3" onclick="if (!finish) clickcell(5)"><p class="rp1" id="c5" name="c5"></p><div class="pmcellbx"><div id="pmc5d1" class="pmdp1">1</div><div id="pmc5d2" class="pmdp2">2</div><div id="pmc5d3" class="pmdp3">3</div><div id="pmc5d4" class="pmdp4">4</div><div id="pmc5d5" class="pmdp5">5</div><div id="pmc5d6" class="pmdp6">6</div><div id="pmc5d7" class="pmdp7">7</div><div id="pmc5d8" class="pmdp8">8</div><div id="pmc5d9" class="pmdp9">9</div></div></div><div id="cell12" class="cbdr msgrid4" onclick="if (!finish) clickcell(12)"><p class="rp1" id="c12" name="c12"></p><div class="pmcellbx"><div id="pmc12d1" class="pmdp1">1</div><div id="pmc12d2" class="pmdp2">2</div><div id="pmc12d3" class="pmdp3">3</div><div id="pmc12d4" class="pmdp4">4</div><div id="pmc12d5" class="pmdp5">5</div><div id="pmc12d6" class="pmdp6">6</div><div id="pmc12d7" class="pmdp7">7</div><div id="pmc12d8" class="pmdp8">8</div><div id="pmc12d9" class="pmdp9">9</div></div></div><div id="cell13" class="cbdr msgrid5" onclick="if (!finish) clickcell(13)"><p class="rp1" id="c13" name="c13"></p><div class="pmcellbx"><div id="pmc13d1" class="pmdp1">1</div><div id="pmc13d2" class="pmdp2">2</div><div id="pmc13d3" class="pmdp3">3</div><div id="pmc13d4" class="pmdp4">4</div><div id="pmc13d5" class="pmdp5">5</div><div id="pmc13d6" class="pmdp6">6</div><div id="pmc13d7" class="pmdp7">7</div><div id="pmc13d8" class="pmdp8">8</div><div id="pmc13d9" class="pmdp9">9</div></div></div><div id="cell14" class="cbdr msgrid6" onclick="if (!finish) clickcell(14)"><p class="rp1" id="c14" name="c14"></p><div class="pmcellbx"><div id="pmc14d1" class="pmdp1">1</div><div id="pmc14d2" class="pmdp2">2</div><div id="pmc14d3" class="pmdp3">3</div><div id="pmc14d4" class="pmdp4">4</div><div id="pmc14d5" class="pmdp5">5</div><div id="pmc14d6" class="pmdp6">6</div><div id="pmc14d7" class="pmdp7">7</div><div id="pmc14d8" class="pmdp8">8</div><div id="pmc14d9" class="pmdp9">9</div></div></div><div id="cell21" class="cbdr msgrid7" onclick="if (!finish) clickcell(21)"><p class="rp1" id="c21" name="c21"></p><div class="pmcellbx"><div id="pmc21d1" class="pmdp1">1</div><div id="pmc21d2" class="pmdp2">2</div><div id="pmc21d3" class="pmdp3">3</div><div id="pmc21d4" class="pmdp4">4</div><div id="pmc21d5" class="pmdp5">5</div><div id="pmc21d6" class="pmdp6">6</div><div id="pmc21d7" class="pmdp7">7</div><div id="pmc21d8" class="pmdp8">8</div><div id="pmc21d9" class="pmdp9">9</div></div></div><div id="cell22" class="cbdr msgrid8" onclick="if (!finish) clickcell(22)"><p class="rp1" id="c22" name="c22"></p><div class="pmcellbx"><div id="pmc22d1" class="pmdp1">1</div><div id="pmc22d2" class="pmdp2">2</div><div id="pmc22d3" class="pmdp3">3</div><div id="pmc22d4" class="pmdp4">4</div><div id="pmc22d5" class="pmdp5">5</div><div id="pmc22d6" class="pmdp6">6</div><div id="pmc22d7" class="pmdp7">7</div><div id="pmc22d8" class="pmdp8">8</div><div id="pmc22d9" class="pmdp9">9</div></div></div><div id="cell23" class="cbdr msgrid9" onclick="if (!finish) clickcell(23)"><p class="rp1" id="c23" name="c23"></p><div class="pmcellbx"><div id="pmc23d1" class="pmdp1">1</div><div id="pmc23d2" class="pmdp2">2</div><div id="pmc23d3" class="pmdp3">3</div><div id="pmc23d4" class="pmdp4">4</div><div id="pmc23d5" class="pmdp5">5</div><div id="pmc23d6" class="pmdp6">6</div><div id="pmc23d7" class="pmdp7">7</div><div id="pmc23d8" class="pmdp8">8</div><div id="pmc23d9" class="pmdp9">9</div></div></div></div><div id="sgrid2" class="grid3x3i msgrid3"><div id="cell6" class="cbdr msgrid1" onclick="if (!finish) clickcell(6)"><p class="rp1" id="c6" name="c6"></p><div class="pmcellbx"><div id="pmc6d1" class="pmdp1">1</div><div id="pmc6d2" class="pmdp2">2</div><div id="pmc6d3" class="pmdp3">3</div><div id="pmc6d4" class="pmdp4">4</div><div id="pmc6d5" class="pmdp5">5</div><div id="pmc6d6" class="pmdp6">6</div><div id="pmc6d7" class="pmdp7">7</div><div id="pmc6d8" class="pmdp8">8</div><div id="pmc6d9" class="pmdp9">9</div></div></div><div id="cell7" class="cbdr msgrid2" onclick="if (!finish) clickcell(7)"><p class="rp1" id="c7" name="c7"></p><div class="pmcellbx"><div id="pmc7d1" class="pmdp1">1</div><div id="pmc7d2" class="pmdp2">2</div><div id="pmc7d3" class="pmdp3">3</div><div id="pmc7d4" class="pmdp4">4</div><div id="pmc7d5" class="pmdp5">5</div><div id="pmc7d6" class="pmdp6">6</div><div id="pmc7d7" class="pmdp7">7</div><div id="pmc7d8" class="pmdp8">8</div><div id="pmc7d9" class="pmdp9">9</div></div></div><div id="cell8" class="cbdr msgrid3" onclick="if (!finish) clickcell(8)"><p class="rp1" id="c8" name="c8"></p><div class="pmcellbx"><div id="pmc8d1" class="pmdp1">1</div><div id="pmc8d2" class="pmdp2">2</div><div id="pmc8d3" class="pmdp3">3</div><div id="pmc8d4" class="pmdp4">4</div><div id="pmc8d5" class="pmdp5">5</div><div id="pmc8d6" class="pmdp6">6</div><div id="pmc8d7" class="pmdp7">7</div><div id="pmc8d8" class="pmdp8">8</div><div id="pmc8d9" class="pmdp9">9</div></div></div><div id="cell15" class="cbdr msgrid4" onclick="if (!finish) clickcell(15)"><p class="rp1" id="c15" name="c15"></p><div class="pmcellbx"><div id="pmc15d1" class="pmdp1">1</div><div id="pmc15d2" class="pmdp2">2</div><div id="pmc15d3" class="pmdp3">3</div><div id="pmc15d4" class="pmdp4">4</div><div id="pmc15d5" class="pmdp5">5</div><div id="pmc15d6" class="pmdp6">6</div><div id="pmc15d7" class="pmdp7">7</div><div id="pmc15d8" class="pmdp8">8</div><div id="pmc15d9" class="pmdp9">9</div></div></div><div id="cell16" class="cbdr msgrid5" onclick="if (!finish) clickcell(16)"><p class="rp1" id="c16" name="c16"></p><div class="pmcellbx"><div id="pmc16d1" class="pmdp1">1</div><div id="pmc16d2" class="pmdp2">2</div><div id="pmc16d3" class="pmdp3">3</div><div id="pmc16d4" class="pmdp4">4</div><div id="pmc16d5" class="pmdp5">5</div><div id="pmc16d6" class="pmdp6">6</div><div id="pmc16d7" class="pmdp7">7</div><div id="pmc16d8" class="pmdp8">8</div><div id="pmc16d9" class="pmdp9">9</div></div></div><div id="cell17" class="cbdr msgrid6" onclick="if (!finish) clickcell(17)"><p class="rp1" id="c17" name="c17"></p><div class="pmcellbx"><div id="pmc17d1" class="pmdp1">1</div><div id="pmc17d2" class="pmdp2">2</div><div id="pmc17d3" class="pmdp3">3</div><div id="pmc17d4" class="pmdp4">4</div><div id="pmc17d5" class="pmdp5">5</div><div id="pmc17d6" class="pmdp6">6</div><div id="pmc17d7" class="pmdp7">7</div><div id="pmc17d8" class="pmdp8">8</div><div id="pmc17d9" class="pmdp9">9</div></div></div><div id="cell24" class="cbdr msgrid7" onclick="if (!finish) clickcell(24)"><p class="rp1" id="c24" name="c24"></p><div class="pmcellbx"><div id="pmc24d1" class="pmdp1">1</div><div id="pmc24d2" class="pmdp2">2</div><div id="pmc24d3" class="pmdp3">3</div><div id="pmc24d4" class="pmdp4">4</div><div id="pmc24d5" class="pmdp5">5</div><div id="pmc24d6" class="pmdp6">6</div><div id="pmc24d7" class="pmdp7">7</div><div id="pmc24d8" class="pmdp8">8</div><div id="pmc24d9" class="pmdp9">9</div></div></div><div id="cell25" class="cbdr msgrid8" onclick="if (!finish) clickcell(25)"><p class="rp1" id="c25" name="c25"></p><div class="pmcellbx"><div id="pmc25d1" class="pmdp1">1</div><div id="pmc25d2" class="pmdp2">2</div><div id="pmc25d3" class="pmdp3">3</div><div id="pmc25d4" class="pmdp4">4</div><div id="pmc25d5" class="pmdp5">5</div><div id="pmc25d6" class="pmdp6">6</div><div id="pmc25d7" class="pmdp7">7</div><div id="pmc25d8" class="pmdp8">8</div><div id="pmc25d9" class="pmdp9">9</div></div></div><div id="cell26" class="cbdr msgrid9" onclick="if (!finish) clickcell(26)"><p class="rp1" id="c26" name="c26"></p><div class="pmcellbx"><div id="pmc26d1" class="pmdp1">1</div><div id="pmc26d2" class="pmdp2">2</div><div id="pmc26d3" class="pmdp3">3</div><div id="pmc26d4" class="pmdp4">4</div><div id="pmc26d5" class="pmdp5">5</div><div id="pmc26d6" class="pmdp6">6</div><div id="pmc26d7" class="pmdp7">7</div><div id="pmc26d8" class="pmdp8">8</div><div id="pmc26d9" class="pmdp9">9</div></div></div></div><div id="sgrid3" class="grid3x3i msgrid4"><div id="cell27" class="cbdr msgrid1" onclick="if (!finish) clickcell(27)"><p class="rp1" id="c27" name="c27"></p><div class="pmcellbx"><div id="pmc27d1" class="pmdp1">1</div><div id="pmc27d2" class="pmdp2">2</div><div id="pmc27d3" class="pmdp3">3</div><div id="pmc27d4" class="pmdp4">4</div><div id="pmc27d5" class="pmdp5">5</div><div id="pmc27d6" class="pmdp6">6</div><div id="pmc27d7" class="pmdp7">7</div><div id="pmc27d8" class="pmdp8">8</div><div id="pmc27d9" class="pmdp9">9</div></div></div><div id="cell28" class="cbdr msgrid2" onclick="if (!finish) clickcell(28)"><p class="rp1" id="c28" name="c28"></p><div class="pmcellbx"><div id="pmc28d1" class="pmdp1">1</div><div id="pmc28d2" class="pmdp2">2</div><div id="pmc28d3" class="pmdp3">3</div><div id="pmc28d4" class="pmdp4">4</div><div id="pmc28d5" class="pmdp5">5</div><div id="pmc28d6" class="pmdp6">6</div><div id="pmc28d7" class="pmdp7">7</div><div id="pmc28d8" class="pmdp8">8</div><div id="pmc28d9" class="pmdp9">9</div></div></div><div id="cell29" class="cbdr msgrid3" onclick="if (!finish) clickcell(29)"><p class="rp1" id="c29" name="c29"></p><div class="pmcellbx"><div id="pmc29d1" class="pmdp1">1</div><div id="pmc29d2" class="pmdp2">2</div><div id="pmc29d3" class="pmdp3">3</div><div id="pmc29d4" class="pmdp4">4</div><div id="pmc29d5" class="pmdp5">5</div><div id="pmc29d6" class="pmdp6">6</div><div id="pmc29d7" class="pmdp7">7</div><div id="pmc29d8" class="pmdp8">8</div><div id="pmc29d9" class="pmdp9">9</div></div></div><div id="cell36" class="cbdr msgrid4" onclick="if (!finish) clickcell(36)"><p class="rp1" id="c36" name="c36"></p><div class="pmcellbx"><div id="pmc36d1" class="pmdp1">1</div><div id="pmc36d2" class="pmdp2">2</div><div id="pmc36d3" class="pmdp3">3</div><div id="pmc36d4" class="pmdp4">4</div><div id="pmc36d5" class="pmdp5">5</div><div id="pmc36d6" class="pmdp6">6</div><div id="pmc36d7" class="pmdp7">7</div><div id="pmc36d8" class="pmdp8">8</div><div id="pmc36d9" class="pmdp9">9</div></div></div><div id="cell37" class="cbdr msgrid5" onclick="if (!finish) clickcell(37)"><p class="rp1" id="c37" name="c37"></p><div class="pmcellbx"><div id="pmc37d1" class="pmdp1">1</div><div id="pmc37d2" class="pmdp2">2</div><div id="pmc37d3" class="pmdp3">3</div><div id="pmc37d4" class="pmdp4">4</div><div id="pmc37d5" class="pmdp5">5</div><div id="pmc37d6" class="pmdp6">6</div><div id="pmc37d7" class="pmdp7">7</div><div id="pmc37d8" class="pmdp8">8</div><div id="pmc37d9" class="pmdp9">9</div></div></div><div id="cell38" class="cbdr msgrid6" onclick="if (!finish) clickcell(38)"><p class="rp1" id="c38" name="c38"></p><div class="pmcellbx"><div id="pmc38d1" class="pmdp1">1</div><div id="pmc38d2" class="pmdp2">2</div><div id="pmc38d3" class="pmdp3">3</div><div id="pmc38d4" class="pmdp4">4</div><div id="pmc38d5" class="pmdp5">5</div><div id="pmc38d6" class="pmdp6">6</div><div id="pmc38d7" class="pmdp7">7</div><div id="pmc38d8" class="pmdp8">8</div><div id="pmc38d9" class="pmdp9">9</div></div></div><div id="cell45" class="cbdr msgrid7" onclick="if (!finish) clickcell(45)"><p class="rp1" id="c45" name="c45"></p><div class="pmcellbx"><div id="pmc45d1" class="pmdp1">1</div><div id="pmc45d2" class="pmdp2">2</div><div id="pmc45d3" class="pmdp3">3</div><div id="pmc45d4" class="pmdp4">4</div><div id="pmc45d5" class="pmdp5">5</div><div id="pmc45d6" class="pmdp6">6</div><div id="pmc45d7" class="pmdp7">7</div><div id="pmc45d8" class="pmdp8">8</div><div id="pmc45d9" class="pmdp9">9</div></div></div><div id="cell46" class="cbdr msgrid8" onclick="if (!finish) clickcell(46)"><p class="rp1" id="c46" name="c46"></p><div class="pmcellbx"><div id="pmc46d1" class="pmdp1">1</div><div id="pmc46d2" class="pmdp2">2</div><div id="pmc46d3" class="pmdp3">3</div><div id="pmc46d4" class="pmdp4">4</div><div id="pmc46d5" class="pmdp5">5</div><div id="pmc46d6" class="pmdp6">6</div><div id="pmc46d7" class="pmdp7">7</div><div id="pmc46d8" class="pmdp8">8</div><div id="pmc46d9" class="pmdp9">9</div></div></div><div id="cell47" class="cbdr msgrid9" onclick="if (!finish) clickcell(47)"><p class="rp1" id="c47" name="c47"></p><div class="pmcellbx"><div id="pmc47d1" class="pmdp1">1</div><div id="pmc47d2" class="pmdp2">2</div><div id="pmc47d3" class="pmdp3">3</div><div id="pmc47d4" class="pmdp4">4</div><div id="pmc47d5" class="pmdp5">5</div><div id="pmc47d6" class="pmdp6">6</div><div id="pmc47d7" class="pmdp7">7</div><div id="pmc47d8" class="pmdp8">8</div><div id="pmc47d9" class="pmdp9">9</div></div></div></div><div id="sgrid4" class="grid3x3i msgrid5"><div id="cell30" class="cbdr msgrid1" onclick="if (!finish) clickcell(30)"><p class="rp1" id="c30" name="c30"></p><div class="pmcellbx"><div id="pmc30d1" class="pmdp1">1</div><div id="pmc30d2" class="pmdp2">2</div><div id="pmc30d3" class="pmdp3">3</div><div id="pmc30d4" class="pmdp4">4</div><div id="pmc30d5" class="pmdp5">5</div><div id="pmc30d6" class="pmdp6">6</div><div id="pmc30d7" class="pmdp7">7</div><div id="pmc30d8" class="pmdp8">8</div><div id="pmc30d9" class="pmdp9">9</div></div></div><div id="cell31" class="cbdr msgrid2" onclick="if (!finish) clickcell(31)"><p class="rp1" id="c31" name="c31"></p><div class="pmcellbx"><div id="pmc31d1" class="pmdp1">1</div><div id="pmc31d2" class="pmdp2">2</div><div id="pmc31d3" class="pmdp3">3</div><div id="pmc31d4" class="pmdp4">4</div><div id="pmc31d5" class="pmdp5">5</div><div id="pmc31d6" class="pmdp6">6</div><div id="pmc31d7" class="pmdp7">7</div><div id="pmc31d8" class="pmdp8">8</div><div id="pmc31d9" class="pmdp9">9</div></div></div><div id="cell32" class="cbdr msgrid3" onclick="if (!finish) clickcell(32)"><p class="rp1" id="c32" name="c32"></p><div class="pmcellbx"><div id="pmc32d1" class="pmdp1">1</div><div id="pmc32d2" class="pmdp2">2</div><div id="pmc32d3" class="pmdp3">3</div><div id="pmc32d4" class="pmdp4">4</div><div id="pmc32d5" class="pmdp5">5</div><div id="pmc32d6" class="pmdp6">6</div><div id="pmc32d7" class="pmdp7">7</div><div id="pmc32d8" class="pmdp8">8</div><div id="pmc32d9" class="pmdp9">9</div></div></div><div id="cell39" class="cbdr msgrid4" onclick="if (!finish) clickcell(39)"><p class="rp1" id="c39" name="c39"></p><div class="pmcellbx"><div id="pmc39d1" class="pmdp1">1</div><div id="pmc39d2" class="pmdp2">2</div><div id="pmc39d3" class="pmdp3">3</div><div id="pmc39d4" class="pmdp4">4</div><div id="pmc39d5" class="pmdp5">5</div><div id="pmc39d6" class="pmdp6">6</div><div id="pmc39d7" class="pmdp7">7</div><div id="pmc39d8" class="pmdp8">8</div><div id="pmc39d9" class="pmdp9">9</div></div></div><div id="cell40" class="cbdr msgrid5" onclick="if (!finish) clickcell(40)"><p class="rp1" id="c40" name="c40"></p><div class="pmcellbx"><div id="pmc40d1" class="pmdp1">1</div><div id="pmc40d2" class="pmdp2">2</div><div id="pmc40d3" class="pmdp3">3</div><div id="pmc40d4" class="pmdp4">4</div><div id="pmc40d5" class="pmdp5">5</div><div id="pmc40d6" class="pmdp6">6</div><div id="pmc40d7" class="pmdp7">7</div><div id="pmc40d8" class="pmdp8">8</div><div id="pmc40d9" class="pmdp9">9</div></div></div><div id="cell41" class="cbdr msgrid6" onclick="if (!finish) clickcell(41)"><p class="rp1" id="c41" name="c41"></p><div class="pmcellbx"><div id="pmc41d1" class="pmdp1">1</div><div id="pmc41d2" class="pmdp2">2</div><div id="pmc41d3" class="pmdp3">3</div><div id="pmc41d4" class="pmdp4">4</div><div id="pmc41d5" class="pmdp5">5</div><div id="pmc41d6" class="pmdp6">6</div><div id="pmc41d7" class="pmdp7">7</div><div id="pmc41d8" class="pmdp8">8</div><div id="pmc41d9" class="pmdp9">9</div></div></div><div id="cell48" class="cbdr msgrid7" onclick="if (!finish) clickcell(48)"><p class="rp1" id="c48" name="c48"></p><div class="pmcellbx"><div id="pmc48d1" class="pmdp1">1</div><div id="pmc48d2" class="pmdp2">2</div><div id="pmc48d3" class="pmdp3">3</div><div id="pmc48d4" class="pmdp4">4</div><div id="pmc48d5" class="pmdp5">5</div><div id="pmc48d6" class="pmdp6">6</div><div id="pmc48d7" class="pmdp7">7</div><div id="pmc48d8" class="pmdp8">8</div><div id="pmc48d9" class="pmdp9">9</div></div></div><div id="cell49" class="cbdr msgrid8" onclick="if (!finish) clickcell(49)"><p class="rp1" id="c49" name="c49"></p><div class="pmcellbx"><div id="pmc49d1" class="pmdp1">1</div><div id="pmc49d2" class="pmdp2">2</div><div id="pmc49d3" class="pmdp3">3</div><div id="pmc49d4" class="pmdp4">4</div><div id="pmc49d5" class="pmdp5">5</div><div id="pmc49d6" class="pmdp6">6</div><div id="pmc49d7" class="pmdp7">7</div><div id="pmc49d8" class="pmdp8">8</div><div id="pmc49d9" class="pmdp9">9</div></div></div><div id="cell50" class="cbdr msgrid9" onclick="if (!finish) clickcell(50)"><p class="rp1" id="c50" name="c50"></p><div class="pmcellbx"><div id="pmc50d1" class="pmdp1">1</div><div id="pmc50d2" class="pmdp2">2</div><div id="pmc50d3" class="pmdp3">3</div><div id="pmc50d4" class="pmdp4">4</div><div id="pmc50d5" class="pmdp5">5</div><div id="pmc50d6" class="pmdp6">6</div><div id="pmc50d7" class="pmdp7">7</div><div id="pmc50d8" class="pmdp8">8</div><div id="pmc50d9" class="pmdp9">9</div></div></div></div><div id="sgrid5" class="grid3x3i msgrid6"><div id="cell33" class="cbdr msgrid1" onclick="if (!finish) clickcell(33)"><p class="rp1" id="c33" name="c33"></p><div class="pmcellbx"><div id="pmc33d1" class="pmdp1">1</div><div id="pmc33d2" class="pmdp2">2</div><div id="pmc33d3" class="pmdp3">3</div><div id="pmc33d4" class="pmdp4">4</div><div id="pmc33d5" class="pmdp5">5</div><div id="pmc33d6" class="pmdp6">6</div><div id="pmc33d7" class="pmdp7">7</div><div id="pmc33d8" class="pmdp8">8</div><div id="pmc33d9" class="pmdp9">9</div></div></div><div id="cell34" class="cbdr msgrid2" onclick="if (!finish) clickcell(34)"><p class="rp1" id="c34" name="c34"></p><div class="pmcellbx"><div id="pmc34d1" class="pmdp1">1</div><div id="pmc34d2" class="pmdp2">2</div><div id="pmc34d3" class="pmdp3">3</div><div id="pmc34d4" class="pmdp4">4</div><div id="pmc34d5" class="pmdp5">5</div><div id="pmc34d6" class="pmdp6">6</div><div id="pmc34d7" class="pmdp7">7</div><div id="pmc34d8" class="pmdp8">8</div><div id="pmc34d9" class="pmdp9">9</div></div></div><div id="cell35" class="cbdr msgrid3" onclick="if (!finish) clickcell(35)"><p class="rp1" id="c35" name="c35"></p><div class="pmcellbx"><div id="pmc35d1" class="pmdp1">1</div><div id="pmc35d2" class="pmdp2">2</div><div id="pmc35d3" class="pmdp3">3</div><div id="pmc35d4" class="pmdp4">4</div><div id="pmc35d5" class="pmdp5">5</div><div id="pmc35d6" class="pmdp6">6</div><div id="pmc35d7" class="pmdp7">7</div><div id="pmc35d8" class="pmdp8">8</div><div id="pmc35d9" class="pmdp9">9</div></div></div><div id="cell42" class="cbdr msgrid4" onclick="if (!finish) clickcell(42)"><p class="rp1" id="c42" name="c42"></p><div class="pmcellbx"><div id="pmc42d1" class="pmdp1">1</div><div id="pmc42d2" class="pmdp2">2</div><div id="pmc42d3" class="pmdp3">3</div><div id="pmc42d4" class="pmdp4">4</div><div id="pmc42d5" class="pmdp5">5</div><div id="pmc42d6" class="pmdp6">6</div><div id="pmc42d7" class="pmdp7">7</div><div id="pmc42d8" class="pmdp8">8</div><div id="pmc42d9" class="pmdp9">9</div></div></div><div id="cell43" class="cbdr msgrid5" onclick="if (!finish) clickcell(43)"><p class="rp1" id="c43" name="c43"></p><div class="pmcellbx"><div id="pmc43d1" class="pmdp1">1</div><div id="pmc43d2" class="pmdp2">2</div><div id="pmc43d3" class="pmdp3">3</div><div id="pmc43d4" class="pmdp4">4</div><div id="pmc43d5" class="pmdp5">5</div><div id="pmc43d6" class="pmdp6">6</div><div id="pmc43d7" class="pmdp7">7</div><div id="pmc43d8" class="pmdp8">8</div><div id="pmc43d9" class="pmdp9">9</div></div></div><div id="cell44" class="cbdr msgrid6" onclick="if (!finish) clickcell(44)"><p class="rp1" id="c44" name="c44"></p><div class="pmcellbx"><div id="pmc44d1" class="pmdp1">1</div><div id="pmc44d2" class="pmdp2">2</div><div id="pmc44d3" class="pmdp3">3</div><div id="pmc44d4" class="pmdp4">4</div><div id="pmc44d5" class="pmdp5">5</div><div id="pmc44d6" class="pmdp6">6</div><div id="pmc44d7" class="pmdp7">7</div><div id="pmc44d8" class="pmdp8">8</div><div id="pmc44d9" class="pmdp9">9</div></div></div><div id="cell51" class="cbdr msgrid7" onclick="if (!finish) clickcell(51)"><p class="rp1" id="c51" name="c51"></p><div class="pmcellbx"><div id="pmc51d1" class="pmdp1">1</div><div id="pmc51d2" class="pmdp2">2</div><div id="pmc51d3" class="pmdp3">3</div><div id="pmc51d4" class="pmdp4">4</div><div id="pmc51d5" class="pmdp5">5</div><div id="pmc51d6" class="pmdp6">6</div><div id="pmc51d7" class="pmdp7">7</div><div id="pmc51d8" class="pmdp8">8</div><div id="pmc51d9" class="pmdp9">9</div></div></div><div id="cell52" class="cbdr msgrid8" onclick="if (!finish) clickcell(52)"><p class="rp1" id="c52" name="c52"></p><div class="pmcellbx"><div id="pmc52d1" class="pmdp1">1</div><div id="pmc52d2" class="pmdp2">2</div><div id="pmc52d3" class="pmdp3">3</div><div id="pmc52d4" class="pmdp4">4</div><div id="pmc52d5" class="pmdp5">5</div><div id="pmc52d6" class="pmdp6">6</div><div id="pmc52d7" class="pmdp7">7</div><div id="pmc52d8" class="pmdp8">8</div><div id="pmc52d9" class="pmdp9">9</div></div></div><div id="cell53" class="cbdr msgrid9" onclick="if (!finish) clickcell(53)"><p class="rp1" id="c53" name="c53"></p><div class="pmcellbx"><div id="pmc53d1" class="pmdp1">1</div><div id="pmc53d2" class="pmdp2">2</div><div id="pmc53d3" class="pmdp3">3</div><div id="pmc53d4" class="pmdp4">4</div><div id="pmc53d5" class="pmdp5">5</div><div id="pmc53d6" class="pmdp6">6</div><div id="pmc53d7" class="pmdp7">7</div><div id="pmc53d8" class="pmdp8">8</div><div id="pmc53d9" class="pmdp9">9</div></div></div></div><div id="sgrid6" class="grid3x3i msgrid7"><div id="cell54" class="cbdr msgrid1" onclick="if (!finish) clickcell(54)"><p class="rp1" id="c54" name="c54"></p><div class="pmcellbx"><div id="pmc54d1" class="pmdp1">1</div><div id="pmc54d2" class="pmdp2">2</div><div id="pmc54d3" class="pmdp3">3</div><div id="pmc54d4" class="pmdp4">4</div><div id="pmc54d5" class="pmdp5">5</div><div id="pmc54d6" class="pmdp6">6</div><div id="pmc54d7" class="pmdp7">7</div><div id="pmc54d8" class="pmdp8">8</div><div id="pmc54d9" class="pmdp9">9</div></div></div><div id="cell55" class="cbdr msgrid2" onclick="if (!finish) clickcell(55)"><p class="rp1" id="c55" name="c55"></p><div class="pmcellbx"><div id="pmc55d1" class="pmdp1">1</div><div id="pmc55d2" class="pmdp2">2</div><div id="pmc55d3" class="pmdp3">3</div><div id="pmc55d4" class="pmdp4">4</div><div id="pmc55d5" class="pmdp5">5</div><div id="pmc55d6" class="pmdp6">6</div><div id="pmc55d7" class="pmdp7">7</div><div id="pmc55d8" class="pmdp8">8</div><div id="pmc55d9" class="pmdp9">9</div></div></div><div id="cell56" class="cbdr msgrid3" onclick="if (!finish) clickcell(56)"><p class="rp1" id="c56" name="c56"></p><div class="pmcellbx"><div id="pmc56d1" class="pmdp1">1</div><div id="pmc56d2" class="pmdp2">2</div><div id="pmc56d3" class="pmdp3">3</div><div id="pmc56d4" class="pmdp4">4</div><div id="pmc56d5" class="pmdp5">5</div><div id="pmc56d6" class="pmdp6">6</div><div id="pmc56d7" class="pmdp7">7</div><div id="pmc56d8" class="pmdp8">8</div><div id="pmc56d9" class="pmdp9">9</div></div></div><div id="cell63" class="cbdr msgrid4" onclick="if (!finish) clickcell(63)"><p class="rp1" id="c63" name="c63"></p><div class="pmcellbx"><div id="pmc63d1" class="pmdp1">1</div><div id="pmc63d2" class="pmdp2">2</div><div id="pmc63d3" class="pmdp3">3</div><div id="pmc63d4" class="pmdp4">4</div><div id="pmc63d5" class="pmdp5">5</div><div id="pmc63d6" class="pmdp6">6</div><div id="pmc63d7" class="pmdp7">7</div><div id="pmc63d8" class="pmdp8">8</div><div id="pmc63d9" class="pmdp9">9</div></div></div><div id="cell64" class="cbdr msgrid5" onclick="if (!finish) clickcell(64)"><p class="rp1" id="c64" name="c64"></p><div class="pmcellbx"><div id="pmc64d1" class="pmdp1">1</div><div id="pmc64d2" class="pmdp2">2</div><div id="pmc64d3" class="pmdp3">3</div><div id="pmc64d4" class="pmdp4">4</div><div id="pmc64d5" class="pmdp5">5</div><div id="pmc64d6" class="pmdp6">6</div><div id="pmc64d7" class="pmdp7">7</div><div id="pmc64d8" class="pmdp8">8</div><div id="pmc64d9" class="pmdp9">9</div></div></div><div id="cell65" class="cbdr msgrid6" onclick="if (!finish) clickcell(65)"><p class="rp1" id="c65" name="c65"></p><div class="pmcellbx"><div id="pmc65d1" class="pmdp1">1</div><div id="pmc65d2" class="pmdp2">2</div><div id="pmc65d3" class="pmdp3">3</div><div id="pmc65d4" class="pmdp4">4</div><div id="pmc65d5" class="pmdp5">5</div><div id="pmc65d6" class="pmdp6">6</div><div id="pmc65d7" class="pmdp7">7</div><div id="pmc65d8" class="pmdp8">8</div><div id="pmc65d9" class="pmdp9">9</div></div></div><div id="cell72" class="cbdr msgrid7" onclick="if (!finish) clickcell(72)"><p class="rp1" id="c72" name="c72"></p><div class="pmcellbx"><div id="pmc72d1" class="pmdp1">1</div><div id="pmc72d2" class="pmdp2">2</div><div id="pmc72d3" class="pmdp3">3</div><div id="pmc72d4" class="pmdp4">4</div><div id="pmc72d5" class="pmdp5">5</div><div id="pmc72d6" class="pmdp6">6</div><div id="pmc72d7" class="pmdp7">7</div><div id="pmc72d8" class="pmdp8">8</div><div id="pmc72d9" class="pmdp9">9</div></div></div><div id="cell73" class="cbdr msgrid8" onclick="if (!finish) clickcell(73)"><p class="rp1" id="c73" name="c73"></p><div class="pmcellbx"><div id="pmc73d1" class="pmdp1">1</div><div id="pmc73d2" class="pmdp2">2</div><div id="pmc73d3" class="pmdp3">3</div><div id="pmc73d4" class="pmdp4">4</div><div id="pmc73d5" class="pmdp5">5</div><div id="pmc73d6" class="pmdp6">6</div><div id="pmc73d7" class="pmdp7">7</div><div id="pmc73d8" class="pmdp8">8</div><div id="pmc73d9" class="pmdp9">9</div></div></div><div id="cell74" class="cbdr msgrid9" onclick="if (!finish) clickcell(74)"><p class="rp1" id="c74" name="c74"></p><div class="pmcellbx"><div id="pmc74d1" class="pmdp1">1</div><div id="pmc74d2" class="pmdp2">2</div><div id="pmc74d3" class="pmdp3">3</div><div id="pmc74d4" class="pmdp4">4</div><div id="pmc74d5" class="pmdp5">5</div><div id="pmc74d6" class="pmdp6">6</div><div id="pmc74d7" class="pmdp7">7</div><div id="pmc74d8" class="pmdp8">8</div><div id="pmc74d9" class="pmdp9">9</div></div></div></div><div id="sgrid7" class="grid3x3i msgrid8"><div id="cell57" class="cbdr msgrid1" onclick="if (!finish) clickcell(57)"><p class="rp1" id="c57" name="c57"></p><div class="pmcellbx"><div id="pmc57d1" class="pmdp1">1</div><div id="pmc57d2" class="pmdp2">2</div><div id="pmc57d3" class="pmdp3">3</div><div id="pmc57d4" class="pmdp4">4</div><div id="pmc57d5" class="pmdp5">5</div><div id="pmc57d6" class="pmdp6">6</div><div id="pmc57d7" class="pmdp7">7</div><div id="pmc57d8" class="pmdp8">8</div><div id="pmc57d9" class="pmdp9">9</div></div></div><div id="cell58" class="cbdr msgrid2" onclick="if (!finish) clickcell(58)"><p class="rp1" id="c58" name="c58"></p><div class="pmcellbx"><div id="pmc58d1" class="pmdp1">1</div><div id="pmc58d2" class="pmdp2">2</div><div id="pmc58d3" class="pmdp3">3</div><div id="pmc58d4" class="pmdp4">4</div><div id="pmc58d5" class="pmdp5">5</div><div id="pmc58d6" class="pmdp6">6</div><div id="pmc58d7" class="pmdp7">7</div><div id="pmc58d8" class="pmdp8">8</div><div id="pmc58d9" class="pmdp9">9</div></div></div><div id="cell59" class="cbdr msgrid3" onclick="if (!finish) clickcell(59)"><p class="rp1" id="c59" name="c59"></p><div class="pmcellbx"><div id="pmc59d1" class="pmdp1">1</div><div id="pmc59d2" class="pmdp2">2</div><div id="pmc59d3" class="pmdp3">3</div><div id="pmc59d4" class="pmdp4">4</div><div id="pmc59d5" class="pmdp5">5</div><div id="pmc59d6" class="pmdp6">6</div><div id="pmc59d7" class="pmdp7">7</div><div id="pmc59d8" class="pmdp8">8</div><div id="pmc59d9" class="pmdp9">9</div></div></div><div id="cell66" class="cbdr msgrid4" onclick="if (!finish) clickcell(66)"><p class="rp1" id="c66" name="c66"></p><div class="pmcellbx"><div id="pmc66d1" class="pmdp1">1</div><div id="pmc66d2" class="pmdp2">2</div><div id="pmc66d3" class="pmdp3">3</div><div id="pmc66d4" class="pmdp4">4</div><div id="pmc66d5" class="pmdp5">5</div><div id="pmc66d6" class="pmdp6">6</div><div id="pmc66d7" class="pmdp7">7</div><div id="pmc66d8" class="pmdp8">8</div><div id="pmc66d9" class="pmdp9">9</div></div></div><div id="cell67" class="cbdr msgrid5" onclick="if (!finish) clickcell(67)"><p class="rp1" id="c67" name="c67"></p><div class="pmcellbx"><div id="pmc67d1" class="pmdp1">1</div><div id="pmc67d2" class="pmdp2">2</div><div id="pmc67d3" class="pmdp3">3</div><div id="pmc67d4" class="pmdp4">4</div><div id="pmc67d5" class="pmdp5">5</div><div id="pmc67d6" class="pmdp6">6</div><div id="pmc67d7" class="pmdp7">7</div><div id="pmc67d8" class="pmdp8">8</div><div id="pmc67d9" class="pmdp9">9</div></div></div><div id="cell68" class="cbdr msgrid6" onclick="if (!finish) clickcell(68)"><p class="rp1" id="c68" name="c68"></p><div class="pmcellbx"><div id="pmc68d1" class="pmdp1">1</div><div id="pmc68d2" class="pmdp2">2</div><div id="pmc68d3" class="pmdp3">3</div><div id="pmc68d4" class="pmdp4">4</div><div id="pmc68d5" class="pmdp5">5</div><div id="pmc68d6" class="pmdp6">6</div><div id="pmc68d7" class="pmdp7">7</div><div id="pmc68d8" class="pmdp8">8</div><div id="pmc68d9" class="pmdp9">9</div></div></div><div id="cell75" class="cbdr msgrid7" onclick="if (!finish) clickcell(75)"><p class="rp1" id="c75" name="c75"></p><div class="pmcellbx"><div id="pmc75d1" class="pmdp1">1</div><div id="pmc75d2" class="pmdp2">2</div><div id="pmc75d3" class="pmdp3">3</div><div id="pmc75d4" class="pmdp4">4</div><div id="pmc75d5" class="pmdp5">5</div><div id="pmc75d6" class="pmdp6">6</div><div id="pmc75d7" class="pmdp7">7</div><div id="pmc75d8" class="pmdp8">8</div><div id="pmc75d9" class="pmdp9">9</div></div></div><div id="cell76" class="cbdr msgrid8" onclick="if (!finish) clickcell(76)"><p class="rp1" id="c76" name="c76"></p><div class="pmcellbx"><div id="pmc76d1" class="pmdp1">1</div><div id="pmc76d2" class="pmdp2">2</div><div id="pmc76d3" class="pmdp3">3</div><div id="pmc76d4" class="pmdp4">4</div><div id="pmc76d5" class="pmdp5">5</div><div id="pmc76d6" class="pmdp6">6</div><div id="pmc76d7" class="pmdp7">7</div><div id="pmc76d8" class="pmdp8">8</div><div id="pmc76d9" class="pmdp9">9</div></div></div><div id="cell77" class="cbdr msgrid9" onclick="if (!finish) clickcell(77)"><p class="rp1" id="c77" name="c77"></p><div class="pmcellbx"><div id="pmc77d1" class="pmdp1">1</div><div id="pmc77d2" class="pmdp2">2</div><div id="pmc77d3" class="pmdp3">3</div><div id="pmc77d4" class="pmdp4">4</div><div id="pmc77d5" class="pmdp5">5</div><div id="pmc77d6" class="pmdp6">6</div><div id="pmc77d7" class="pmdp7">7</div><div id="pmc77d8" class="pmdp8">8</div><div id="pmc77d9" class="pmdp9">9</div></div></div></div><div id="sgrid8" class="grid3x3i msgrid9"><div id="cell60" class="cbdr msgrid1" onclick="if (!finish) clickcell(60)"><p class="rp1" id="c60" name="c60"></p><div class="pmcellbx"><div id="pmc60d1" class="pmdp1">1</div><div id="pmc60d2" class="pmdp2">2</div><div id="pmc60d3" class="pmdp3">3</div><div id="pmc60d4" class="pmdp4">4</div><div id="pmc60d5" class="pmdp5">5</div><div id="pmc60d6" class="pmdp6">6</div><div id="pmc60d7" class="pmdp7">7</div><div id="pmc60d8" class="pmdp8">8</div><div id="pmc60d9" class="pmdp9">9</div></div></div><div id="cell61" class="cbdr msgrid2" onclick="if (!finish) clickcell(61)"><p class="rp1" id="c61" name="c61"></p><div class="pmcellbx"><div id="pmc61d1" class="pmdp1">1</div><div id="pmc61d2" class="pmdp2">2</div><div id="pmc61d3" class="pmdp3">3</div><div id="pmc61d4" class="pmdp4">4</div><div id="pmc61d5" class="pmdp5">5</div><div id="pmc61d6" class="pmdp6">6</div><div id="pmc61d7" class="pmdp7">7</div><div id="pmc61d8" class="pmdp8">8</div><div id="pmc61d9" class="pmdp9">9</div></div></div><div id="cell62" class="cbdr msgrid3" onclick="if (!finish) clickcell(62)"><p class="rp1" id="c62" name="c62"></p><div class="pmcellbx"><div id="pmc62d1" class="pmdp1">1</div><div id="pmc62d2" class="pmdp2">2</div><div id="pmc62d3" class="pmdp3">3</div><div id="pmc62d4" class="pmdp4">4</div><div id="pmc62d5" class="pmdp5">5</div><div id="pmc62d6" class="pmdp6">6</div><div id="pmc62d7" class="pmdp7">7</div><div id="pmc62d8" class="pmdp8">8</div><div id="pmc62d9" class="pmdp9">9</div></div></div><div id="cell69" class="cbdr msgrid4" onclick="if (!finish) clickcell(69)"><p class="rp1" id="c69" name="c69"></p><div class="pmcellbx"><div id="pmc69d1" class="pmdp1">1</div><div id="pmc69d2" class="pmdp2">2</div><div id="pmc69d3" class="pmdp3">3</div><div id="pmc69d4" class="pmdp4">4</div><div id="pmc69d5" class="pmdp5">5</div><div id="pmc69d6" class="pmdp6">6</div><div id="pmc69d7" class="pmdp7">7</div><div id="pmc69d8" class="pmdp8">8</div><div id="pmc69d9" class="pmdp9">9</div></div></div><div id="cell70" class="cbdr msgrid5" onclick="if (!finish) clickcell(70)"><p class="rp1" id="c70" name="c70"></p><div class="pmcellbx"><div id="pmc70d1" class="pmdp1">1</div><div id="pmc70d2" class="pmdp2">2</div><div id="pmc70d3" class="pmdp3">3</div><div id="pmc70d4" class="pmdp4">4</div><div id="pmc70d5" class="pmdp5">5</div><div id="pmc70d6" class="pmdp6">6</div><div id="pmc70d7" class="pmdp7">7</div><div id="pmc70d8" class="pmdp8">8</div><div id="pmc70d9" class="pmdp9">9</div></div></div><div id="cell71" class="cbdr msgrid6" onclick="if (!finish) clickcell(71)"><p class="rp1" id="c71" name="c71"></p><div class="pmcellbx"><div id="pmc71d1" class="pmdp1">1</div><div id="pmc71d2" class="pmdp2">2</div><div id="pmc71d3" class="pmdp3">3</div><div id="pmc71d4" class="pmdp4">4</div><div id="pmc71d5" class="pmdp5">5</div><div id="pmc71d6" class="pmdp6">6</div><div id="pmc71d7" class="pmdp7">7</div><div id="pmc71d8" class="pmdp8">8</div><div id="pmc71d9" class="pmdp9">9</div></div></div><div id="cell78" class="cbdr msgrid7" onclick="if (!finish) clickcell(78)"><p class="rp1" id="c78" name="c78"></p><div class="pmcellbx"><div id="pmc78d1" class="pmdp1">1</div><div id="pmc78d2" class="pmdp2">2</div><div id="pmc78d3" class="pmdp3">3</div><div id="pmc78d4" class="pmdp4">4</div><div id="pmc78d5" class="pmdp5">5</div><div id="pmc78d6" class="pmdp6">6</div><div id="pmc78d7" class="pmdp7">7</div><div id="pmc78d8" class="pmdp8">8</div><div id="pmc78d9" class="pmdp9">9</div></div></div><div id="cell79" class="cbdr msgrid8" onclick="if (!finish) clickcell(79)"><p class="rp1" id="c79" name="c79"></p><div class="pmcellbx"><div id="pmc79d1" class="pmdp1">1</div><div id="pmc79d2" class="pmdp2">2</div><div id="pmc79d3" class="pmdp3">3</div><div id="pmc79d4" class="pmdp4">4</div><div id="pmc79d5" class="pmdp5">5</div><div id="pmc79d6" class="pmdp6">6</div><div id="pmc79d7" class="pmdp7">7</div><div id="pmc79d8" class="pmdp8">8</div><div id="pmc79d9" class="pmdp9">9</div></div></div><div id="cell80" class="cbdr msgrid9" onclick="if (!finish) clickcell(80)"><p class="rp1" id="c80" name="c80"></p><div class="pmcellbx"><div id="pmc80d1" class="pmdp1">1</div><div id="pmc80d2" class="pmdp2">2</div><div id="pmc80d3" class="pmdp3">3</div><div id="pmc80d4" class="pmdp4">4</div><div id="pmc80d5" class="pmdp5">5</div><div id="pmc80d6" class="pmdp6">6</div><div id="pmc80d7" class="pmdp7">7</div><div id="pmc80d8" class="pmdp8">8</div><div id="pmc80d9" class="pmdp9">9</div></div></div></div>	</div>
+</div>
+<div id="numberoption">
+<div class="picknumber" id="b1" onmousedown="clickdigit(1)">
+<p class="nmtxt" id="bn1">1</p>
+<p class="nmleft" id="nl1" style="display: none; color: rgb(0, 102, 0);">9</p>
+</div>
+<div class="picknumber" id="b2" onmousedown="clickdigit(2)">
+<p class="nmtxt" id="bn2">2</p>
+<p class="nmleft" id="nl2" style="display: none; color: rgb(0, 102, 0);">9</p>
+</div>
+<div class="picknumber" id="b3" onmousedown="clickdigit(3)">
+<p class="nmtxt" id="bn3">3</p>
+<p class="nmleft" id="nl3" style="display: none; color: rgb(0, 102, 0);">9</p>
+</div>
+<div class="picknumber" id="b4" onmousedown="clickdigit(4)">
+<p class="nmtxt" id="bn4">4</p>
+<p class="nmleft" id="nl4" style="display: none; color: rgb(0, 102, 0);">9</p>
+</div>
+<div class="picknumber" id="b5" onmousedown="clickdigit(5)">
+<p class="nmtxt" id="bn5">5</p>
+<p class="nmleft" id="nl5" style="display: none; color: rgb(0, 102, 0);">9</p>
+</div>
+<div class="picknumber" id="b6" onmousedown="clickdigit(6)">
+<p class="nmtxt" id="bn6">6</p>
+<p class="nmleft" id="nl6" style="display: none; color: rgb(0, 102, 0);">9</p>
+</div>
+<div class="picknumber" id="b7" onmousedown="clickdigit(7)">
+<p class="nmtxt" id="bn7">7</p>
+<p class="nmleft" id="nl7" style="display: none; color: rgb(0, 102, 0);">9</p>
+</div>
+<div class="picknumber" id="b8" onmousedown="clickdigit(8)">
+<p class="nmtxt" id="bn8">8</p>
+<p class="nmleft" id="nl8" style="display: none; color: rgb(0, 102, 0);">9</p>
+</div>
+<div class="picknumber" id="b9" onmousedown="clickdigit(9)">
+<p class="nmtxt" id="bn9">9</p>
+<p class="nmleft" id="nl9" style="display: none; color: rgb(0, 102, 0);">9</p>
+</div>
+<div class="picknumber" id="b10" onmousedown="clickdigit(10)">
+<p class="nmtxt" id="bn10">X</p>
+</div>
+</div>
+<div id="pencilwrap">
+<div id="pencil" onclick="togglepmmode();" title="Switch between Regular Entry mode and Pencil Mark mode">
+ <div class="ptailwrap"><div class="ptail"></div><div class="ptail2"></div></div><div class="pmiddle"></div><div class="ptop"></div>
+</div>
+</div>
+<div id="pctrl1">
+<div id="cpuzz" class="idone" onclick="clear_puzzle();"><p>Clear Grid</p></div><form id="blanktable" name="blanktable" action="https://www.sudoku9x9.com/blankgrid/" method="post" autocomplete="off"><input id="clueval" name="clueval" type="hidden"><input id="sltnval" name="sltnval" type="hidden"></form><div id="saveclues" class="idone" onclick="javascript:if (chkvalid()) document.getElementById(&#39;blanktable&#39;).submit();"><p>Submit My Puzzle</p></div><div id="undoredo">
+<div id="bundo" class="idone" onclick="if (!finish) {undo();}" title="Undo" style="opacity: 0.5;">
+ <div class="undotail"></div><div class="undoarrow"></div>
+</div>
+<div id="bredo" class="idone" onclick="if (!finish) {redo();}" title="Redo" style="opacity: 0.5;">
+ <div class="redotail"></div><div class="redoarrow"></div>
+</div>
+</div>
+</div>
+<div id="digitcellwrap">
+<div id="digitcell" class="box" onclick="toggledcmode();" title="Switch between Digit First mode and Cell First mode">
+  <div id="dcbxtp">Select</div>
+  <div id="dcdgbx">Digit</div>
+  <div id="dcbxbm">First</div>
+</div>
+</div>
+<div id="tools">
+  <span class="toolstxt" onclick="expandtools()" title="More tools">Tools&nbsp;<span id="tarrow">▼</span></span>
+</div>  
+<div id="pctrl2">
+<div id="pctrl2dtl">
+<div id="relatecells" class="toolpic" onclick="if (!finish) togglercmode();" title="Highlight all related cells (those in the same row, in the same column or in the same 3x3 block)"><div id="relatedpic"></div></div>
+<div id="colorbox">
+<div id="colorpic" class="toolpic" onclick="togglehlmode();" title="Background Highlight mode">
+<div id="cbx1" class="cbxt"></div><div id="cbx2" class="cbxt"></div><div id="cbx3" class="cbxt"></div><div id="cbx4" class="cbxt"></div><div id="cbx5" class="cbxt"></div><div id="cbx6" class="cbxt"></div><div id="cbx7" class="cbxt"></div><div id="cbx8" class="cbxt"></div>
+</div>
+<div id="chgcolorbox">
+<div id="chgcolorwrap"><div id="ccleft"></div><div id="ccright"></div><div id="chgcolor">
+<div class="cboxclr" id="cbox1" title="Green" onclick="if (hlmode) chghlclr(green);"></div>
+<div class="cboxclr" id="cbox2" title="Yellow" onclick="if (hlmode) chghlclr(yellow);"></div>
+<div class="cboxclr" id="cbox3" title="Red" onclick="if (hlmode) chghlclr(red);"></div>
+<div class="cboxclr" id="cbox4" title="Blue" onclick="if (hlmode) chghlclr(blue);"></div>
+<div class="cboxclr" id="cbox5" title="Remove a highlight" onclick="if (hlmode) chghlclr(nobgclr);"></div>
+</div>
+</div>
+</div>
+</div>
+<div id="ccolorpic" class="toolpic" onclick="if (!finish) c_bgcolor();" title="Clear all highlights">
+<div id="cbx1c" class="cbxt">X</div><div id="cbx2c" class="cbxt"></div><div id="cbx3c" class="cbxt">X</div><div id="cbx4c" class="cbxt"></div><div id="cbx5c" class="cbxt"></div><div id="cbx6c" class="cbxt">X</div><div id="cbx7c" class="cbxt"></div><div id="cbx8c" class="cbxt">X</div>
+</div>
+<div id="cpencilpic" class="toolpic" onclick="if (!finish) clear_pencilmark();" title="Clear all Pencil Marks">
+ <div id="cptext1" class="cptxt">49</div><div id="cptext2" class="cptxt">236</div>
+</div>
+<div id="convbox">
+<div id="convp" class="toolpic" title="Convert all Single Digit Pencil Marks into Regular Entries" onclick="if (!finish) convtp();">
+ <span class="sm2big0">3</span><span class="sm2big1">&gt;</span><span class="sm2big2">&gt;</span><span class="sm2big3">&gt;</span><span class="sm2big4">3</span>
+</div>
+
+<div id="autoconv" onclick="togglespm()" title="Automatically convert single digit pencil marks into regular entries">
+<div id="actxt"><span>Auto: </span></div>
+<div id="acbx">
+ <div class="swbar"></div><div id="swbut"></div>
+</div>
+</div>
+<div class="clearfloat"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="buffer2a">
+<div class="notetxt2">You can play your own Sudoku puzzles on our online Sudoku grid interface. Just submit a valid Sudoku puzzle, and it will be loaded into our grid interface for you to play.</div><p id="h2use2"><a href="https://www.sudoku9x9.com/manual/" target="_blank">How to use this grid?</a></p>
+</div>
+<div id="itfbm2"><div class="npuzz"><a class="npzlk" href="https://www.sudoku9x9.com/">Play a random puzzle</a></div></div>
+<div id="gmopt2"><div id="flink">
+</div>
+<div class="clearfloat"></div>
+<div id="savegame">
+<form name="rlpuzz" method="post" action="https://www.sudoku9x9.com/blankgrid/" autocomplete="off"><input type="hidden" name="rload" value="1"></form>
+<p>Puzzle Saved<span id="exptime"></span>:</p><p class="pad1"><span id="savedgnum"></span> <a title="Reload" href="javascript:rlpuzz()">Reload</a>&nbsp;<a title="Delete" href="javascript:mdelpuzz()">Delete</a></p> 
+</div>
+</div>
+</div>
+<div id="adps">
+<div id="adsp">
+<!-- main responsive -->
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-1084572351617719" data-ad-slot="9334957514" data-ad-format="auto" data-full-width-responsive="true" data-adsbygoogle-status="done"><iframe id="aswift_1" style="height: 1px !important; max-height: 1px !important; max-width: 1px !important; width: 1px !important;" src="./Blank Sudoku Grid with Features - Play Your Own Sudoku Puzzles Online_files/saved_resource(2).html"><iframe id="google_ads_frame1" src="./Blank Sudoku Grid with Features - Play Your Own Sudoku Puzzles Online_files/saved_resource(3).html"></iframe></iframe></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script></div>
+</div>
+<div id="desc">
+<div class="mintro"><h3>Online Sudoku Blank Grid</h3><p>Our online Sudoku game interface has many unique features and functions, which can make it more convenient for you to solve Sudoku puzzles online.  Occasionally, you may want to use our interface to solve your own Sudoku puzzles found in other places.  Our online Sudoku blank grid can fulfill your needs.  Just enter a valid Sudoku puzzle in the blank grid above.  Submit the puzzle, and we will prepare the game for you. Then you can play your own Sudoku puzzle on our interface with all its features.</p></div><div id="cpy">
+<div class="footlink">
+<a href="https://www.sudoku9x9.com/" title="Home Page">Home</a>
+<a href="https://www.sudoku9x9.com/sudoku/" title="Sudoku">Sudoku</a>
+<a href="https://www.sudoku9x9.com/classic/blankgrid/" title="Classic Desktop Version">Classic Version<br>(Desktop only)</a>
+<a href="https://www.sudoku9x9.com/privacy/" title="Privacy Policy" rel="nofollow">Privacy</a>
+<a href="https://www.sudoku9x9.com/about/" title="About Sudoku9x9.com">About</a>
+</div>
+<span>©2026 sudoku9x9.com - All Right Reserved.</span> </div>
+</div>
+</div>	 
+<script type="text/javascript">
+//<![CDATA[
+  resetundo();
+  resetredo();
+  document.getElementById("broadcastmsg").innerHTML="";
+  for (i=1;i<10;i++) {document.getElementById("nl"+i).style.display="none";}  chkpzsaved();
+  step=0;
+  historylength=0;
+  stacklength=5000;
+  length2step=new Array(stacklength);
+  historybgcolor=new Array(stacklength);
+  historyvalue=new Array(stacklength);
+  historycellnumber=new Array(stacklength);
+  historypm=new Array(stacklength);
+  oldvalue="";
+  oldbgcolor="";
+  oldcellnumber="";
+  oldpm=false;
+  rdstep=0;
+  rdhistorylength=0;
+  rdlength2step=new Array(stacklength);
+  rdhistorybgcolor=new Array(stacklength);
+  rdhistoryvalue=new Array(stacklength);
+  rdhistorycellnumber=new Array(stacklength);
+  rdhistorypm=new Array(stacklength);
+  currmsg="";
+  pmark=new Array(81);
+  related=new Array(81);
+  for (i=0;i<81;i++)
+  {
+   pmark[i]=false; 
+   related[i]=false;   
+  }
+    countdg();
+  document.addEventListener('mousedown',function(event){if (event.detail > 1) {event.preventDefault();}});
+  document.addEventListener('click',function(){if (document.getElementById("navcontent").clientHeight>120) togglenavblk();});
+  document.addEventListener('keydown',function(){if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(event.key) > -1) event.preventDefault();if (dcmode=="c") kyin(event);});
+  forder=new Array(
+  72,8,17,63,73,7,6,74,54,26,16,64,75,5,25,55,45,35,15,65,46,44,14,76,36,34,4,66,56,24,43,37,77,13,33,57,27,53,23,67,47,3,62,28,58,12,32,78,38,52,2,68,18,42,22,48,69,11,59,31,19,71,39,21,79,51,9,41,29,61,49,1,80,0,10,70,60,20,30,50,40);
+//]]> 
+</script>
+
+
+
+</body></html>

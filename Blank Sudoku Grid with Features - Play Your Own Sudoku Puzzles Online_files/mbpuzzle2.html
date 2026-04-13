@@ -1,0 +1,2478 @@
+h = '<script type="text/javascript">top.location = "https://www.sudoku9x9.com"</script>';<!-- ';
+function gotacell(a,iref,jref,kref,poscell,krowcell,kcolcell,ksqrcell)
+{
+  var n,ii,jj,nrow,ncol,nsquare;
+  a[iref][jref][kref]=2;
+  for(n=0;n<=8;n++)
+  {
+   if (n!=iref && a[n][jref][kref]==1) rmapos(a,n,jref,kref,poscell,krowcell,kcolcell,ksqrcell);
+   if (n!=jref && a[iref][n][kref]==1) rmapos(a,iref,n,kref,poscell,krowcell,kcolcell,ksqrcell);
+   if (n!=kref && a[iref][jref][n]==1) rmapos(a,iref,jref,n,poscell,krowcell,kcolcell,ksqrcell);
+  }
+  nsquare=rc2sqr(iref,jref); 
+  for(ii=0;ii<=2;ii++)
+  {
+   for(jj=0;jj<=2;jj++)
+   {
+    nrow=sqrc2r(nsquare,ii);
+    ncol=sqrc2c(nsquare,jj);
+    if ((nrow!=iref || ncol!=jref) && a[nrow][ncol][kref]==1) rmapos(a,nrow,ncol,kref,poscell,krowcell,kcolcell,ksqrcell);
+   }
+  }
+}
+
+function rmapos(a,iref,jref,kref,poscell,krowcell,kcolcell,ksqrcell)
+{
+  if (a[iref][jref][kref]==1)
+  {
+   a[iref][jref][kref]=0;
+   poscell[iref][jref]--;
+   krowcell[iref][kref]--;
+   kcolcell[jref][kref]--;
+   nsquare=rc2sqr(iref,jref); 
+   ksqrcell[nsquare][kref]--;
+  } 
+}  
+
+function findcells(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var index1,index2,i,j,k,ii,jj,idone;
+ 
+ do
+ {
+  idone=0;
+  for(index1=0;index1<=8;index1++)
+  {
+   for(index2=0;index2<=8;index2++)
+   {
+    if (poscell[index1][index2]==1)
+	{
+     for(k=0;k<=8;k++)
+     {
+      if(a[index1][index2][k]==1) 
+	  {
+	   gotacell(a,index1,index2,k,poscell,krowcell,kcolcell,ksqrcell);
+	   idone=1;
+      } 
+     }	 
+	}
+	if(krowcell[index1][index2]==1)
+	{
+     for(j=0;j<=8;j++)
+     {
+      if(a[index1][j][index2]==1) 
+	  {
+	   gotacell(a,index1,j,index2,poscell,krowcell,kcolcell,ksqrcell);
+	   idone=1;
+      } 
+     }	 	
+	}
+	if(kcolcell[index1][index2]==1)
+	{
+     for(i=0;i<=8;i++)
+     {
+      if(a[i][index1][index2]==1) 
+	  {
+	   gotacell(a,i,index1,index2,poscell,krowcell,kcolcell,ksqrcell);
+	   idone=1;
+      } 
+     }	 	
+	}
+	if(ksqrcell[index1][index2]==1)
+	{
+	 for(ii=0;ii<=2;ii++)
+	 {
+      for(jj=0;jj<=2;jj++)
+      {
+	   i=sqrc2r(index1,ii);
+	   j=sqrc2c(index1,jj);
+       if(a[i][j][index2]==1)
+	   {
+	    gotacell(a,i,j,index2,poscell,krowcell,kcolcell,ksqrcell);
+	    idone=1;
+	   }
+      }      
+	 }
+	}
+   }	
+  }
+ } while (idone!=0)
+}
+
+function chksolvedorerr(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var found=1,index1,index2,index3;
+ // found variable:  =0: not solved, =1: solved, =2: puzzle invalid
+ var chkrow=new Array(9),chkcol=new Array(9),chksqr=new Array(9);
+ var i,j,k,isqr;
+ for(i=0;i<=8;i++)
+ {
+  chkrow[i]=new Array(9);
+  chkcol[i]=new Array(9);
+  chksqr[i]=new Array(9);
+ } 
+ for(index1=0;index1<=8;index1++)
+ {
+  for(index2=0;index2<=8;index2++) 
+  {
+   chkrow[index1][index2]=0;
+   chkcol[index1][index2]=0;
+   chksqr[index1][index2]=0;   
+   if(poscell[index1][index2]==0 || krowcell[index1][index2]==0 || kcolcell[index1][index2]==0 
+        || ksqrcell[index1][index2]==0)
+   {
+    found=2;
+    break;	
+   }
+   if(poscell[index1][index2]>1 || krowcell[index1][index2]>1 || kcolcell[index1][index2]>1 
+        || ksqrcell[index1][index2]>1) found=0;
+  }
+  if (found==2) break;  
+ }
+ if (found==0)
+ {
+  for(i=0;i<=8;i++)
+  {
+   for(j=0;j<=8;j++)
+   {
+    for(k=0;k<=8;k++)
+	{
+     if(a[i][j][k]==2)
+     {
+      isqr=rc2sqr(i,j);
+      chkrow[i][k]++;
+      chkcol[j][k]++;
+      chksqr[isqr][k]++;
+	  if (chkrow[i][k]>1 || chkcol[j][k]>1 || chksqr[isqr][k]>1) 
+	  {
+	   found=2;
+	   break;
+	  }
+	 } 
+    }
+    if (found==2) break;	
+   }
+   if (found==2) break;
+  }
+ } 
+ return found;
+}
+
+function getworkingmatrix(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var index1,index2,index3,isqr; 
+ for(index1=0;index1<=8;index1++)
+ {
+  for(index2=0;index2<=8;index2++)
+  {
+   poscell[index1][index2]=0;
+   krowcell[index1][index2]=0;
+   kcolcell[index1][index2]=0;
+   ksqrcell[index1][index2]=0;
+  }
+ }
+ for(index1=0;index1<=8;index1++)
+ {
+  for(index2=0;index2<=8;index2++)
+  { 
+   for(index3=0;index3<=8;index3++)
+   {	
+    if (a[index1][index2][index3]>0)
+	{
+	 poscell[index1][index2]++;	
+     krowcell[index1][index3]++;
+	 kcolcell[index2][index3]++;
+	 isqr=rc2sqr(index1,index2);
+	 ksqrcell[isqr][index3]++;
+	}   
+   } 
+  }
+ } 
+}
+
+function getpossum(poscell)
+{
+ var i,j,possum=0;
+ for(i=0;i<=8;i++)
+ {
+  for(j=0;j<=8;j++)
+  {
+   possum+=poscell[i][j];
+  }
+ }
+ return possum;
+}
+
+function fullprocess(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var change=lockcd(a,poscell,krowcell,kcolcell,ksqrcell);
+ if (!change) change=rdrow2(a,poscell,krowcell,kcolcell,ksqrcell);
+ if (!change) change=rdcol2(a,poscell,krowcell,kcolcell,ksqrcell);
+ if (!change) change=rdsqr2(a,poscell,krowcell,kcolcell,ksqrcell);
+ if (!change) change=hrdrow2(a,poscell,krowcell,kcolcell,ksqrcell);
+ if (!change) change=hrdcol2(a,poscell,krowcell,kcolcell,ksqrcell);
+ if (!change) change=hrdsqr2(a,poscell,krowcell,kcolcell,ksqrcell);
+ if (!change) change=xpatrow2(a,poscell,krowcell,kcolcell,ksqrcell);
+ if (!change) change=xpatcol2(a,poscell,krowcell,kcolcell,ksqrcell);
+ if (!change) change=xywingrowcol(a,poscell,krowcell,kcolcell,ksqrcell);
+ if (!change) change=xywingrowsqr(a,poscell,krowcell,kcolcell,ksqrcell);
+ if (!change) change=xywingcolsqr(a,poscell,krowcell,kcolcell,ksqrcell);
+ if (!change) change=xyzwingrowsqr(a,poscell,krowcell,kcolcell,ksqrcell);
+ if (!change) change=xyzwingcolsqr(a,poscell,krowcell,kcolcell,ksqrcell);
+ if (!change) change=rdrow3(a,poscell,krowcell,kcolcell,ksqrcell);
+ if (!change) change=rdcol3(a,poscell,krowcell,kcolcell,ksqrcell);
+ if (!change) change=rdsqr3(a,poscell,krowcell,kcolcell,ksqrcell);
+ if (!change) change=hrdrow3(a,poscell,krowcell,kcolcell,ksqrcell);
+ if (!change) change=hrdcol3(a,poscell,krowcell,kcolcell,ksqrcell);
+ if (!change) change=hrdsqr3(a,poscell,krowcell,kcolcell,ksqrcell);
+ if (!change) change=xpatrow3(a,poscell,krowcell,kcolcell,ksqrcell);
+ if (!change) change=xpatcol3(a,poscell,krowcell,kcolcell,ksqrcell);
+ 
+ return change;
+}
+
+function process(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var change=0;
+ //if (!change) change=lockcd(a,poscell,krowcell,kcolcell,ksqrcell);
+ if (!change) change=hrdrow2(a,poscell,krowcell,kcolcell,ksqrcell);
+ if (!change) change=hrdcol2(a,poscell,krowcell,kcolcell,ksqrcell);
+ if (!change) change=hrdsqr2(a,poscell,krowcell,kcolcell,ksqrcell);
+ //if (!change) change=xyzwingrowsqr(a,poscell,krowcell,kcolcell,ksqrcell);
+ //if (!change) change=xyzwingcolsqr(a,poscell,krowcell,kcolcell,ksqrcell);
+ //if (!change) change=hrdrow3(a,poscell,krowcell,kcolcell,ksqrcell);
+ //if (!change) change=hrdcol3(a,poscell,krowcell,kcolcell,ksqrcell);
+ //if (!change) change=hrdsqr3(a,poscell,krowcell,kcolcell,ksqrcell);
+ //if (!change) change=xpatrow3(a,poscell,krowcell,kcolcell,ksqrcell);
+ //if (!change) change=xpatcol3(a,poscell,krowcell,kcolcell,ksqrcell);
+ 
+ return change;
+}
+
+function rdrow2(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var i,j1,j2,k,jj,kk,match,change;
+ change=0;  //document.write("new rdrow2"+"<br/>");
+ for(i=0;i<=8;i++)
+ {
+  for(j1=0;j1<=7;j1++)
+  { 
+   for(j2=j1+1;j2<=8;j2++)
+   {	
+    match=0;
+	if (poscell[i][j1]==2 && poscell[i][j2]==2)
+    {
+	 match=1;
+	 for(k=0;k<=8;k++)
+	 {
+	  if(a[i][j1][k]!=a[i][j2][k]) match=0;
+	 }
+	 if (match)
+	 {
+	  for(jj=0;jj<=8;jj++)
+	  {
+	   for(kk=0;kk<=8;kk++)
+	   {
+	    if(jj!=j1 && jj!=j2 && a[i][j1][kk]+a[i][j2][kk]!=0 && a[i][jj][kk]!=0) 
+		{
+		 rmapos(a,i,jj,kk,poscell,krowcell,kcolcell,ksqrcell);
+         change=1;  
+        }		
+	   }
+	  }
+	 }
+    }	
+	if (change) break;
+   }
+   if (change) break;   
+  }
+  if (change) break;
+ }  
+ return change;
+} 
+function rdcol2(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var i1,i2,j,k,ii,kk,match,change;
+ change=0;           
+ for(j=0;j<=8;j++)
+ {
+  for(i1=0;i1<=7;i1++)
+  {
+   for(i2=i1+1;i2<=8;i2++)
+   {	
+    match=0;
+	if (poscell[i1][j]==2 && poscell[i2][j]==2)
+    {
+	 match=1;
+	 for(k=0;k<=8;k++)
+	 {
+	  if(a[i1][j][k]!=a[i2][j][k]) match=0;
+	 }
+	 if (match)
+	 {
+	  for(ii=0;ii<=8;ii++)
+	  {
+	   for(kk=0;kk<=8;kk++)
+	   {
+	    if(ii!=i1 && ii!=i2 && a[i1][j][kk]+a[i2][j][kk]!=0 && a[ii][j][kk]!=0) 
+		{
+		 rmapos(a,ii,j,kk,poscell,krowcell,kcolcell,ksqrcell);
+         change=1;        
+        }		
+	   }
+	  }
+	 }
+    }
+	if (change) break;
+   } 
+   if (change) break;
+  }
+  if (change) break;
+ }
+  
+ return change;
+} 
+
+function rdsqr2(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var isqr,index1,index2,i1,i2,j1,j2,k;
+ var ii,jj,nindex,kk,match,change;
+ change=0;         
+ for(isqr=0;isqr<=8;isqr++)
+ {
+  for(index1=0;index1<=7;index1++)
+  {
+   i1=Math.floor(isqr/3)*3+Math.floor(index1/3);
+   j1=(isqr%3)*3+index1%3;
+   for(index2=index1+1;index2<=8;index2++)
+   {
+    i2=Math.floor(isqr/3)*3+Math.floor(index2/3);
+    j2=(isqr%3)*3+index2%3;
+    match=0;
+	if (poscell[i1][j1]==2 && poscell[i2][j2]==2)
+    {
+	 match=1;
+	 for(k=0;k<=8;k++)
+	 {
+	  if(a[i1][j1][k]!=a[i2][j2][k]) match=0;
+	 }
+	 if (match)
+	 {
+	  for(nindex=0;nindex<=8;nindex++)
+	  {
+       ii=Math.floor(isqr/3)*3+Math.floor(nindex/3);
+       jj=(isqr%3)*3+nindex%3;
+	   for(kk=0;kk<=8;kk++)
+	   {
+	    if(nindex!=index1 && nindex!=index2 && a[i1][j1][kk]+a[i2][j2][kk]!=0 && a[ii][jj][kk]!=0) 
+		{
+		 rmapos(a,ii,jj,kk,poscell,krowcell,kcolcell,ksqrcell);
+         change=1;        
+        }		
+	   }
+	  }
+	 }
+    }
+	if (change) break;
+   }
+   if (change) break;   
+  }
+  if (change) break;
+ }
+  
+ return change;
+} 
+function rdrow3(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var i,j1,j2,j3,icount,k,jj,kk,change;
+ change=0;  
+ for(i=0;i<=8;i++)
+ {
+  for(j1=0;j1<=6;j1++)
+  {
+   for(j2=j1+1;j2<=7;j2++)
+   {
+    for(j3=j2+1;j3<=8;j3++)
+    { 
+	 if (poscell[i][j1]<=3 && poscell[i][j1]>=2 &&
+         poscell[i][j2]<=3 && poscell[i][j2]>=2 &&
+	     poscell[i][j3]<=3 && poscell[i][j3]>=2)
+     {
+	  icount=0;
+	  for(k=0;k<=8;k++)
+	  {
+	   if(a[i][j1][k]+a[i][j2][k]+a[i][j3][k]>0) icount+=1;
+	  }
+	  if (icount==3)
+	  {	   
+	   for(jj=0;jj<=8;jj++)
+	   {
+	    for(kk=0;kk<=8;kk++)
+	    {
+	     if(jj!=j1 && jj!=j2 && jj!=j3 && 
+	         a[i][j1][kk]+a[i][j2][kk]+a[i][j3][kk]!=0 && a[i][jj][kk]!=0) 
+		 {
+		  rmapos(a,i,jj,kk,poscell,krowcell,kcolcell,ksqrcell);
+          change=1;  
+         }
+        }		 
+	   }
+	  }
+	 }
+	 if (change) break;
+    }
+	if (change) break;	
+   }
+   if (change) break;   
+  }
+  if (change) break;
+ }  
+ return change;
+}
+ 
+function rdcol3(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var i1,i2,i3,j,icount,k,ii,kk,change;
+ change=0;   
+ for(j=0;j<=8;j++)
+ {
+  for(i1=0;i1<=6;i1++)
+  {
+   for(i2=i1+1;i2<=7;i2++)
+   {
+    for(i3=i2+1;i3<=8;i3++)
+    {	
+	 if (poscell[i1][j]<=3 && poscell[i1][j]>=2 && 
+	     poscell[i2][j]<=3 && poscell[i2][j]>=2 && 
+         poscell[i3][j]<=3 && poscell[i3][j]>=2)
+     {
+	  icount=0;
+	  for(k=0;k<=8;k++)
+	  {
+	   if(a[i1][j][k]+a[i2][j][k]+a[i3][j][k]>0) icount+=1;
+	  }
+	  if (icount==3)
+	  {	   
+	   for(ii=0;ii<=8;ii++)
+	   {
+	    for(kk=0;kk<=8;kk++)
+	    {
+	     if(ii!=i1 && ii!=i2 && ii!=i3 && 
+		    a[i1][j][kk]+a[i2][j][kk]+a[i3][j][kk]!=0 && a[ii][j][kk]!=0) 
+		 {
+		  rmapos(a,ii,j,kk,poscell,krowcell,kcolcell,ksqrcell);
+          change=1;   
+         }
+        }		 
+	   }
+	  }
+	 }
+	 if (change) break; 
+    }
+    if (change) break; 	
+   }
+   if (change) break;    
+  }
+  if (change) break; 
+ }
+ return change;
+} 
+function rdsqr3(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var isqr,index1,index2,index3,i1,i2,i3,j1,j2,j3,k;
+ var ii,jj,nindex,kk,icount,change; 
+ change=0;   
+ for(isqr=0;isqr<=8;isqr++)
+ {
+  for(index1=0;index1<=6;index1++)
+  {
+   i1=Math.floor(isqr/3)*3+Math.floor(index1/3);
+   j1=(isqr%3)*3+index1%3;   
+   for(index2=index1+1;index2<=7;index2++)
+   {
+    i2=Math.floor(isqr/3)*3+Math.floor(index2/3);
+    j2=(isqr%3)*3+index2%3;      
+    for(index3=index2+1;index3<=8;index3++)
+    {
+     i3=Math.floor(isqr/3)*3+Math.floor(index3/3);
+     j3=(isqr%3)*3+index3%3;      
+	 if (poscell[i1][j1]<=3 && poscell[i1][j1]>=2 && 
+	     poscell[i2][j2]<=3 && poscell[i2][j2]>=2 && 
+		 poscell[i3][j3]<=3 && poscell[i3][j3]>=2)
+     {
+	  icount=0;
+	  for(k=0;k<=8;k++)
+	  {
+	   if(a[i1][j1][k]+a[i2][j2][k]+a[i3][j3][k]>0) icount+=1;
+	  }
+	  if (icount==3)
+	  {	   
+	   for(nindex=0;nindex<=8;nindex++)
+	   {
+        ii=Math.floor(isqr/3)*3+Math.floor(nindex/3);
+        jj=(isqr%3)*3+nindex%3;
+
+	    for(kk=0;kk<=8;kk++)
+	    {
+	     if(nindex!=index1 && nindex!=index2 && nindex!=index3 && 
+		    a[i1][j1][kk]+a[i2][j2][kk]+a[i3][j3][kk]!=0 && a[ii][jj][kk]!=0) 
+		 {
+		  rmapos(a,ii,jj,kk,poscell,krowcell,kcolcell,ksqrcell);
+          change=1;   
+         }
+        }		 
+	   }
+	  }
+	 }
+	 if (change) break; 
+    }
+    if (change) break; 	
+   }
+   if (change) break;    
+  }
+  if (change) break; 
+ }
+ return change;
+}
+
+function hrdrow2(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var i,j,k1,k2,jj,kk,match,change;
+ change=0;  
+ for(i=0;i<=8;i++)
+ {
+  for(k1=0;k1<=7;k1++)
+  { 
+   for(k2=k1+1;k2<=8;k2++)
+   {	
+    match=0;
+	if (krowcell[i][k1]==2 && krowcell[i][k2]==2)
+    {
+	 match=1;
+	 for(j=0;j<=8;j++)
+	 {
+	  if(a[i][j][k1]!=a[i][j][k2]) match=0;
+	 }
+	 if (match)
+	 {
+	  for(jj=0;jj<=8;jj++)
+	  {
+	   for(kk=0;kk<=8;kk++)
+	   {
+	    if(kk!=k1 && kk!=k2 && a[i][jj][k1]+a[i][jj][k2]!=0 && a[i][jj][kk]!=0) 
+		{
+		 rmapos(a,i,jj,kk,poscell,krowcell,kcolcell,ksqrcell);
+         change=1;  		 
+        }		
+	   }
+	  }
+	 }
+    }	
+	if (change) break;
+   }
+   if (change) break;   
+  }
+  if (change) break;
+ }
+  
+ return change;
+} 
+
+function hrdcol2(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var i,j,k1,k2,ii,kk,match,change;
+ change=0;  
+ for(j=0;j<=8;j++)
+ {
+  for(k1=0;k1<=7;k1++)
+  { 
+   for(k2=k1+1;k2<=8;k2++)
+   {	
+    match=0;
+	if (kcolcell[j][k1]==2 && kcolcell[j][k2]==2)
+    {
+	 match=1;
+	 for(i=0;i<=8;i++)
+	 {
+	  if(a[i][j][k1]!=a[i][j][k2]) match=0;
+	 }
+	 if (match)
+	 {
+	  for(ii=0;ii<=8;ii++)
+	  {
+	   for(kk=0;kk<=8;kk++)
+	   {
+	    if(kk!=k1 && kk!=k2 && a[ii][j][k1]+a[ii][j][k2]!=0 && a[ii][j][kk]!=0) 
+		{
+		 rmapos(a,ii,j,kk,poscell,krowcell,kcolcell,ksqrcell);
+         change=1;  		 
+        }		
+	   }
+	  }
+	 }
+    }	
+	if (change) break;
+   }
+   if (change) break;   
+  }
+  if (change) break;
+ }
+  
+ return change;
+} 
+
+function hrdsqr2(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var isqr,index,i,j,k1,k2;
+ var ii,jj,nindex,kk,match,change;
+ change=0;         
+ for(isqr=0;isqr<=8;isqr++)
+ {
+  for(k1=0;k1<=7;k1++)
+  {
+   for(k2=k1+1;k2<=8;k2++)
+   {
+    match=0;
+	if (ksqrcell[isqr][k1]==2 && ksqrcell[isqr][k2]==2)
+    {
+	 match=1;
+	 for(index=0;index<=8;index++)
+	 {
+      i=Math.floor(isqr/3)*3+Math.floor(index/3);
+      j=(isqr%3)*3+index%3;
+	  if(a[i][j][k1]!=a[i][j][k2]) match=0;
+	 }
+	 if (match)
+	 {
+	  for(nindex=0;nindex<=8;nindex++)
+	  {
+       ii=Math.floor(isqr/3)*3+Math.floor(nindex/3);
+       jj=(isqr%3)*3+nindex%3;
+	   for(kk=0;kk<=8;kk++)
+	   {
+	    if(kk!=k1 && kk!=k2 && a[ii][jj][k1]+a[ii][jj][k2]!=0 && a[ii][jj][kk]!=0) 
+		{
+		 rmapos(a,ii,jj,kk,poscell,krowcell,kcolcell,ksqrcell);
+         change=1;       
+        }		
+	   }
+	  }
+	 }
+    }
+	if (change) break;
+   }
+   if (change) break;   
+  }
+  if (change) break;
+ }
+  
+ return change;
+} 
+
+function hrdrow3(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var i,j,k1,k2,k3,icount,jj,kk,change;
+ change=0; 
+ for(i=0;i<=8;i++)
+ {
+  for(k1=0;k1<=6;k1++)
+  {
+   for(k2=k1+1;k2<=7;k2++)
+   {
+    for(k3=k2+1;k3<=8;k3++)
+    { 
+	 if (krowcell[i][k1]<=3 && krowcell[i][k1]>=2 &&
+         krowcell[i][k2]<=3 && krowcell[i][k2]>=2 &&
+	     krowcell[i][k3]<=3 && krowcell[i][k3]>=2)
+     {
+	  icount=0;
+	  for(j=0;j<=8;j++)
+	  {
+	   if(a[i][j][k1]+a[i][j][k2]+a[i][j][k3]>0) icount+=1;
+	  }
+	  if (icount==3)
+	  {	   
+	   for(jj=0;jj<=8;jj++)
+	   {
+	    for(kk=0;kk<=8;kk++)
+	    {
+	     if(kk!=k1 && kk!=k2 && kk!=k3 && 
+	         a[i][jj][k1]+a[i][jj][k2]+a[i][jj][k3]!=0 && a[i][jj][kk]!=0) 
+		 {
+		  rmapos(a,i,jj,kk,poscell,krowcell,kcolcell,ksqrcell);
+          change=1; 
+         }
+        }		 
+	   }
+	  }
+	 }
+	 if (change) break;
+    }
+	if (change) break;	
+   }
+   if (change) break;   
+  }
+  if (change) break;
+ }  
+ return change;
+}
+
+function hrdcol3(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var i,j,k1,k2,k3,icount,ii,kk,change;
+ change=0;  
+ for(j=0;j<=8;j++)
+ {
+  for(k1=0;k1<=6;k1++)
+  {
+   for(k2=k1+1;k2<=7;k2++)
+   {
+    for(k3=k2+1;k3<=8;k3++)
+    { 
+	 if (kcolcell[j][k1]<=3 && kcolcell[j][k1]>=2 &&
+         kcolcell[j][k2]<=3 && kcolcell[j][k2]>=2 &&
+	     kcolcell[j][k3]<=3 && kcolcell[j][k3]>=2)
+     {
+	  icount=0;
+	  for(i=0;i<=8;i++)
+	  {
+	   if(a[i][j][k1]+a[i][j][k2]+a[i][j][k3]>0) icount+=1;
+	  }
+	  if (icount==3)
+	  {	   
+	   for(ii=0;ii<=8;ii++)
+	   {
+	    for(kk=0;kk<=8;kk++)
+	    {
+	     if(kk!=k1 && kk!=k2 && kk!=k3 && 
+	         a[ii][j][k1]+a[ii][j][k2]+a[ii][j][k3]!=0 && a[ii][j][kk]!=0) 
+		 {
+		  rmapos(a,ii,j,kk,poscell,krowcell,kcolcell,ksqrcell);
+          change=1; 
+         }
+        }		 
+	   }
+	  }
+	 }
+	 if (change) break;
+    }
+	if (change) break;	
+   }
+   if (change) break;   
+  }
+  if (change) break;
+ }  
+ return change;
+}
+
+function hrdsqr3(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var isqr,index,i,j,k1,k2,k3,icount;
+ var ii,jj,nindex,kk,change;
+ change=0;         
+ for(isqr=0;isqr<=8;isqr++)
+ {
+  for(k1=0;k1<=6;k1++)
+  {
+   for(k2=k1+1;k2<=7;k2++)
+   {
+    for(k3=k2+1;k3<=8;k3++)
+    { 
+	 if (ksqrcell[isqr][k1]<=3 && ksqrcell[isqr][k1]>=2 &&
+         ksqrcell[isqr][k2]<=3 && ksqrcell[isqr][k2]>=2 &&
+	     ksqrcell[isqr][k3]<=3 && ksqrcell[isqr][k3]>=2)
+     {
+	  icount=0;
+	  for(index=0;index<=8;index++)
+	  {
+       i=Math.floor(isqr/3)*3+Math.floor(index/3);
+       j=(isqr%3)*3+index%3;
+	   if(a[i][j][k1]+a[i][j][k2]+a[i][j][k3]>0) icount+=1;
+	  }
+	  if (icount==3)
+	  {	   
+	   for(nindex=0;nindex<=8;nindex++)
+	   {
+        ii=Math.floor(isqr/3)*3+Math.floor(nindex/3);
+        jj=(isqr%3)*3+nindex%3;
+	    for(kk=0;kk<=8;kk++)
+	    {
+	     if(kk!=k1 && kk!=k2 && kk!=k3 && a[ii][jj][k1]+a[ii][jj][k2]+a[ii][jj][k3]!=0 && a[ii][jj][kk]!=0) 
+		 {
+		  rmapos(a,ii,jj,kk,poscell,krowcell,kcolcell,ksqrcell);
+          change=1;       
+         }		
+	    }
+	   }
+	  }
+	 }
+	 if (change) break;
+    }
+	if (change) break;	
+   }
+   if (change) break;   
+  }
+  if (change) break;
+ }  
+ return change;
+} 
+ 
+function xpatrow2(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var i1,i2,j,k,ii,jj,match,change;
+ change=0;  
+ for(k=0;k<=8;k++)
+ {
+  for(i1=0;i1<=7;i1++)
+  { 
+   for(i2=i1+1;i2<=8;i2++)
+   {	
+    match=0;
+	if (krowcell[i1][k]==2 && krowcell[i2][k]==2)
+    {
+	 match=1;
+	 for(j=0;j<=8;j++)
+	 {
+	  if(a[i1][j][k]!=a[i2][j][k]) match=0;
+	 }
+	 if (match)
+	 {
+	  for(jj=0;jj<=8;jj++)
+	  {
+	   for(ii=0;ii<=8;ii++)
+	   {
+	    if(ii!=i1 && ii!=i2 && a[i1][jj][k]+a[i2][jj][k]!=0 && a[ii][jj][k]!=0) 
+		{
+		 rmapos(a,ii,jj,k,poscell,krowcell,kcolcell,ksqrcell);
+         change=1;  
+        }		
+	   }
+	  }
+	 }
+    }	
+	if (change) break;
+   }
+   if (change) break;   
+  }
+  if (change) break;
+ }
+ return change;
+} 
+
+function xpatcol2(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var i,j1,j2,k,ii,jj,match,change;
+ change=0;  
+ for(k=0;k<=8;k++)
+ {
+  for(j1=0;j1<=7;j1++)
+  { 
+   for(j2=j1+1;j2<=8;j2++)
+   {	
+    match=0;
+	if (kcolcell[j1][k]==2 && kcolcell[j2][k]==2)
+    {
+	 match=1;
+	 for(i=0;i<=8;i++)
+	 {
+	  if(a[i][j1][k]!=a[i][j2][k]) match=0;
+	 }
+	 if (match)
+	 {
+	  for(ii=0;ii<=8;ii++)
+	  {
+	   for(jj=0;jj<=8;jj++)
+	   {
+	    if(jj!=j1 && jj!=j2 && a[ii][j1][k]+a[ii][j2][k]!=0 && a[ii][jj][k]!=0) 
+		{
+		 rmapos(a,ii,jj,k,poscell,krowcell,kcolcell,ksqrcell);
+         change=1;  
+        }		
+	   }
+	  }
+	 }
+    }	
+	if (change) break;
+   }
+   if (change) break;   
+  }
+  if (change) break;
+ }
+  
+ return change;
+} 
+
+function xpatrow3(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var i1,i2,i3,j,k,icount,ii,jj,change;
+ change=0;  
+ for(k=0;k<=8;k++)
+ {
+  for(i1=0;i1<=6;i1++)
+  {
+   for(i2=i1+1;i2<=7;i2++)
+   {
+    for(i3=i2+1;i3<=8;i3++)
+    { 
+	 if (krowcell[i1][k]<=3 && krowcell[i1][k]>=2 &&
+         krowcell[i2][k]<=3 && krowcell[i2][k]>=2 &&
+	     krowcell[i3][k]<=3 && krowcell[i3][k]>=2)
+     {
+	  icount=0;
+	  for(j=0;j<=8;j++)
+	  {
+	   if(a[i1][j][k]+a[i2][j][k]+a[i3][j][k]>0) icount+=1;
+	  }
+	  if (icount==3)
+	  {	   
+	   for(jj=0;jj<=8;jj++)
+	   {
+	    for(ii=0;ii<=8;ii++)
+	    {
+	     if(ii!=i1 && ii!=i2 && ii!=i3 && 
+	         a[i1][jj][k]+a[i2][jj][k]+a[i3][jj][k]!=0 && a[ii][jj][k]!=0) 
+		 {
+		  rmapos(a,ii,jj,k,poscell,krowcell,kcolcell,ksqrcell);
+          change=1;  
+         }
+        }		 
+	   }
+	  }
+	 }
+	 if (change) break;
+    }
+	if (change) break;	
+   }
+   if (change) break;   
+  }
+  if (change) break;
+ }  
+ return change;
+}
+
+function xpatcol3(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var i,j1,j2,j3,k,icount,ii,jj,change;
+ change=0;  
+ for(k=0;k<=8;k++)
+ {
+  for(j1=0;j1<=6;j1++)
+  {
+   for(j2=j1+1;j2<=7;j2++)
+   {
+    for(j3=j2+1;j3<=8;j3++)
+    { 
+	 if (kcolcell[j1][k]<=3 && kcolcell[j1][k]>=2 &&
+         kcolcell[j2][k]<=3 && kcolcell[j2][k]>=2 &&
+	     kcolcell[j3][k]<=3 && kcolcell[j3][k]>=2)
+     {
+	  icount=0;
+	  for(i=0;i<=8;i++)
+	  {
+	   if(a[i][j1][k]+a[i][j2][k]+a[i][j3][k]>0) icount+=1;
+	  }
+	  if (icount==3)
+	  {	   
+	   for(ii=0;ii<=8;ii++)
+	   {
+	    for(jj=0;jj<=8;jj++)
+	    {
+	     if(jj!=j1 && jj!=j2 && jj!=j3 && 
+	         a[ii][j1][k]+a[ii][j2][k]+a[ii][j3][k]!=0 && a[ii][jj][k]!=0) 
+		 {
+		  rmapos(a,ii,jj,k,poscell,krowcell,kcolcell,ksqrcell);
+          change=1;  
+         }
+        }		 
+	   }
+	  }
+	 }
+	 if (change) break;
+    }
+	if (change) break;	
+   }
+   if (change) break;   
+  }
+  if (change) break;
+ }  
+ return change;
+}
+
+function xywingrowcol(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var i,i1,j1,j2,k,k1,k2,kmatch,match,change;
+ change=0; 
+ for(i=0;i<=8;i++)
+ {
+  for(j1=0;j1<=7;j1++)
+  { 
+   for(j2=j1+1;j2<=8;j2++)
+   {	
+	if (poscell[i][j1]==2 && poscell[i][j2]==2)
+    {
+	 match=0;
+	 for(k=0;k<=8;k++)
+	 {
+	  if (a[i][j1][k]==1 && a[i][j2][k]==1) 
+	  {
+	   match++;
+	   kmatch=k;
+	  }
+	  else if (a[i][j1][k]==1 && a[i][j2][k]==0)
+	  {
+	   k1=k;
+	  }
+	  else if (a[i][j1][k]==0 && a[i][j2][k]==1)
+	  {
+	   k2=k;
+	  }
+	 } 
+	 if (match==1)
+	 {
+	  for(i1=0;i1<=8;i1++)
+	  {
+	   if (poscell[i1][j1]==2 && a[i1][j1][k1]==1 && a[i1][j1][k2]==1 && a[i1][j2][k2]!=0)
+	   {
+		rmapos(a,i1,j2,k2,poscell,krowcell,kcolcell,ksqrcell);
+        change=1;  
+       }	
+	   if (poscell[i1][j2]==2 && a[i1][j2][k1]==1 && a[i1][j2][k2]==1 && a[i1][j1][k1]!=0)
+	   {
+	    rmapos(a,i1,j1,k1,poscell,krowcell,kcolcell,ksqrcell);
+        change=1;  
+	   }
+	  }
+	 }
+    }	
+	if (change) break;
+   }
+   if (change) break;   
+  }
+  if (change) break;
+ }  
+ return change;
+} 
+
+function xywingrowsqr(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var i,j1,j2,k,k1,k2,isqr1,isqr2,ii,jj,newi1,newj1,newi2,newj2,rjindex,jindex1,jindex2,kmatch,match,change;
+ change=0;  
+ for(i=0;i<=8;i++)
+ {
+  for(j1=0;j1<=7;j1++)
+  { 
+   isqr1=rc2sqr(i,j1);
+   for(j2=j1+1;j2<=8;j2++)
+   {	
+    isqr2=rc2sqr(i,j2);
+	if (isqr1!=isqr2 && poscell[i][j1]==2 && poscell[i][j2]==2)
+    {
+	 match=0;
+	 for(k=0;k<=8;k++)
+	 {
+	  if (a[i][j1][k]==1 && a[i][j2][k]==1) 
+	  {
+	   match++;
+	   kmatch=k;
+	  }
+	  else if (a[i][j1][k]==1 && a[i][j2][k]==0)
+	  {
+	   k1=k;
+	  }
+	  else if (a[i][j1][k]==0 && a[i][j2][k]==1)
+	  {
+	   k2=k;
+	  }
+	 } 
+	 if (match==1 & isqr1!=isqr2)
+	 {
+	  for(ii=0;ii<=2;ii++)
+	  {
+	   for(jj=0;jj<=2;jj++)
+	   {
+	    newi1=sqrc2r(isqr1,ii);
+		newj1=sqrc2c(isqr1,jj);
+	    if (poscell[newi1][newj1]==2 && a[newi1][newj1][k1]==1 && a[newi1][newj1][k2]==1)
+	    {
+         for(rjindex=0;rjindex<=2;rjindex++)
+         {
+          jindex1=sqrc2c(isqr1,rjindex);
+		  jindex2=sqrc2c(isqr2,rjindex);
+          if ((i!=newi1 || jindex1!=newj1) && a[i][jindex1][k2]!=0)
+          { 		  
+		   rmapos(a,i,jindex1,k2,poscell,krowcell,kcolcell,ksqrcell);
+           change=1;  
+		  }
+          if ((i!=newi1 || jindex2!=j2) && a[newi1][jindex2][k2]!=0)
+          {
+		   rmapos(a,newi1,jindex2,k2,poscell,krowcell,kcolcell,ksqrcell);
+           change=1;  
+		  }
+		 }		  
+        }
+	    newi2=sqrc2r(isqr2,ii);
+		newj2=sqrc2c(isqr2,jj);
+	    if (poscell[newi2][newj2]==2 && a[newi2][newj2][k1]==1 && a[newi2][newj2][k2]==1)
+	    {
+         for(rjindex=0;rjindex<=2;rjindex++)
+         {
+          jindex1=sqrc2c(isqr1,rjindex);
+		  jindex2=sqrc2c(isqr2,rjindex);
+          if ((i!=newi2 || jindex2!=newj2) && a[i][jindex2][k1]!=0)
+          { 		  
+		   rmapos(a,i,jindex2,k1,poscell,krowcell,kcolcell,ksqrcell);
+           change=1;  
+		  }
+          if ((i!=newi2 || jindex1!=j1) && a[newi2][jindex1][k1]!=0)
+          {
+		   rmapos(a,newi2,jindex1,k1,poscell,krowcell,kcolcell,ksqrcell);
+           change=1;  
+		  }
+		 }		  
+        }
+	   }
+	  }
+	 } 
+    }	
+	if (change) break;
+   }
+   if (change) break;   
+  }
+  if (change) break;
+ }  
+ return change;
+} 
+function xywingcolsqr(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var ii,i2,j,k,k1,k2,isqr1,isqr2,ii,jj,newi1,newj1,newi2,newj2,riindex,iindex1,iindex2,kmatch,match,change;
+ change=0;  
+ for(j=0;j<=8;j++)
+ {
+  for(i1=0;i1<=7;i1++)
+  { 
+   isqr1=rc2sqr(i1,j);
+   for(i2=i1+1;i2<=8;i2++)
+   {	
+    isqr2=rc2sqr(i2,j);
+	if (isqr1!=isqr2 && poscell[i1][j]==2 && poscell[i2][j]==2)
+    {
+	 match=0;
+	 for(k=0;k<=8;k++)
+	 {
+	  if (a[i1][j][k]==1 && a[i2][j][k]==1) 
+	  {
+	   match++;
+	   kmatch=k;
+	  }
+	  else if (a[i1][j][k]==1 && a[i2][j][k]==0)
+	  {
+	   k1=k;
+	  }
+	  else if (a[i1][j][k]==0 && a[i2][j][k]==1)
+	  {
+	   k2=k;
+	  }
+	 } 
+	 if (match==1)
+	 {
+	  for(ii=0;ii<=2;ii++)
+	  {
+	   for(jj=0;jj<=2;jj++)
+	   {
+	    newi1=sqrc2r(isqr1,ii);
+		newj1=sqrc2c(isqr1,jj);
+	    if (poscell[newi1][newj1]==2 && a[newi1][newj1][k1]==1 && a[newi1][newj1][k2]==1)
+	    {
+         for(riindex=0;riindex<=2;riindex++)
+         {
+          iindex1=sqrc2r(isqr1,riindex);
+		  iindex2=sqrc2r(isqr2,riindex);
+          if ((j!=newj1 || iindex1!=newi1) && a[iindex1][j][k2]!=0)
+          { 		  
+		   rmapos(a,iindex1,j,k2,poscell,krowcell,kcolcell,ksqrcell);
+           change=1;  
+		  }
+          if ((j!=newj1 || iindex2!=i2) && a[iindex2][newj1][k2]!=0)
+          {
+		   rmapos(a,iindex2,newj1,k2,poscell,krowcell,kcolcell,ksqrcell);
+           change=1;  
+		  }
+		 }		  
+        }
+	    newi2=sqrc2r(isqr2,ii);
+		newj2=sqrc2c(isqr2,jj);
+	    if (poscell[newi2][newj2]==2 && a[newi2][newj2][k1]==1 && a[newi2][newj2][k2]==1)
+	    {
+         for(riindex=0;riindex<=2;riindex++)
+         {
+          iindex1=sqrc2r(isqr1,riindex);
+		  iindex2=sqrc2r(isqr2,riindex);
+          if ((j!=newj2 || iindex2!=newi2) && a[iindex2][j][k1]!=0)
+          { 		  
+		   rmapos(a,iindex2,j,k1,poscell,krowcell,kcolcell,ksqrcell);
+           change=1;  
+		  }
+          if ((j!=newj2 || iindex1!=i1) && a[iindex1][newj2][k1]!=0)
+          {
+		   rmapos(a,iindex1,newj2,k1,poscell,krowcell,kcolcell,ksqrcell);
+           change=1;  
+		  }
+		 }		  
+        }
+	   }
+	  }
+	 } 
+    }	
+	if (change) break;
+   }
+   if (change) break;   
+  }
+  if (change) break;
+ }  
+ return change;
+} 
+
+function xyzwingrowsqr(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var i,j1,j2,k,k1,isqr1,isqr2,ii,jj,newi,newj,rjindex,jindex,kmatch=new Array(2),match,change;
+ change=0; 
+ for(i=0;i<=8;i++)
+ {
+  for(j1=0;j1<=8;j1++)
+  {
+   isqr1=rc2sqr(i,j1);   
+   if (poscell[i][j1]==3)
+   {
+    for(j2=0;j2<=8;j2++)
+	{
+	 isqr2=rc2sqr(i,j2);
+     if (isqr1!=isqr2 && poscell[i][j2]==2)
+     {
+	  match=0;
+	  for(k=0;k<=8;k++)
+	  {
+	   if (a[i][j1][k]==1 && a[i][j2][k]==1) 
+	   {
+	    kmatch[match]=k;
+	    match++;
+	   }
+	   else if (a[i][j1][k]==1 && a[i][j2][k]==0)
+	   {
+	    k1=k;
+	   }
+	  } 
+	  if (match==2)
+	  { 
+	   for(ii=0;ii<=2;ii++)
+	   {
+	    for(jj=0;jj<=2;jj++)
+		{
+		 newi=sqrc2r(isqr1,ii);
+		 newj=sqrc2c(isqr1,jj);
+	     if (newi!=i && poscell[newi][newj]==2 && a[newi][newj][k1]==1 && a[newi][newj][kmatch[0]]==1)
+	     {
+		  for(rjindex=0;rjindex<=2;rjindex++)
+		  {
+		   jindex=sqrc2c(isqr1,rjindex);
+		   if (jindex!=j1 && a[i][jindex][kmatch[0]]!=0)
+		   {
+		    rmapos(a,i,jindex,kmatch[0],poscell,krowcell,kcolcell,ksqrcell);
+            change=1;  
+           }
+          }
+         } 		  
+	     else if (newi!=i && poscell[newi][newj]==2 && a[newi][newj][k1]==1 && a[newi][newj][kmatch[1]]==1)
+	     {
+		  for(rjindex=0;rjindex<=2;rjindex++)
+		  {
+		   jindex=sqrc2c(isqr1,rjindex);
+		   if (jindex!=j1 && a[i][jindex][kmatch[1]]!=0)
+		   {
+		    rmapos(a,i,jindex,kmatch[1],poscell,krowcell,kcolcell,ksqrcell);
+            change=1;  
+           }
+          }
+         }
+        }
+       }		
+	  }
+	 }	
+	 if (change) break;
+	}
+   }
+   if (change) break;   
+  }
+  if (change) break;
+ }  
+ return change;
+} 
+
+function xyzwingcolsqr(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var i1,i2,j,k,k1,isqr1,isqr2,ii,jj,newi,newj,riindex,iindex,kmatch=new Array(2),match,change;
+ change=0;  
+ for(j=0;j<=8;j++)
+ {
+  for(i1=0;i1<=8;i1++)
+  {
+   isqr1=rc2sqr(i1,j);   
+   if (poscell[i1][j]==3)
+   {
+    for(i2=0;i2<=8;i2++)
+	{
+	 isqr2=rc2sqr(i2,j);
+     if (isqr1!=isqr2 && poscell[i2][j]==2)
+     {
+	  match=0;
+	  for(k=0;k<=8;k++)
+	  {
+	   if (a[i1][j][k]==1 && a[i2][j][k]==1) 
+	   {
+	    kmatch[match]=k;
+	    match++;
+	   }
+	   else if (a[i1][j][k]==1 && a[i2][j][k]==0)
+	   {
+	    k1=k;
+	   }
+	  } 
+	  if (match==2)
+	  { 
+	   for(ii=0;ii<=2;ii++)
+	   {
+	    for(jj=0;jj<=2;jj++)
+		{
+		 newi=sqrc2r(isqr1,ii);
+		 newj=sqrc2c(isqr1,jj);
+	     if (newj!=j && poscell[newi][newj]==2 && a[newi][newj][k1]==1 && a[newi][newj][kmatch[0]]==1)
+	     {
+		  for(riindex=0;riindex<=2;riindex++)
+		  {
+		   iindex=sqrc2r(isqr1,riindex);
+		   if (iindex!=i1 && a[iindex][j][kmatch[0]]!=0)
+		   {
+		    rmapos(a,iindex,j,kmatch[0],poscell,krowcell,kcolcell,ksqrcell);
+            change=1;  
+           }
+          }
+         } 		  
+	     else if (newj!=j && poscell[newi][newj]==2 && a[newi][newj][k1]==1 && a[newi][newj][kmatch[1]]==1)
+	     {
+		  for(riindex=0;riindex<=2;riindex++)
+		  {
+		   iindex=sqrc2r(isqr1,riindex);
+		   if (iindex!=i1 && a[iindex][j][kmatch[1]]!=0)
+		   {
+		    rmapos(a,iindex,j,kmatch[1],poscell,krowcell,kcolcell,ksqrcell);
+            change=1;  
+           }
+          }
+         }
+        }
+       }		
+	  }
+	 }	
+	 if (change) break;
+	}
+   }
+   if (change) break;   
+  }
+  if (change) break;
+ }  
+ return change;
+} 
+
+function lockcd(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var ksqrrow=new Array(9),ksqrcol=new Array(9),ksrno=new Array(9),kscno=new Array(9);
+ var kband=new Array(3),kstack=new Array(3),kbandfix=new Array(3),kstackfix=new Array(3);
+ var i,j,k,isqr,index,ihask,jhask,nsqr,nindex,iband,isqr1,isqr2,idx1,idx2,match,nidx,iindex,dumj,jj,jindex,dumi,ii,istack,change;
+ for(i=0;i<=8;i++)
+ {
+  ksqrrow[i]=new Array(9);
+  ksqrcol[i]=new Array(9);
+  ksrno[i]=new Array(9);
+  kscno[i]=new Array(9);
+  kband[i]=new Array(9);
+  kstack[i]=new Array(9);
+  kbandfix[i]=new Array(9);
+  kstackfix[i]=new Array(9);
+ }
+ for(i=0;i<=8;i++)
+ {
+  for(j=0;j<=8;j++)
+  {
+   ksqrrow[i][j]=new Array(9);
+   ksqrcol[i][j]=new Array(9);
+  } 
+ }
+ change=0; 
+ for (i=0;i<=8;i++)
+ {
+  for (j=0;j<=8;j++) 
+  {
+   ksrno[i][j]=0;
+   kscno[i][j]=0;
+   if (i<=2)
+   {
+    kband[i][j]=0;
+	kstack[i][j]=0;
+    kbandfix[i][j]=0;
+	kstackfix[i][j]=0;
+   }   
+   for (k=0;k<=8;k++) 
+   {
+    ksqrrow[i][j][k]=0;
+	ksqrcol[i][j][k]=0;
+   }
+  }
+ }
+ for (i=0;i<=8;i++)
+ {
+  for (j=0;j<=8;j++) 
+  {
+   isqr=rc2sqr(i,j);  
+   for (k=0;k<=8;k++) 
+   {
+    if (a[i][j][k]==1)
+	{ 
+     ksqrrow[isqr][i][k]=1;
+	 ksqrcol[isqr][j][k]=1;
+	 kband[band(i)][k]=1;
+	 kstack[stack(j)][k]=1;
+	}
+    else if (a[i][j][k]==2)
+	{
+	 kbandfix[band(i)][k]++;
+	 kstackfix[stack(j)][k]++;
+	}
+   }
+  }
+ }
+ for (isqr=0;isqr<=8;isqr++)
+ {
+  for (k=0;k<=8;k++) 
+  {
+   for (index=0;index<=8;index++) 
+   {
+    if (ksqrrow[isqr][index][k]==1)
+	{ 
+     ihask=index;
+	 ksrno[isqr][k]++;
+	} 
+    if (ksqrcol[isqr][index][k]==1)
+	{ 
+     jhask=index;
+	 kscno[isqr][k]++;
+	} 	
+   }
+   if (ksrno[isqr][k]==1)
+   {
+    for (j=0;j<=8;j++)
+    {
+     nsqr=rc2sqr(ihask,j);
+     if (nsqr!=isqr && a[ihask][j][k]==1)
+     {
+      change=1;
+	  rmapos(a,ihask,j,k,poscell,krowcell,kcolcell,ksqrcell);
+     }
+    }
+   }
+   if (kscno[isqr][k]==1)
+   {
+    for (i=0;i<=8;i++)
+    {
+     nsqr=rc2sqr(i,jhask);
+     if (nsqr!=isqr && a[i][jhask][k]==1)
+     {
+      change=1;
+	  rmapos(a,i,jhask,k,poscell,krowcell,kcolcell,ksqrcell);
+     }
+    }
+   }
+  }
+ }
+ 
+ for(iband=0;iband<=2;iband++)
+ {
+  for(k=0;k<=8;k++)
+  {
+   if (kbandfix[iband][k]==0)
+   {
+    for(idx1=0;idx1<=2;idx1++)
+    {
+	 isqr1=iband*3+idx1;
+	 for(idx2=idx1+1;idx2<=2;idx2++)
+	 {
+	  isqr2=iband*3+idx2;
+	  if (ksrno[isqr1][k]==2 && ksrno[isqr2][k]==2)
+	  {
+	   match=0;
+	   for(index=0;index<=8;index++)
+	   {
+	    if (ksqrrow[isqr1][index][k]+ksqrrow[isqr2][index][k]>0) match++;
+	   }
+	   if (match==2)
+	   {
+	    for(nidx=0;nidx<=2;nidx++)
+        {
+		 nsqr=iband*3+nidx;
+		 if (nsqr!=isqr1 && nsqr!=isqr2)
+		 {
+		  for(iindex=0;iindex<=8;iindex++)
+		  {
+		   if(ksqrrow[isqr1][iindex][k]+ksqrrow[isqr2][iindex][k]>0 && ksqrrow[nsqr][iindex][k]>0)
+		   {
+		    for(jj=0;jj<=2;jj++)
+            {
+			 dumj=sqrc2c(nsqr,jj);
+			 if(a[iindex][dumj][k]==1)
+             {
+			  change=1;
+			  rmapos(a,iindex,dumj,k,poscell,krowcell,kcolcell,ksqrcell);
+			 }			 
+			}			
+		   }
+		  }
+		 }
+		}		
+	   }
+	  }
+	 }
+	}	
+   }
+  }
+ }
+ for(istack=0;istack<=2;istack++)
+ {
+  for(k=0;k<=8;k++)
+  {
+   if (kstackfix[istack][k]==0)
+   {
+    for(idx1=0;idx1<=2;idx1++)
+    {
+	 isqr1=idx1*3+istack;
+	 for(idx2=idx1+1;idx2<=2;idx2++)
+	 {
+	  isqr2=idx2*3+istack;
+	  if (kscno[isqr1][k]==2 && kscno[isqr2][k]==2)
+	  {
+	   match=0;
+	   for(index=0;index<=8;index++)
+	   {
+	    if (ksqrcol[isqr1][index][k]+ksqrcol[isqr2][index][k]>0) match++;
+	   }
+	   if (match==2)
+	   {
+	    for(nidx=0;nidx<=2;nidx++)
+        {
+		 nsqr=nidx*3+istack;
+		 if (nsqr!=isqr1 && nsqr!=isqr2)
+		 {
+		  for(jindex=0;jindex<=8;jindex++)
+		  {
+		   if(ksqrcol[isqr1][jindex][k]+ksqrcol[isqr2][jindex][k]>0 && ksqrcol[nsqr][jindex][k]>0)
+		   {
+		    for(ii=0;ii<=2;ii++)
+            {
+			 dumi=sqrc2r(nsqr,ii);
+			 if(a[dumi][jindex][k]==1)
+             {
+			  change=1;
+			  rmapos(a,dumi,jindex,k,poscell,krowcell,kcolcell,ksqrcell);
+			 }			 
+			}			
+		   }
+		  }
+		 }
+		}		
+	   }
+	  }
+	 }
+	}	
+   }
+  }
+ }
+ return change; 
+} 
+
+function forced(a,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var change=0,i,j,k,isqr,ii,jj,icount,possum,origpossum,targetpossum,nchange=0;
+ var ipick=new Array(2),jpick=new Array(2),kpick=new Array(2);
+
+ origpossum=getpossum(poscell);
+ targetpossum=origpossum-10;
+ possum=getpossum(poscell);
+ for(i=0;i<=8;i++)
+ {
+  for(j=0;j<=8;j++)
+  {
+   if (poscell[i][j]==2)
+   {
+    icount=0;
+	for(k=0;k<=8;k++)
+    {
+	 if (a[i][j][k]==1)
+	 {
+	  ipick[icount]=i;
+	  jpick[icount]=j;
+	  kpick[icount]=k;
+	  icount++;	  
+	 }
+	}
+	change=forcechk(a,ipick,jpick,kpick,poscell,krowcell,kcolcell,ksqrcell);
+	possum=getpossum(poscell);
+    if (possum<targetpossum) break;
+   }
+  }
+  if (possum<targetpossum) break;
+ }
+ possum=getpossum(poscell);
+ if (possum>=targetpossum)
+ {
+  for(k=0;k<=8;k++)
+  {
+   for(i=0;i<=8;i++)
+   {
+    if (krowcell[i][k]==2)
+    {
+     icount=0;
+	 for(j=0;j<=8;j++)
+     {
+	  if (a[i][j][k]==1)
+	  {
+	   ipick[icount]=i;
+	   jpick[icount]=j;
+	   kpick[icount]=k;
+	   icount++;	  
+	  }
+	 }
+	 change=forcechk(a,ipick,jpick,kpick,poscell,krowcell,kcolcell,ksqrcell);
+	 possum=getpossum(poscell);
+     if (possum<targetpossum) break;
+    }
+   }
+   if (possum<targetpossum) break;
+  }
+ }
+ possum=getpossum(poscell);
+ if (possum>=targetpossum)
+ {
+  for(k=0;k<=8;k++)
+  {
+   for(j=0;j<=8;j++)
+   {
+    if (kcolcell[j][k]==2)
+    {
+     icount=0;
+	 for(i=0;i<=8;i++)
+     {
+	  if (a[i][j][k]==1)
+	  {
+	   ipick[icount]=i;
+	   jpick[icount]=j;
+	   kpick[icount]=k;
+	   icount++;  
+	  }
+	 }
+	 change=forcechk(a,ipick,jpick,kpick,poscell,krowcell,kcolcell,ksqrcell);
+	 possum=getpossum(poscell);
+     if (possum<targetpossum) break;
+    }
+   }
+   if (possum<targetpossum) break;
+  }
+ }
+ possum=getpossum(poscell);
+ if (possum>=targetpossum)
+ {
+  for(k=0;k<=8;k++)
+  {
+   for(isqr=0;isqr<=8;isqr++)
+   {
+    if (ksqrcell[isqr][k]==2)
+    {
+     icount=0;
+     for(ii=0;ii<=2;ii++)
+     {
+      for(jj=0;jj<=2;jj++)
+      {
+       i=sqrc2r(isqr,ii);
+       j=sqrc2c(isqr,jj);
+	   if (a[i][j][k]==1)
+	   {
+	    ipick[icount]=i;
+	    jpick[icount]=j;
+	    kpick[icount]=k;
+	    icount++;	  
+	   }
+	  }
+	 } 
+	 change=forcechk(a,ipick,jpick,kpick,poscell,krowcell,kcolcell,ksqrcell);
+	 possum=getpossum(poscell);
+     if (possum<targetpossum) break;
+    }
+   }
+   if (possum<targetpossum) break;
+  }
+ }
+ possum=getpossum(poscell);
+ if (possum<origpossum) change=1;
+ else change=0;
+ return change;
+}
+
+function forcechk(a,ipick,jpick,kpick,poscell,krowcell,kcolcell,ksqrcell)
+{
+ var atemp1=new Array(9),atemp2=new Array(9);
+ var postemp1=new Array(9),krowtemp1=new Array(9),kcoltemp1=new Array(9),ksqrtemp1=new Array(9);
+ var postemp2=new Array(9),krowtemp2=new Array(9),kcoltemp2=new Array(9),ksqrtemp2=new Array(9);
+ var change=0,i,j,k,dumchange,iwinlose;
+ for(i=0;i<=8;i++) 
+ {
+  atemp1[i]=new Array(9);
+  atemp2[i]=new Array(9);
+  postemp1[i]=new Array(9);
+  krowtemp1[i]=new Array(9);
+  kcoltemp1[i]=new Array(9);
+  ksqrtemp1[i]=new Array(9);
+  postemp2[i]=new Array(9);
+  krowtemp2[i]=new Array(9);
+  kcoltemp2[i]=new Array(9);
+  ksqrtemp2[i]=new Array(9);
+ }
+ for(i=0;i<=8;i++)
+ {
+  for(j=0;j<=8;j++)
+  {
+   atemp1[i][j]=new Array(9);
+   atemp2[i][j]=new Array(9);
+  }
+ }
+ for (i=0;i<=8;i++)
+ {
+  for (j=0;j<=8;j++) 
+  {
+   postemp1[i][j]=poscell[i][j];
+   krowtemp1[i][j]=krowcell[i][j];
+   kcoltemp1[i][j]=kcolcell[i][j];
+   ksqrtemp1[i][j]=ksqrcell[i][j];
+   postemp2[i][j]=poscell[i][j];
+   krowtemp2[i][j]=krowcell[i][j];
+   kcoltemp2[i][j]=kcolcell[i][j];
+   ksqrtemp2[i][j]=ksqrcell[i][j];   
+   for (k=0;k<=8;k++) 
+   {
+    atemp1[i][j][k]=a[i][j][k];
+    atemp2[i][j][k]=a[i][j][k];
+   }
+  }
+ }
+ gotacell(atemp1,ipick[0],jpick[0],kpick[0],postemp1,krowtemp1,kcoltemp1,ksqrtemp1);
+ do
+ {
+  dumchange=0; 
+  findcells(atemp1,postemp1,krowtemp1,kcoltemp1,ksqrtemp1);
+  iwinlose=chksolvedorerr(atemp1,postemp1,krowtemp1,kcoltemp1,ksqrtemp1);
+  if (iwinlose==0) dumchange=fullprocess(atemp1,postemp1,krowtemp1,kcoltemp1,ksqrtemp1);
+ } while (dumchange && iwinlose==0);	 
+ if (iwinlose==2)
+ {
+  gotacell(a,ipick[1],jpick[1],kpick[1],poscell,krowcell,kcolcell,ksqrcell);
+  change=1;
+ }
+ if (!change)
+ {
+  gotacell(atemp2,ipick[1],jpick[1],kpick[1],postemp2,krowtemp2,kcoltemp2,ksqrtemp2);
+  do
+  {
+   dumchange=0; 
+   findcells(atemp2,postemp2,krowtemp2,kcoltemp2,ksqrtemp2);
+   iwinlose=chksolvedorerr(atemp2,postemp2,krowtemp2,kcoltemp2,ksqrtemp2);
+   if (iwinlose==0) dumchange=fullprocess(atemp2,postemp2,krowtemp2,kcoltemp2,ksqrtemp2);
+  } while (dumchange && iwinlose==0);	 
+  if (iwinlose==2)
+  {
+   gotacell(a,ipick[0],jpick[0],kpick[0],poscell,krowcell,kcolcell,ksqrcell);
+   change=1;
+  }
+ }
+ if (!change)
+ {
+  for (i=0;i<=8;i++)
+  {
+   for (j=0;j<=8;j++) 
+   {
+    for (k=0;k<=8;k++) 
+    {
+     if(a[i][j][k]==1 && atemp1[i][j][k]==0 && atemp2[i][j][k]==0)
+	 {
+	  rmapos(a,i,j,k,poscell,krowcell,kcolcell,ksqrcell);
+	  change=1;
+	 }
+	 else if (a[i][j][k]!=2 && atemp1[i][j][k]==2 && atemp2[i][j][k]==2)
+     {
+	  gotacell(a,i,j,k,poscell,krowcell,kcolcell,ksqrcell); 
+	  change=1;
+	 }
+    }
+   }
+  }  
+ }
+ return change; 
+}
+ 
+function pickminpossimple(a,poscell,krowcell,kcolcell,ksqrcell,nadd,ipick,jpick,kpick,pickposs)
+{
+ var npmin,npick,i,j,k,kindex,isqr,sqrpick=new Array(9);
+ npmin=9;
+ for(i=0;i<=8;i++)
+ {
+  for(j=0;j<=8;j++)
+  {
+   if (poscell[i][j]>1 && poscell[i][j]<npmin) npmin=poscell[i][j];
+  }
+ }
+ npick=0;
+ while(npick<nadd)
+ {
+  for(i=0;i<=8;i++)
+  {
+   for(j=0;j<=8;j++)
+   {
+    if (poscell[i][j]==npmin && npick<nadd)
+	{
+	 isqr=rc2sqr(i,j);
+	 ipick[npick]=i;
+	 jpick[npick]=j;
+	 sqrpick[npick]=isqr;
+	 pickposs[npick]=npmin;
+	 kindex=0;
+	 for(k=0;k<=8;k++)
+	 {
+	  if(a[i][j][k]>0)
+	  {
+	   kpick[npick][kindex]=k;
+	   kindex++;
+	  } 	
+	 } 
+	 npick++;
+	}
+   } 
+  }
+  npmin++;
+ }
+}
+
+function pickminpos(a,poscell,krowcell,kcolcell,ksqrcell,nadd,ipick,jpick,kpick,pickposs)
+{
+ var npmin,npick,i,j,k,kindex,isqr,conflict,icount,sqrpick=new Array(9);
+ 
+ npmin=9;
+ for(i=0;i<=8;i++)
+ {
+  for(j=0;j<=8;j++)
+  {
+   if (poscell[i][j]>1 && poscell[i][j]<npmin) npmin=poscell[i][j];
+  }
+ }
+ npick=0;
+
+ while(npick<nadd)
+ {
+  for(i=0;i<=8;i++)
+  {
+   for(j=0;j<=8;j++)
+   {
+    if (poscell[i][j]==npmin && npick<nadd)
+	{
+	 isqr=rc2sqr(i,j);
+	 conflict=0;
+	 icount=0;
+	 while(conflict==0 && icount<npick)
+	 {
+	  if (i==ipick[icount] || j==jpick[icount] || isqr==sqrpick[icount]) conflict=1;
+	  icount++;
+	 }
+     if (conflict==0)
+     {
+	  ipick[npick]=i;
+	  jpick[npick]=j;
+	  sqrpick[npick]=isqr;
+	  pickposs[npick]=npmin;
+	  kindex=0;
+	  for(k=0;k<=8;k++)
+	  {
+	   if(a[i][j][k]>0)
+	   {
+	    kpick[npick][kindex]=k;
+		kindex++;
+	   } 	
+	  } 
+	  npick++;
+	 }	 
+	}
+   } 
+  }
+  npmin++;
+ }
+}
+
+function add4cells(a,poscell,krowcell,kcolcell,ksqrcell,addmethod)
+{
+ var atemp=new Array(9),asolution=new Array(9),ipick=new Array(9),jpick=new Array(9);
+ var postemp=new Array(9),krowtemp=new Array(9),kcoltemp=new Array(9),ksqrtemp=new Array(9);
+ var kpick=new Array(9),pickposs=new Array(9);
+ var nadd,i,j,k,counter,nsolution,m0,m1,m2,m3,isuccess,newisuccess,solvedorerr;
+
+ for(i=0;i<=8;i++)
+ {
+  atemp[i]=new Array(9);
+  asolution[i]=new Array(9);
+  postemp[i]=new Array(9);
+  krowtemp[i]=new Array(9);
+  kcoltemp[i]=new Array(9);
+  ksqrtemp[i]=new Array(9);
+  kpick[i]=new Array(9);
+}
+ for(i=0;i<=8;i++)
+ {
+  for(j=0;j<=8;j++)
+  {
+   atemp[i][j]=new Array(9);
+   asolution[i][j]=new Array(9);
+  }
+ }
+ for (i=0;i<=8;i++)
+ {
+  for (j=0;j<=8;j++) 
+  {
+   postemp[i][j]=poscell[i][j];
+   krowtemp[i][j]=krowcell[i][j];
+   kcoltemp[i][j]=kcolcell[i][j];
+   ksqrtemp[i][j]=ksqrcell[i][j];
+   for (k=0;k<=8;k++) 
+   {
+    atemp[i][j][k]=a[i][j][k];
+   }
+  }
+ }
+ isuccess=0;  
+ nadd=4;
+ switch (addmethod)
+ {
+  case 0:
+   pickminpossimple(atemp,postemp,krowtemp,kcoltemp,ksqrtemp,nadd,ipick,jpick,kpick,pickposs);
+   break;
+  case 1:
+   pickminpos(atemp,postemp,krowtemp,kcoltemp,ksqrtemp,nadd,ipick,jpick,kpick,pickposs);
+   break;
+  default:
+   pickminpossimple(atemp,postemp,krowtemp,kcoltemp,ksqrtemp,nadd,ipick,jpick,kpick,pickposs);    
+ }
+ nsolution=0;   //count the number of solutions
+ counter=0;   // count the number of possible outcomes
+
+ for(m0=0;m0<pickposs[0];m0++)
+ {
+  gotacell(atemp,ipick[0],jpick[0],kpick[0][m0],postemp,krowtemp,kcoltemp,ksqrtemp);
+  findcells(atemp,postemp,krowtemp,kcoltemp,ksqrtemp);
+  solvedorerr=chksolvedorerr(atemp,postemp,krowtemp,kcoltemp,ksqrtemp); 
+  if (solvedorerr!=2)
+  {  
+   for(m1=0;m1<pickposs[1];m1++)
+   {
+    if (atemp[ipick[1]][jpick[1]][kpick[1][m1]]==0) continue;
+    gotacell(atemp,ipick[1],jpick[1],kpick[1][m1],postemp,krowtemp,kcoltemp,ksqrtemp);
+    findcells(atemp,postemp,krowtemp,kcoltemp,ksqrtemp);
+    solvedorerr=chksolvedorerr(atemp,postemp,krowtemp,kcoltemp,ksqrtemp); 
+    if (solvedorerr!=2)  
+    {  
+     for(m2=0;m2<pickposs[2];m2++)
+     {
+      if (atemp[ipick[2]][jpick[2]][kpick[2][m2]]==0) continue;
+      gotacell(atemp,ipick[2],jpick[2],kpick[2][m2],postemp,krowtemp,kcoltemp,ksqrtemp);
+      findcells(atemp,postemp,krowtemp,kcoltemp,ksqrtemp);
+      solvedorerr=chksolvedorerr(atemp,postemp,krowtemp,kcoltemp,ksqrtemp); 
+      if (solvedorerr!=2)  
+      {
+	   for(m3=0;m3<pickposs[3];m3++)
+       {
+        if (atemp[ipick[3]][jpick[3]][kpick[3][m3]]==0) continue;  
+        gotacell(atemp,ipick[3],jpick[3],kpick[3][m3],postemp,krowtemp,kcoltemp,ksqrtemp);
+        do
+        {
+	     findcells(atemp,postemp,krowtemp,kcoltemp,ksqrtemp);
+         solvedorerr=chksolvedorerr(atemp,postemp,krowtemp,kcoltemp,ksqrtemp); 
+         ichange=0;
+         if (solvedorerr==1)
+         {
+		  nsolution++;
+		 }		 
+         else if (solvedorerr==0) 	   
+         {
+	      ichange=process(atemp,postemp,krowtemp,kcoltemp,ksqrtemp);
+	     }  	  
+	    } while(ichange && solvedorerr==0);      
+        if (solvedorerr!=2)
+        {
+         counter++; 
+        }
+        if (solvedorerr==0) 
+		{
+		 newisuccess=add4cells(atemp,postemp,krowtemp,kcoltemp,ksqrtemp,0); 
+         if (newisuccess==1 || newisuccess==2) 
+		 {
+		  nsolution++;
+		  solvedorerr=1;
+		  if (newisuccess==2)
+		  {
+		   nsolution++;
+		   counter++;
+		  } 	
+		 }
+		 else if (newisuccess==4)
+         {
+		  counter--;
+          solvedorerr=2;
+         }		  
+		} 
+		if (solvedorerr==1) 
+        {
+         for (i=0;i<=8;i++)
+         {
+          for (j=0;j<=8;j++) 
+          {
+           for (k=0;k<=8;k++) 
+           {
+            asolution[i][j][k]=atemp[i][j][k];
+           }
+          }
+         }
+		} 
+		if (nsolution>1) break;
+        for (i=0;i<=8;i++)
+        {
+         for (j=0;j<=8;j++) 
+         {
+          postemp[i][j]=poscell[i][j];
+          krowtemp[i][j]=krowcell[i][j];
+          kcoltemp[i][j]=kcolcell[i][j];
+          ksqrtemp[i][j]=ksqrcell[i][j];
+          for (k=0;k<=8;k++) 
+          {
+           atemp[i][j][k]=a[i][j][k];
+          }
+         }
+        }
+        gotacell(atemp,ipick[0],jpick[0],kpick[0][m0],postemp,krowtemp,kcoltemp,ksqrtemp); 
+        gotacell(atemp,ipick[1],jpick[1],kpick[1][m1],postemp,krowtemp,kcoltemp,ksqrtemp);
+        gotacell(atemp,ipick[2],jpick[2],kpick[2][m2],postemp,krowtemp,kcoltemp,ksqrtemp);
+       }
+	  } 
+	  if (nsolution>1) break;
+      for (i=0;i<=8;i++)
+      {
+       for (j=0;j<=8;j++) 
+       {
+        postemp[i][j]=poscell[i][j];
+        krowtemp[i][j]=krowcell[i][j];
+        kcoltemp[i][j]=kcolcell[i][j];
+        ksqrtemp[i][j]=ksqrcell[i][j];
+        for (k=0;k<=8;k++) 
+        {
+         atemp[i][j][k]=a[i][j][k];
+        }
+       }
+      }
+      gotacell(atemp,ipick[0],jpick[0],kpick[0][m0],postemp,krowtemp,kcoltemp,ksqrtemp); 
+      gotacell(atemp,ipick[1],jpick[1],kpick[1][m1],postemp,krowtemp,kcoltemp,ksqrtemp);
+     } 
+	} 
+	if (nsolution>1) break;
+    for (i=0;i<=8;i++)
+    {
+     for (j=0;j<=8;j++) 
+     {
+      postemp[i][j]=poscell[i][j];
+      krowtemp[i][j]=krowcell[i][j];
+      kcoltemp[i][j]=kcolcell[i][j];
+      ksqrtemp[i][j]=ksqrcell[i][j];
+      for (k=0;k<=8;k++) 
+      {
+       atemp[i][j][k]=a[i][j][k];
+      }
+     }
+    }
+    gotacell(atemp,ipick[0],jpick[0],kpick[0][m0],postemp,krowtemp,kcoltemp,ksqrtemp);
+   }
+  }
+  if (nsolution>1) break;
+  for (i=0;i<=8;i++)
+  {
+   for (j=0;j<=8;j++) 
+   {
+    postemp[i][j]=poscell[i][j];
+    krowtemp[i][j]=krowcell[i][j];
+    kcoltemp[i][j]=kcolcell[i][j];
+    ksqrtemp[i][j]=ksqrcell[i][j];
+    for (k=0;k<=8;k++) 
+    {
+     atemp[i][j][k]=a[i][j][k];
+    }
+   }
+  }
+ }
+ if (nsolution>=1)
+ {
+  for (i=0;i<=8;i++)
+  {
+   for (j=0;j<=8;j++) 
+   {
+    for (k=0;k<=8;k++) 
+    {
+     a[i][j][k]=asolution[i][j][k];
+    }
+   }
+  }
+  getworkingmatrix(a,poscell,krowcell,kcolcell,ksqrcell);
+ }
+ if (nsolution==0 && counter>0)
+ {
+  isuccess=0;           //  isuccess=0 :  solutions might exist, but not found yet
+ }
+ else if (nsolution==1 && counter==1)
+ {
+  isuccess=1;          //isuccess=1 : unique solution 
+ }
+ else if (nsolution>1)
+ {
+  isuccess=2;             //isuccess=2 : multiple solutions
+ } 
+ else if (nsolution==1 && counter>1) 
+ {
+  isuccess=3;           // isuccess=3 :  one solution found, but may be more solutions.
+ } 
+ else if (nsolution==0 && counter==0)
+ {
+  isuccess=4;           //  isuccess=4 :  puzzle has no solution (invalid puzzle)
+ }
+
+ return isuccess;
+}
+
+function validate_blanktable()
+{
+ var itemp=new Array(9),chkrow=new Array(9),chkcol=new Array(9),chksqr=new Array(9);
+ var rowfail=0,colfail=0,sqrfail=0,totalfail;
+ var msg,i,j,k,isqr,idx,ii,jj,fail;
+ for(i=0;i<9;i++)
+ {
+  itemp[i]=new Array(9);
+  chkrow[i]=new Array(9);
+  chkcol[i]=new Array(9);
+  chksqr[i]=new Array(9);
+ }
+ c_bgcolor();
+ fail=false; 
+ for(i=0;i<9;i++)
+ {
+  for(j=0;j<9;j++)
+  {
+   idx=9*i+j;
+   chkrow[i][j]=0;
+   chkcol[i][j]=0;
+   chksqr[i][j]=0;
+   itemp[i][j]=0;
+   if (document.getElementById('c'+idx).innerHTML.length==1 && (("123456789").indexOf(document.getElementById('c'+idx).innerHTML) > -1) && !pmark[idx]) 
+   {
+    itemp[i][j]=document.getElementById('c'+idx).innerHTML;
+   }
+   else if (document.getElementById('c'+idx).innerHTML.length!=0)
+   {
+    fail=true;
+    document.getElementById('cell'+idx).style.backgroundColor=hlcolor;    
+    document.getElementById("broadcastmsg").innerHTML = "This cell is not valid.  Please check.";
+	return false;
+   }
+   if (fail) break;	
+  }
+  if (fail) break;
+ }
+ if(!fail)
+ {
+  for(i=0;i<9;i++)
+  {
+   for(j=0;j<9;j++)
+   {
+    if (itemp[i][j]>0)
+	{
+     chkrow[i][itemp[i][j]-1]++;
+	 chkcol[j][itemp[i][j]-1]++;
+	 isqr=rc2sqr(i,j);
+	 chksqr[isqr][itemp[i][j]-1]++;
+	}
+   }
+  }
+  for(i=0;i<9;i++)
+  {
+   for(k=0;k<9;k++)
+   {
+    if(chkrow[i][k]>1)
+    {
+     for(j=0;j<9;j++)
+     {
+	  idx=9*i+j;
+      if (orig[idx]==0 && itemp[i][j]==k+1) 
+	  {
+	   document.getElementById('cell'+idx).style.backgroundColor=hlcolor;
+       rowfail++;
+      }	   
+	 }	
+    } 	 
+   }
+  }
+
+  for(j=0;j<9;j++)
+  {
+   for(k=0;k<9;k++)
+   {
+    if(chkcol[j][k]>1)
+    {
+     for(i=0;i<9;i++)
+     {
+	  idx=9*i+j;
+      if (orig[idx]==0 && itemp[i][j]==k+1) 
+	  {
+	   document.getElementById('cell'+idx).style.backgroundColor=hlcolor;
+	   colfail++;
+      }	  
+	 }	
+    } 	 
+   }
+  }
+
+  for(isqr=0;isqr<9;isqr++)
+  {
+   for(k=0;k<9;k++)
+   {
+    if(chksqr[isqr][k]>1)
+    {
+     for(ii=0;ii<3;ii++)
+     {
+	  for(jj=0;jj<3;jj++)
+	  {
+	   i=sqrc2r(isqr,ii);
+	   j=sqrc2c(isqr,jj);
+	   idx=9*i+j;
+       if (orig[idx]==0 && itemp[i][j]==k+1) 
+	   {
+	    document.getElementById('cell'+idx).style.backgroundColor= hlcolor;
+		sqrfail++;
+	   }	
+      }	  
+	 }	
+    } 	 
+   }
+  }
+  totalfail=rowfail+colfail+sqrfail;
+  if(totalfail>0)
+  {
+   msg="Please check ";
+   if (totalfail==1) msg+="this cell.";
+   else msg+="these cells.";
+   document.getElementById("broadcastmsg").innerHTML = msg;
+   return false;
+  }
+  else 
+  {
+   return true;
+  }
+ }
+}
+
+function solve_puzzle2()
+{
+ a=new Array(9);
+ itemp=new Array(9); 
+ var poscell=new Array(9),krowcell=new Array(9),kcolcell=new Array(9),ksqrcell=new Array(9);
+ var iresult=new Array(9),possarray=new Array(1000);
+ var i,j,k,idx,itrial,solvedorerr,change;
+ for(i=0;i<=8;i++) 
+ {
+  a[i]=new Array(9);
+  itemp[i]=new Array(9);
+  poscell[i]=new Array(9);
+  krowcell[i]=new Array(9);
+  kcolcell[i]=new Array(9);
+  ksqrcell[i]=new Array(9);
+  iresult[i]=new Array(9);
+ }
+ for(i=0;i<=8;i++)
+ {
+  for(j=0;j<=8;j++)
+  {
+   a[i][j]=new Array(9);
+   idx=9*i+j;
+   if ((("123456789").indexOf(document.getElementById('c'+idx).innerHTML) > -1)) 
+   {
+    itemp[i][j]=1*document.getElementById('c'+idx).innerHTML;
+   }
+   else
+   {
+    itemp[i][j]=0;
+   } 
+  }
+ }
+
+ for (i=0;i<=8;i++)
+ {
+  for (j=0;j<=8;j++) 
+  {
+   poscell[i][j]=9;
+   krowcell[i][j]=9;
+   kcolcell[i][j]=9;
+   ksqrcell[i][j]=9;
+   for (k=0;k<=8;k++) 
+   {
+    if(itemp[i][j]==k+1) 
+    {
+     a[i][j][k]=2;
+    }
+    else
+    {
+     a[i][j][k]=1;
+    } 
+   }
+  }
+ }
+ 
+ for (i=0;i<=8;i++)
+ {
+  for (j=0;j<=8;j++) 
+  {
+   for (k=0;k<=8;k++) 
+   {
+    if (a[i][j][k]==2) gotacell(a,i,j,k,poscell,krowcell,kcolcell,ksqrcell);
+   }
+  }
+ } 
+
+ fsolvedorerr=chksolvedorerr(a,poscell,krowcell,kcolcell,ksqrcell);
+ itrial=0;
+ if (!fsolvedorerr)
+ {
+  do
+  {
+   itrial++;
+   change=0;
+   findcells(a,poscell,krowcell,kcolcell,ksqrcell);
+   fsolvedorerr=chksolvedorerr(a,poscell,krowcell,kcolcell,ksqrcell);
+   if (fsolvedorerr==0) 
+   {
+    change=fullprocess(a,poscell,krowcell,kcolcell,ksqrcell);
+   } 
+  } while(!fsolvedorerr && change);
+ } 
+
+ if (fsolvedorerr==1) isuccess=1;
+ else if (!fsolvedorerr) 
+ {
+  possum=getpossum(poscell);
+  nadd=4;
+  if (possum> 120) addmethod=1;
+  else addmethod=0;
+  isuccess=add4cells(a,poscell,krowcell,kcolcell,ksqrcell,addmethod);
+  if (isuccess==1 || isuccess==2 || isuccess==3) fsolvedorerr=1;
+  else if (isuccess==4) fsolvedorerr=2;
+  else if (isuccess==0) fsolvedorerr=0;
+ }
+}
+
+function chkvalid()
+{
+ if (validate_blanktable())
+ {
+  solve_puzzle2();
+  if (fsolvedorerr==2)
+  {
+   alert("Your puzzle has no solution and therefore is invalid.  Please check your entries.");
+   return false;
+  } 
+  else if (fsolvedorerr==1)
+  {
+   var i,j,k,idx;
+   if (isuccess==1)
+   {
+    for(i=0;i<=80;i++)
+    {
+      if (document.getElementById('c'+i).innerHTML.length==1 && (("123456789").indexOf(document.getElementById('c'+i).innerHTML) > -1) && !pmark[i]) 
+  	    document.getElementById("clueval").value=document.getElementById("clueval").value+document.getElementById('c'+i).innerHTML;
+	  else document.getElementById("clueval").value=document.getElementById("clueval").value+"0";
+    }
+    for(i=0;i<=8;i++)
+    {
+     for(j=0;j<=8;j++)
+     {
+      idx=9*i+j;
+      for(k=0;k<=8;k++)
+      {
+       if(a[i][j][k]==2) 
+	   {
+	    document.getElementById('sltnval').value=document.getElementById('sltnval').value+(k+1);
+       }	  
+      }
+     }
+    }
+    return true;
+   }
+   else if (isuccess==2) 
+   {
+    alert("Your puzzle has multiple solutions and therefore is invalid.  Please check your entries.");
+    return false;
+   } 
+   else 
+   {
+    alert("Your puzzle is invalid.  Please check your entries.");
+	return false;
+   } 							   
+  }
+  else
+  {
+    alert("Your puzzle is invalid.  Please check your entries.");
+	return false;
+  }
+ }
+ else return false;
+}
+
+function clear_puzzle()
+{
+ var i;
+ var clear=confirm("Are you sure you want to clear all cells?");
+ if (clear==true)
+ {
+  step=0;
+  historylength=0;
+  if (rdstep>0) resetredo();
+  resetundo();
+  setcellselected(81);
+  for(var i=0;i<81;i++)
+  {
+   pmark[i]=false; 
+   related[i]=false;   
+    document.getElementById('c'+i).innerHTML="";
+    document.getElementById('cell'+i).style.backgroundColor="";
+    if (i!=cellselected) document.getElementById('cell'+i).style.borderColor="";
+    pmark[i]=false;
+	for (var j=1;j<10;j++) {
+	 document.getElementById('pmc'+i+'d'+j).style.display="";
+	}
+  }
+  document.getElementById("broadcastmsg").innerHTML = "Please Enter Your Puzzle.";  
+  countdg();
+ }
+}
+
+h = ' -->';

@@ -18,6 +18,16 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
   bool _solvedDialogShown = false;
 
   @override
+  void initState() {
+    super.initState();
+    // Reset pencil mode every time puzzle screen opens
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = context.read<PuzzleProvider>();
+      if (provider.pencilMode) provider.togglePencilMode();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colors = context.watch<ThemeProvider>().config;
 
@@ -74,11 +84,29 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
         builder: (context, provider, _) {
           final isSetup = provider.setupMode;
 
-          // Show solved dialog
-          if (provider.isSolved && !isSetup) {
+          // Show solved snackbar (not popup — let user see the solved grid)
+          if (provider.isSolved && !isSetup && !_solvedDialogShown) {
+            _solvedDialogShown = true;
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              _showSolvedDialog(context, colors);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('Puzzle solved!'),
+                  behavior: SnackBarBehavior.floating,
+                  duration: const Duration(seconds: 5),
+                  action: SnackBarAction(
+                    label: 'Undo',
+                    onPressed: () {
+                      _solvedDialogShown = false;
+                      provider.undo();
+                    },
+                  ),
+                ),
+              );
             });
+          }
+          // Reset flag when puzzle is no longer solved (e.g., after undo)
+          if (!provider.isSolved) {
+            _solvedDialogShown = false;
           }
 
           return Column(
