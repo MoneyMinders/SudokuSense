@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/hint_result.dart';
 import '../providers/puzzle_provider.dart';
+import '../providers/theme_provider.dart';
 import '../utils/constants.dart';
 
 class HintSheet extends StatelessWidget {
@@ -9,9 +10,11 @@ class HintSheet extends StatelessWidget {
 
   const HintSheet({super.key, required this.hint});
 
+  String _cellRef(int row, int col) => 'Row ${row + 1}, Col ${col + 1}';
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final colors = context.watch<ThemeProvider>().config;
     final diffColor = AppColors.difficultyColor(hint.difficulty);
     final diffLabel = AppColors.difficultyLabel(hint.difficulty);
 
@@ -27,71 +30,92 @@ class HintSheet extends StatelessWidget {
               child: Container(
                 width: 40,
                 height: 4,
-                margin: const EdgeInsets.only(bottom: 16),
+                margin: const EdgeInsets.only(bottom: 20),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
+                  color: colors.gridBorderThin,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
             ),
 
-            // Strategy name and difficulty
+            // Strategy name + difficulty badge
             Row(
               children: [
                 Expanded(
                   child: Text(
                     hint.strategyName,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontStyle: FontStyle.italic,
+                      fontFamily: 'Serif',
+                      fontWeight: FontWeight.w600,
+                      color: colors.fixedText,
                     ),
                   ),
                 ),
-                Chip(
-                  label: Text(
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: diffColor.withAlpha(40),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: diffColor.withAlpha(80)),
+                  ),
+                  child: Text(
                     diffLabel,
                     style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
+                      fontSize: 11,
+                      letterSpacing: 0.5,
+                      color: diffColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  backgroundColor: diffColor,
-                  side: BorderSide.none,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
                 ),
               ],
             ),
             const SizedBox(height: 16),
 
-            // Explanation
+            // Explanation in serif italic
             Text(
               hint.explanation,
-              style: theme.textTheme.bodyLarge,
+              style: TextStyle(
+                fontSize: 15,
+                fontStyle: FontStyle.italic,
+                fontFamily: 'Serif',
+                color: colors.userText,
+                height: 1.5,
+              ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
 
-            // Placements summary
+            // Placements
             if (hint.placements.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(
-                  'Will place: ${hint.placements.map((p) => '${p.value} at R${p.row + 1}C${p.col + 1}').join(', ')}',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.primary,
-                  ),
-                ),
+              _buildActionSection(
+                colors: colors,
+                icon: Icons.add_circle_outline,
+                iconColor: const Color(0xFF81C784),
+                label: 'Place',
+                items: hint.placements
+                    .map((p) => '${p.value} at ${_cellRef(p.row, p.col)}')
+                    .toList(),
               ),
 
-            // Eliminations summary
+            // Eliminations
             if (hint.eliminations.isNotEmpty)
               Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  'Will eliminate: ${hint.eliminations.map((e) => '${e.value} from R${e.row + 1}C${e.col + 1}').join(', ')}',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.error,
-                  ),
+                padding: EdgeInsets.only(
+                  top: hint.placements.isNotEmpty ? 8 : 0,
+                ),
+                child: _buildActionSection(
+                  colors: colors,
+                  icon: Icons.remove_circle_outline,
+                  iconColor: const Color(0xFFE57373),
+                  label: 'Remove',
+                  items: hint.eliminations
+                      .map((e) => '${e.value} from ${_cellRef(e.row, e.col)}')
+                      .toList(),
                 ),
               ),
 
@@ -101,25 +125,82 @@ class HintSheet extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Dismiss'),
+                  child: SizedBox(
+                    height: 48,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        context.read<PuzzleProvider>().applyHint(hint);
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: colors.fixedText,
+                        foregroundColor: colors.background,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Text('Apply'),
+                    ),
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
                 Expanded(
-                  child: FilledButton(
-                    onPressed: () {
-                      context.read<PuzzleProvider>().applyHint(hint);
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Apply Hint'),
+                  child: SizedBox(
+                    height: 48,
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: colors.gridBorderThin),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: Text(
+                        'Dismiss',
+                        style: TextStyle(color: colors.candidateText),
+                      ),
+                    ),
                   ),
                 ),
               ],
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildActionSection({
+    required ThemeConfig colors,
+    required IconData icon,
+    required Color iconColor,
+    required String label,
+    required List<String> items,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: colors.highlightedRegion,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 16, color: iconColor),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              '$label: ${items.join(', ')}',
+              style: TextStyle(
+                fontSize: 13,
+                color: colors.fixedText,
+                fontWeight: FontWeight.w500,
+                height: 1.4,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -8,7 +8,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final colors = context.watch<ThemeProvider>().config;
 
     return Scaffold(
       appBar: AppBar(
@@ -24,85 +24,137 @@ class HomeScreen extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
+            padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.grid_on_rounded,
-                  size: 64,
-                  color: theme.colorScheme.primary,
+                // Grid icon
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: colors.fixedText, width: 1.5),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.grid_on_rounded,
+                    size: 40,
+                    color: colors.fixedText,
+                  ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
+                // Serif italic title
                 Text(
                   'SudokuSense',
-                  style: theme.textTheme.headlineLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.primary,
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.w400,
+                    color: colors.fixedText,
+                    fontFamily: 'Serif',
+                    letterSpacing: 0.5,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Scan, solve, and learn',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
+                  'A quiet space for focus and clarity.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontStyle: FontStyle.italic,
+                    color: colors.candidateText,
+                    fontFamily: 'Serif',
                   ),
                 ),
-                const SizedBox(height: 64),
+                const SizedBox(height: 56),
+
+                // Primary action — Scan Page (most prominent)
                 SizedBox(
                   width: double.infinity,
                   height: 56,
-                  child: FilledButton.icon(
+                  child: ElevatedButton.icon(
                     onPressed: () => Navigator.pushNamed(context, '/camera'),
-                    icon: const Icon(Icons.camera_alt_rounded),
+                    icon: const Icon(Icons.camera_alt_outlined, size: 20),
                     label: const Text(
-                      'Scan Puzzle',
-                      style: TextStyle(fontSize: 16),
+                      'Scan Page',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colors.fixedText,
+                      foregroundColor: colors.background,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      elevation: 0,
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      context.read<PuzzleProvider>().startSetupMode();
-                      Navigator.pushNamed(context, '/puzzle');
-                    },
-                    icon: const Icon(Icons.grid_3x3_rounded),
-                    label: const Text(
-                      'Enter Manually',
-                      style: TextStyle(fontSize: 16),
+                const SizedBox(height: 12),
+
+                // Secondary actions row — Manual Entry & Random
+                Row(
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 52,
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            context.read<PuzzleProvider>().startSetupMode();
+                            Navigator.pushNamed(context, '/puzzle');
+                          },
+                          icon: Icon(Icons.edit_outlined, size: 16, color: colors.fixedText),
+                          label: Text(
+                            'Manual',
+                            style: TextStyle(fontSize: 14, color: colors.fixedText),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: colors.gridBorderThin),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: FilledButton.tonalIcon(
-                    onPressed: () {
-                      context.read<PuzzleProvider>().loadRandomPuzzle();
-                      Navigator.pushNamed(context, '/puzzle');
-                    },
-                    icon: const Icon(Icons.shuffle_rounded),
-                    label: const Text(
-                      'Random Puzzle',
-                      style: TextStyle(fontSize: 16),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: SizedBox(
+                        height: 52,
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            context.read<PuzzleProvider>().loadRandomPuzzle();
+                            Navigator.pushNamed(context, '/puzzle');
+                          },
+                          icon: Icon(Icons.shuffle_rounded, size: 16, color: colors.fixedText),
+                          label: Text(
+                            'Random',
+                            style: TextStyle(fontSize: 14, color: colors.fixedText),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: colors.gridBorderThin),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
+
+                // Tertiary — Library (text button, least prominent)
                 SizedBox(
                   width: double.infinity,
-                  height: 56,
-                  child: OutlinedButton.icon(
+                  height: 44,
+                  child: TextButton.icon(
                     onPressed: () => Navigator.pushNamed(context, '/saved'),
-                    icon: const Icon(Icons.bookmark_rounded),
-                    label: const Text(
+                    icon: Icon(Icons.bookmark_outline, size: 16, color: colors.candidateText),
+                    label: Text(
                       'Saved Puzzles',
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: colors.candidateText,
+                      ),
                     ),
                   ),
                 ),
@@ -122,6 +174,10 @@ class HomeScreen extends StatelessWidget {
       builder: (context) {
         return Consumer<ThemeProvider>(
           builder: (context, tp, _) {
+            final screenWidth = MediaQuery.of(context).size.width;
+            // 4 columns on wider screens, 3 on narrow
+            final crossCount = screenWidth > 360 ? 4 : 3;
+
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
               child: Column(
@@ -132,19 +188,27 @@ class HomeScreen extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 8, bottom: 16),
                     child: Text(
                       'Choose Theme',
-                      style: Theme.of(context).textTheme.titleLarge,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontStyle: FontStyle.italic,
+                        fontFamily: 'Serif',
+                        color: tp.config.fixedText,
+                      ),
                     ),
                   ),
-                  Wrap(
-                    spacing: 12,
-                    runSpacing: 12,
+                  GridView.count(
+                    crossAxisCount: crossCount,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    childAspectRatio: 0.85,
                     children: AppTheme.values.map((appTheme) {
                       final config = ThemeProvider.themes[appTheme]!;
                       final isSelected = tp.currentTheme == appTheme;
                       return GestureDetector(
                         onTap: () => themeProvider.setTheme(appTheme),
                         child: Container(
-                          width: 100,
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             color: config.surface,
@@ -157,10 +221,11 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                           child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Container(
-                                width: 32,
-                                height: 32,
+                                width: 28,
+                                height: 28,
                                 decoration: BoxDecoration(
                                   color: config.accent,
                                   shape: BoxShape.circle,
@@ -177,7 +242,7 @@ class HomeScreen extends StatelessWidget {
                                       : FontWeight.normal,
                                 ),
                                 textAlign: TextAlign.center,
-                                maxLines: 1,
+                                maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ],

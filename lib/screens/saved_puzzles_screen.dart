@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/puzzle_provider.dart';
+import '../providers/theme_provider.dart';
 import '../services/storage_service.dart';
 
 class SavedPuzzlesScreen extends StatefulWidget {
@@ -26,92 +27,194 @@ class _SavedPuzzlesScreenState extends State<SavedPuzzlesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final colors = context.watch<ThemeProvider>().config;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Saved Puzzles')),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        title: Text(
+          'Library',
+          style: TextStyle(
+            fontStyle: FontStyle.italic,
+            fontFamily: 'Serif',
+            color: colors.fixedText,
+          ),
+        ),
+        iconTheme: IconThemeData(color: colors.fixedText),
+      ),
       body: _puzzles == null
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(
+              child: CircularProgressIndicator(
+                color: colors.accent,
+                strokeWidth: 2,
+              ),
+            )
           : _puzzles!.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.bookmark_border_rounded,
-                        size: 64,
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'No saved puzzles yet',
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Tap the save icon while solving to save your progress',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                )
-              : ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: _puzzles!.length,
-                  itemBuilder: (context, index) {
-                    final puzzle = _puzzles![index];
-                    final progressPct = (puzzle.progress * 100).round();
+              ? _buildEmptyState(colors)
+              : _buildPuzzleList(colors),
+    );
+  }
 
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        leading: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            SizedBox(
-                              width: 48,
-                              height: 48,
-                              child: CircularProgressIndicator(
-                                value: puzzle.progress,
-                                strokeWidth: 3,
-                                backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                              ),
-                            ),
-                            Text(
-                              '$progressPct%',
-                              style: const TextStyle(fontSize: 11),
-                            ),
-                          ],
-                        ),
-                        title: Text(puzzle.name),
-                        subtitle: Text(
-                          _formatDate(puzzle.savedAt),
-                          style: theme.textTheme.bodySmall,
-                        ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete_outline),
-                          onPressed: () async {
-                            await StorageService().delete(puzzle.id);
-                            _load();
-                          },
-                        ),
-                        onTap: () {
-                          context.read<PuzzleProvider>().loadSavedPuzzle(puzzle);
-                          Navigator.pushReplacementNamed(context, '/puzzle');
-                        },
-                      ),
-                    );
+  Widget _buildEmptyState(ThemeConfig colors) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.bookmark_border_rounded,
+              size: 56,
+              color: colors.candidateText,
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'No saved puzzles yet',
+              style: TextStyle(
+                fontSize: 18,
+                fontStyle: FontStyle.italic,
+                fontFamily: 'Serif',
+                color: colors.fixedText,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Tap the save icon while solving to save your progress.',
+              style: TextStyle(
+                fontSize: 14,
+                fontStyle: FontStyle.italic,
+                fontFamily: 'Serif',
+                color: colors.candidateText,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPuzzleList(ThemeConfig colors) {
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: _puzzles!.length,
+      itemBuilder: (context, index) {
+        final puzzle = _puzzles![index];
+        final progressPct = (puzzle.progress * 100).round();
+
+        return Dismissible(
+          key: Key(puzzle.id),
+          direction: DismissDirection.endToStart,
+          background: Container(
+            alignment: Alignment.centerRight,
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.only(right: 24),
+            decoration: BoxDecoration(
+              color: colors.errorBg,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(Icons.delete_outline, color: colors.fixedText),
+          ),
+          onDismissed: (_) {
+            final removed = _puzzles!.removeAt(index);
+            setState(() {});
+            StorageService().delete(removed.id);
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('${removed.name} deleted'),
+                behavior: SnackBarBehavior.floating,
+                action: SnackBarAction(
+                  label: 'Undo',
+                  onPressed: () async {
+                    await StorageService().save(removed);
+                    _load();
                   },
                 ),
+              ),
+            );
+          },
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(
+              color: colors.surface,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: colors.gridBorderThin, width: 1),
+            ),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(14),
+              onTap: () {
+                context.read<PuzzleProvider>().loadSavedPuzzle(puzzle);
+                Navigator.pushReplacementNamed(context, '/puzzle');
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
+                child: Row(
+                  children: [
+                    // Progress ring
+                    SizedBox(
+                      width: 48,
+                      height: 48,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          CircularProgressIndicator(
+                            value: puzzle.progress,
+                            strokeWidth: 2.5,
+                            backgroundColor: colors.gridBorderThin,
+                            color: colors.accent,
+                          ),
+                          Text(
+                            '$progressPct%',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: colors.candidateText,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    // Info
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            puzzle.name,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: colors.fixedText,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            _formatDate(puzzle.savedAt),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: colors.candidateText,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Arrow
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      color: colors.candidateText,
+                      size: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 

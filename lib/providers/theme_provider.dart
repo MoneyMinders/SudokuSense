@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../services/storage_service.dart';
 
 enum AppTheme {
+  kindlePaper,
   midnightPurple,
   draculaPink,
   monokaiGold,
@@ -47,23 +50,44 @@ class ThemeConfig {
 }
 
 class ThemeProvider extends ChangeNotifier {
-  AppTheme _currentTheme = AppTheme.midnightPurple;
+  AppTheme _currentTheme = AppTheme.kindlePaper;
 
   AppTheme get currentTheme => _currentTheme;
 
+  /// Load the persisted theme from device storage.
+  Future<void> loadSavedTheme() async {
+    final name = await StorageService().loadTheme();
+    if (name != null) {
+      final match = AppTheme.values.where(
+        (t) => themes[t]!.name == name,
+      );
+      if (match.isNotEmpty) {
+        _currentTheme = match.first;
+        notifyListeners();
+      }
+    }
+  }
+
   void setTheme(AppTheme theme) {
     _currentTheme = theme;
+    StorageService().saveTheme(themes[theme]!.name);
     notifyListeners();
   }
 
   ThemeConfig get config => themes[_currentTheme]!;
 
+  bool get isLightTheme => _currentTheme == AppTheme.kindlePaper;
+
   ThemeData get themeData {
     final c = config;
+    final brightness = isLightTheme ? Brightness.light : Brightness.dark;
+    final roundedShape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(16),
+    );
     return ThemeData(
       colorScheme: ColorScheme.fromSeed(
         seedColor: c.accent,
-        brightness: Brightness.dark,
+        brightness: brightness,
       ),
       useMaterial3: true,
       scaffoldBackgroundColor: c.background,
@@ -72,10 +96,49 @@ class ThemeProvider extends ChangeNotifier {
         elevation: 0,
         backgroundColor: c.surface,
       ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(shape: roundedShape),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(shape: roundedShape),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(shape: roundedShape),
+      ),
+      cardTheme: CardThemeData(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+      bottomSheetTheme: const BottomSheetThemeData(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+      ),
     );
   }
 
+  ThemeMode get themeMode =>
+      isLightTheme ? ThemeMode.light : ThemeMode.dark;
+
   static const Map<AppTheme, ThemeConfig> themes = {
+    // Warm paper theme — like solving on a newspaper/Kindle
+    AppTheme.kindlePaper: ThemeConfig(
+      name: 'Paper',
+      accent: Color(0xFF3C3C3C),       // Dark charcoal ink
+      accentDim: Color(0xFF8A8A84),    // Muted gray
+      surface: Color(0xFFD5D0C8),      // Warm gray paper
+      background: Color(0xFFCCC7BF),   // Muted warm gray — like the mockup
+      cellBg: Color(0xFFDAD5CD),       // Slightly lighter for cells
+      selectedCell: Color(0xFFC0BAB0),  // Subtle darker highlight
+      highlightedRegion: Color(0xFFD0CBC3), // Very subtle tint
+      gridBorderThick: Color(0xFF2C2C2C),  // Near-black, like newspaper lines
+      gridBorderThin: Color(0xFF706B65),   // Darker — clearly visible cell borders
+      fixedText: Color(0xFF1A1A1A),     // Near-black — printed ink
+      userText: Color(0xFF4A4A4A),      // Dark gray — pencil marks
+      candidateText: Color(0xFF9A9590), // Faded pencil
+      errorBg: Color(0x55C0392B),       // Visible red tint for errors
+      hintHighlight: Color(0x33558B2F), // Soft green for hints
+    ),
+
     // Inspired by VS Code / Cursor dark themes
     AppTheme.midnightPurple: ThemeConfig(
       name: 'Midnight Purple',

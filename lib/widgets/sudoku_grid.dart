@@ -27,84 +27,149 @@ class SudokuGrid extends StatelessWidget {
         return Center(
           child: AspectRatio(
             aspectRatio: 1,
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: colors.gridBorderThick,
-                  width: GridConstants.thickBorder,
-                ),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(2),
-                child: Column(
-                  children: List.generate(9, (row) {
-                    return Expanded(
-                      child: Row(
-                        children: List.generate(9, (col) {
-                          final cell = board.getCell(row, col);
-                          final isSelected =
-                              row == selectedRow && col == selectedCol;
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final gridSize = constraints.maxWidth;
+                final cellSize = gridSize / 9;
 
-                          bool isHighlighted = false;
-                          if (selectedRow != null && selectedCol != null) {
-                            isHighlighted = row == selectedRow ||
-                                col == selectedCol ||
-                                Board.boxIndexOf(row, col) ==
-                                    Board.boxIndexOf(
-                                        selectedRow, selectedCol);
-                          }
+                return Container(
+                  width: gridSize,
+                  height: gridSize,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: colors.gridBorderThick,
+                      width: GridConstants.thickBorder,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Stack(
+                      children: [
+                        // Cell backgrounds and content
+                        Column(
+                          children: List.generate(9, (row) {
+                            return Expanded(
+                              child: Row(
+                                children: List.generate(9, (col) {
+                                  final cell = board.getCell(row, col);
+                                  final isSelected =
+                                      row == selectedRow && col == selectedCol;
 
-                          final isHinted = hintCells.contains((row, col));
+                                  // Highlight same row/col/box
+                                  bool isHighlighted = false;
+                                  if (selectedRow != null &&
+                                      selectedCol != null) {
+                                    isHighlighted = row == selectedRow ||
+                                        col == selectedCol ||
+                                        Board.boxIndexOf(row, col) ==
+                                            Board.boxIndexOf(
+                                                selectedRow, selectedCol);
+                                  }
 
-                          final rightBorder = (col + 1) % 3 == 0 && col < 8
-                              ? GridConstants.thickBorder
-                              : GridConstants.thinBorder;
-                          final bottomBorder = (row + 1) % 3 == 0 && row < 8
-                              ? GridConstants.thickBorder
-                              : GridConstants.thinBorder;
+                                  // Highlight cells with same number as selected cell
+                                  bool isSameNumber = false;
+                                  if (selectedRow != null && selectedCol != null) {
+                                    final selectedCell = board.getCell(selectedRow, selectedCol);
+                                    if (selectedCell.value != null &&
+                                        cell.value != null &&
+                                        cell.value == selectedCell.value &&
+                                        !isSelected) {
+                                      isSameNumber = true;
+                                    }
+                                  }
 
-                          return Expanded(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  right: BorderSide(
-                                    color: rightBorder ==
-                                            GridConstants.thickBorder
-                                        ? colors.gridBorderThick
-                                        : colors.gridBorderThin,
-                                    width: rightBorder,
-                                  ),
-                                  bottom: BorderSide(
-                                    color: bottomBorder ==
-                                            GridConstants.thickBorder
-                                        ? colors.gridBorderThick
-                                        : colors.gridBorderThin,
-                                    width: bottomBorder,
-                                  ),
-                                ),
+                                  final isHinted =
+                                      hintCells.contains((row, col));
+
+                                  return Expanded(
+                                    child: CellWidget(
+                                      cell: cell,
+                                      isSelected: isSelected,
+                                      isHighlighted:
+                                          isHighlighted && !isSelected,
+                                      isSameNumber: isSameNumber,
+                                      isHinted: isHinted,
+                                      onTap: () =>
+                                          provider.selectCell(row, col),
+                                    ),
+                                  );
+                                }),
                               ),
-                              child: CellWidget(
-                                cell: cell,
-                                isSelected: isSelected,
-                                isHighlighted:
-                                    isHighlighted && !isSelected,
-                                isHinted: isHinted,
-                                onTap: () =>
-                                    provider.selectCell(row, col),
-                              ),
+                            );
+                          }),
+                        ),
+                        // Grid lines drawn on top
+                        IgnorePointer(
+                          child: CustomPaint(
+                            size: Size(gridSize, gridSize),
+                            painter: _GridPainter(
+                              thinColor: colors.gridBorderThin,
+                              thickColor: colors.gridBorderThick,
+                              thinWidth: GridConstants.thinBorder,
+                              thickWidth: GridConstants.thickBorder,
                             ),
-                          );
-                        }),
-                      ),
-                    );
-                  }),
-                ),
-              ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         );
       },
     );
+  }
+}
+
+class _GridPainter extends CustomPainter {
+  final Color thinColor;
+  final Color thickColor;
+  final double thinWidth;
+  final double thickWidth;
+
+  _GridPainter({
+    required this.thinColor,
+    required this.thickColor,
+    required this.thinWidth,
+    required this.thickWidth,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final thinPaint = Paint()
+      ..color = thinColor
+      ..strokeWidth = thinWidth
+      ..style = PaintingStyle.stroke;
+
+    final thickPaint = Paint()
+      ..color = thickColor
+      ..strokeWidth = thickWidth
+      ..style = PaintingStyle.stroke;
+
+    final cellW = size.width / 9;
+    final cellH = size.height / 9;
+
+    // Draw horizontal lines
+    for (int i = 1; i < 9; i++) {
+      final y = i * cellH;
+      final paint = (i % 3 == 0) ? thickPaint : thinPaint;
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
+    }
+
+    // Draw vertical lines
+    for (int i = 1; i < 9; i++) {
+      final x = i * cellW;
+      final paint = (i % 3 == 0) ? thickPaint : thinPaint;
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _GridPainter oldDelegate) {
+    return oldDelegate.thinColor != thinColor ||
+        oldDelegate.thickColor != thickColor;
   }
 }

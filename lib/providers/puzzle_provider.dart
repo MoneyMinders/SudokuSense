@@ -26,6 +26,7 @@ class PuzzleProvider extends ChangeNotifier {
   int? _selectedCol;
   bool _pencilMode = false;
   bool _setupMode = false;
+  bool _setupFromOcr = false;
   int? _digitFirst; // "Select Digit First" mode: selected digit to place
   final List<BoardState> _history = [];
   final List<BoardState> _redoStack = [];
@@ -41,6 +42,7 @@ class PuzzleProvider extends ChangeNotifier {
   int? get selectedCol => _selectedCol;
   bool get pencilMode => _pencilMode;
   bool get setupMode => _setupMode;
+  bool get setupFromOcr => _setupFromOcr;
   int? get digitFirst => _digitFirst;
   HintResult? get activeHint => _activeHint;
   bool get canUndo => _history.isNotEmpty;
@@ -65,7 +67,7 @@ class PuzzleProvider extends ChangeNotifier {
   // ---------------------------------------------------------------------------
 
   /// Enter setup mode for manual puzzle entry.
-  void startSetupMode() {
+  void startSetupMode({bool fromOcr = false}) {
     _board = Board.empty();
     _solution = null;
     _solutionCount = null;
@@ -75,12 +77,25 @@ class PuzzleProvider extends ChangeNotifier {
     _selectedCol = null;
     _pencilMode = false;
     _setupMode = true;
+    _setupFromOcr = fromOcr;
     notifyListeners();
   }
 
   /// Finish setup mode: mark all entered values as fixed, solve, calculate candidates.
   /// Returns null on success, or an error message string.
   String? finishSetup() {
+    // Count how many clues were entered.
+    int clueCount = 0;
+    for (int r = 0; r < 9; r++) {
+      for (int c = 0; c < 9; c++) {
+        if (_board.getCell(r, c).value != null) clueCount++;
+      }
+    }
+
+    if (clueCount == 0) {
+      return 'Enter at least some clues before starting.';
+    }
+
     // Mark all entered values as fixed clues.
     for (int r = 0; r < 9; r++) {
       for (int c = 0; c < 9; c++) {
@@ -109,13 +124,38 @@ class PuzzleProvider extends ChangeNotifier {
     }
 
     _setupMode = false;
-    CandidateService().calculateAllCandidates(_board);
+    _originalGrid = _board.toGrid();
+    _currentPuzzleId = DateTime.now().millisecondsSinceEpoch.toString();
     notifyListeners();
-
-    if (result.solutionCount >= 2) {
-      return 'Warning: Multiple solutions detected — not a standard Sudoku.';
-    }
     return null;
+  }
+
+  /// Return to setup mode so the user can correct clues (e.g. after OCR).
+  /// Un-fixes all clue cells so they become editable again.
+  void editClues() {
+    _setupMode = true;
+    _solution = null;
+    _solutionCount = null;
+    _history.clear();
+    _redoStack.clear();
+    _activeHint = null;
+    _pencilMode = false;
+
+    // Un-fix all cells and clear user entries (keep only clue values).
+    for (int r = 0; r < 9; r++) {
+      for (int c = 0; c < 9; c++) {
+        final cell = _board.getCell(r, c);
+        if (cell.isFixed) {
+          cell.isFixed = false;
+        } else {
+          // Clear any user-entered values and pencil marks.
+          cell.value = null;
+          cell.candidates.clear();
+          cell.isError = false;
+        }
+      }
+    }
+    notifyListeners();
   }
 
   /// Load a puzzle from an int grid where 0 = empty.
@@ -136,8 +176,8 @@ class PuzzleProvider extends ChangeNotifier {
     _solution = result.solution;
     _solutionCount = result.solutionCount;
 
-    // Calculate candidates for all empty cells.
-    CandidateService().calculateAllCandidates(_board);
+    // Don't auto-show candidates to user. The hint engine calculates
+    // them internally when needed. Users add pencil marks manually.
 
     notifyListeners();
   }
@@ -195,13 +235,10 @@ class PuzzleProvider extends ChangeNotifier {
       cell.isError = (solutionValue != null && value != solutionValue);
     }
 
-    // Recalculate candidates for all empty cells since a new value was placed.
-    CandidateService().calculateAllCandidates(_board);
-
     notifyListeners();
   }
 
-  /// Toggle a single candidate in the selected cell.
+  /// Toggle a single candidate in the selected cell (pencil mode).
   void toggleCandidate(int value) {
     if (_selectedRow == null || _selectedCol == null) return;
     final row = _selectedRow!;
@@ -230,9 +267,6 @@ class PuzzleProvider extends ChangeNotifier {
     cell.value = null;
     cell.isError = false;
 
-    // Recalculate candidates for all empty cells.
-    CandidateService().calculateAllCandidates(_board);
-
     notifyListeners();
   }
 
@@ -242,6 +276,27 @@ class PuzzleProvider extends ChangeNotifier {
 
   void togglePencilMode() {
     _pencilMode = !_pencilMode;
+    notifyListeners();
+  }
+
+  /// Fill all empty cells with their possible candidates (user-triggered).
+  void fillPossibilities() {
+    _pushHistory();
+    CandidateService().calculateAllCandidates(_board);
+    notifyListeners();
+  }
+
+  /// Clear all pencil marks from the board.
+  void clearPencilMarks() {
+    _pushHistory();
+    for (int r = 0; r < 9; r++) {
+      for (int c = 0; c < 9; c++) {
+        final cell = _board.getCell(r, c);
+        if (cell.value == null) {
+          cell.candidates.clear();
+        }
+      }
+    }
     notifyListeners();
   }
 
@@ -275,12 +330,7 @@ class PuzzleProvider extends ChangeNotifier {
       cell.candidates.remove(elim.value);
     }
 
-    // Only recalculate candidates if placements were made (new values affect
-    // peer candidates). Skip recalculation for elimination-only hints to
-    // preserve the logical deductions.
-    if (hint.placements.isNotEmpty) {
-      CandidateService().calculateAllCandidates(_board);
-    }
+    // Don't auto-fill candidates on the user's board.
 
     _activeHint = null;
     notifyListeners();
@@ -411,20 +461,16 @@ class PuzzleProvider extends ChangeNotifier {
   // Random puzzle
   // ---------------------------------------------------------------------------
 
-  /// Generate a random solvable Sudoku puzzle.
+  /// Generate a random solvable Sudoku puzzle with a unique solution.
+  /// Algorithm: fill grid randomly, then remove cells while ensuring uniqueness.
   void loadRandomPuzzle() {
-    // Start with empty board, solve it, then remove cells
-    final fullBoard = Board.empty();
-    final solver = SolverService();
-
-    // Solve an empty board to get a random full solution
-    final result = solver.solve(fullBoard);
-    if (result.solution == null) return;
-
-    final grid = result.solution!.toGrid();
     final random = Random();
 
-    // Remove ~45 cells to create puzzle (leaves ~36 clues)
+    // Step 1: Generate a fully solved grid using randomized backtracking
+    final grid = List.generate(9, (_) => List.filled(9, 0));
+    _fillGrid(grid, random);
+
+    // Step 2: Remove cells one by one, ensuring unique solution each time
     final positions = <(int, int)>[];
     for (int r = 0; r < 9; r++) {
       for (int c = 0; c < 9; c++) {
@@ -433,12 +479,75 @@ class PuzzleProvider extends ChangeNotifier {
     }
     positions.shuffle(random);
 
-    for (int i = 0; i < 45; i++) {
-      final (r, c) = positions[i];
+    int attempts = 5; // Higher = harder puzzle (more removals attempted)
+    for (final (r, c) in positions) {
+      if (attempts <= 0) break;
+      if (grid[r][c] == 0) continue;
+
+      final backup = grid[r][c];
       grid[r][c] = 0;
+
+      // Check if puzzle still has exactly 1 solution
+      final testBoard = Board.fromGrid(grid);
+      final result = SolverService().solve(testBoard);
+      if (result.solutionCount != 1) {
+        // Multiple or zero solutions — put it back
+        grid[r][c] = backup;
+        attempts--;
+      }
     }
 
     loadPuzzle(grid);
+  }
+
+  /// Fill a 9x9 grid with valid random numbers using backtracking.
+  bool _fillGrid(List<List<int>> grid, Random random) {
+    for (int i = 0; i < 81; i++) {
+      final row = i ~/ 9;
+      final col = i % 9;
+      if (grid[row][col] == 0) {
+        final numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+        numbers.shuffle(random);
+        for (final value in numbers) {
+          if (_canPlace(grid, row, col, value)) {
+            grid[row][col] = value;
+            if (_isGridFull(grid) || _fillGrid(grid, random)) {
+              return true;
+            }
+          }
+        }
+        grid[row][col] = 0;
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool _canPlace(List<List<int>> grid, int row, int col, int value) {
+    // Check row
+    if (grid[row].contains(value)) return false;
+    // Check column
+    for (int r = 0; r < 9; r++) {
+      if (grid[r][col] == value) return false;
+    }
+    // Check 3x3 box
+    final boxRow = (row ~/ 3) * 3;
+    final boxCol = (col ~/ 3) * 3;
+    for (int r = boxRow; r < boxRow + 3; r++) {
+      for (int c = boxCol; c < boxCol + 3; c++) {
+        if (grid[r][c] == value) return false;
+      }
+    }
+    return true;
+  }
+
+  bool _isGridFull(List<List<int>> grid) {
+    for (int r = 0; r < 9; r++) {
+      for (int c = 0; c < 9; c++) {
+        if (grid[r][c] == 0) return false;
+      }
+    }
+    return true;
   }
 
   // ---------------------------------------------------------------------------

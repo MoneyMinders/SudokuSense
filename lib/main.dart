@@ -4,12 +4,16 @@ import 'providers/puzzle_provider.dart';
 import 'providers/theme_provider.dart';
 import 'app.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final themeProvider = ThemeProvider();
+  await themeProvider.loadSavedTheme();
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => PuzzleProvider()),
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider.value(value: themeProvider),
       ],
       child: const SudokuSenseApp(),
     ),

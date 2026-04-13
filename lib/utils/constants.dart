@@ -44,6 +44,6 @@ class AppColors {
 class GridConstants {
   static const int gridSize = 9;
   static const int boxSize = 3;
-  static const double thickBorder = 2.0;
-  static const double thinBorder = 0.5;
+  static const double thickBorder = 2.5;
+  static const double thinBorder = 1.5;
 }

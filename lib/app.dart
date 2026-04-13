@@ -16,8 +16,8 @@ class SudokuSenseApp extends StatelessWidget {
         return MaterialApp(
           title: 'SudokuSense',
           debugShowCheckedModeBanner: false,
-          themeMode: ThemeMode.dark,
-          darkTheme: themeProvider.themeData,
+          themeMode: themeProvider.themeMode,
+          darkTheme: themeProvider.isLightTheme ? null : themeProvider.themeData,
           theme: themeProvider.themeData,
           initialRoute: '/',
           routes: {

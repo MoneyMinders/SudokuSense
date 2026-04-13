@@ -52,11 +52,12 @@ class HintService {
   /// Try each strategy in order of difficulty.
   /// Returns the first hint found, or null if no logical step is available.
   HintResult? findHint(Board board) {
-    // Ensure candidates are up to date before scanning.
-    CandidateService().calculateAllCandidates(board);
+    // Work on a deep copy so we don't mutate the user's board with candidates.
+    final workBoard = board.deepCopy();
+    CandidateService().calculateAllCandidates(workBoard);
 
     for (final strategy in _strategies) {
-      final result = strategy.apply(board);
+      final result = strategy.apply(workBoard);
       if (result != null) return result;
     }
     return null;
