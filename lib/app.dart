@@ -11,17 +11,26 @@ class SudokuSenseApp extends StatelessWidget {
     return MaterialApp(
       title: 'SudokuSense',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
+      themeMode: ThemeMode.dark,
+      darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF1A237E),
-          brightness: Brightness.light,
+          seedColor: const Color(0xFF9FA8DA), // Soft indigo pastel
+          brightness: Brightness.dark,
         ),
         useMaterial3: true,
-        scaffoldBackgroundColor: Colors.white,
+        scaffoldBackgroundColor: const Color(0xFF121212),
         appBarTheme: const AppBarTheme(
           centerTitle: true,
           elevation: 0,
+          backgroundColor: Color(0xFF1E1E1E),
         ),
+      ),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF9FA8DA),
+          brightness: Brightness.light,
+        ),
+        useMaterial3: true,
       ),
       initialRoute: '/',
       routes: {

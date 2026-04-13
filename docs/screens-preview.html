@@ -7,30 +7,32 @@
 <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
 <style>
   :root {
-    --primary: #1A237E;
-    --primary-light: #3949AB;
-    --primary-container: #E8EAF6;
-    --on-primary: #FFFFFF;
-    --surface: #FAFAFA;
-    --surface-variant: #E7E0EC;
-    --on-surface: #1C1B1F;
-    --on-surface-variant: #49454F;
-    --outline: #79747E;
-    --outline-variant: #CAC4D0;
-    --tertiary: #7D5260;
-    --error: #B3261E;
-    --success: #2E7D32;
-    --highlight: #BBDEFB;
-    --highlight-soft: #E3F2FD;
-    --user-entry: #1565C0;
-    --candidate-color: #78909C;
+    --bg: #121212;
+    --surface: #1E1E2E;
+    --card: #2A2D3E;
+    --accent: #9FA8DA;
+    --accent-dim: #5C6BC0;
+    --accent-faint: rgba(159,168,218,0.08);
+    --on-surface: #E0E0E0;
+    --on-surface-dim: #A0A0A0;
+    --on-surface-muted: #787878;
+    --border: #333333;
+    --user-entry: #9FA8DA;
+    --candidate-color: #787878;
+    --error-tint: #33EF5350;
+    --hint-tint: #3381C784;
+    --easy: #81C784;
+    --medium: #FFD54F;
+    --hard: #FFB74D;
+    --expert: #E57373;
+    --evil: #CE93D8;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
     font-family: 'Roboto', 'Google Sans', sans-serif;
-    background: linear-gradient(135deg, #0D1B4A 0%, #1A237E 40%, #283593 100%);
+    background: var(--bg);
     min-height: 100vh;
     padding: 40px 20px;
     color: var(--on-surface);
@@ -44,12 +46,12 @@
     font-family: 'Google Sans', 'Roboto', sans-serif;
     font-size: 40px;
     font-weight: 700;
-    color: #FFFFFF;
+    color: var(--accent);
     letter-spacing: -0.5px;
   }
   .page-header p {
     font-size: 16px;
-    color: rgba(255,255,255,0.7);
+    color: var(--on-surface-dim);
     margin-top: 8px;
   }
 
@@ -73,16 +75,16 @@
     font-family: 'Google Sans', 'Roboto', sans-serif;
     font-size: 18px;
     font-weight: 500;
-    color: rgba(255,255,255,0.9);
+    color: var(--on-surface-dim);
     letter-spacing: 0.2px;
   }
 
   .phone-frame {
     width: 320px;
     height: 640px;
-    background: #FFFFFF;
+    background: var(--surface);
     border-radius: 36px;
-    box-shadow: 0 0 0 3px #1a1a2e, 0 0 0 6px #333355, 0 20px 60px rgba(0,0,0,0.5);
+    box-shadow: 0 0 0 3px #0a0a14, 0 0 0 6px #1a1a2e, 0 20px 60px rgba(0,0,0,0.6);
     overflow: hidden;
     position: relative;
     display: flex;
@@ -97,21 +99,21 @@
     transform: translateX(-50%);
     width: 100px;
     height: 24px;
-    background: #1a1a2e;
+    background: #0a0a14;
     border-radius: 0 0 16px 16px;
     z-index: 10;
   }
 
   .status-bar {
     height: 36px;
-    background: var(--primary);
+    background: var(--surface);
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
     padding: 0 20px 4px;
     font-size: 11px;
     font-weight: 500;
-    color: rgba(255,255,255,0.9);
+    color: var(--on-surface-dim);
     flex-shrink: 0;
   }
   .status-bar .time { font-weight: 600; }
@@ -119,20 +121,22 @@
 
   .app-bar {
     height: 52px;
-    background: var(--primary);
+    background: var(--surface);
     display: flex;
     align-items: center;
     padding: 0 16px;
-    color: white;
+    color: var(--on-surface);
     flex-shrink: 0;
     gap: 12px;
+    border-bottom: 1px solid var(--border);
   }
-  .app-bar .back-arrow { font-size: 22px; opacity: 0.9; cursor: pointer; }
+  .app-bar .back-arrow { font-size: 22px; opacity: 0.7; cursor: pointer; color: var(--accent); }
   .app-bar .title {
     font-family: 'Google Sans', 'Roboto', sans-serif;
     font-size: 18px;
     font-weight: 500;
     flex: 1;
+    color: var(--on-surface);
   }
   .app-bar .actions { display: flex; gap: 8px; }
   .app-bar .action-icon {
@@ -141,8 +145,9 @@
     border-radius: 50%;
     font-size: 20px;
     cursor: pointer;
+    color: var(--accent);
   }
-  .app-bar .action-icon:hover { background: rgba(255,255,255,0.12); }
+  .app-bar .action-icon:hover { background: rgba(159,168,218,0.1); }
 
   .screen-body {
     flex: 1;
@@ -151,65 +156,65 @@
     flex-direction: column;
   }
 
-  /* ─── Screen 1: Home ─── */
+  /* --- Screen 1: Home --- */
   .home-body {
     flex: 1;
-    background: linear-gradient(180deg, var(--primary) 0%, #283593 100%);
+    background: var(--bg);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 40px 32px;
+    padding: 32px 32px;
     gap: 8px;
   }
   .home-icon {
     width: 88px; height: 88px;
-    background: rgba(255,255,255,0.12);
+    background: var(--card);
     border-radius: 24px;
     display: flex; align-items: center; justify-content: center;
     margin-bottom: 16px;
-    border: 2px solid rgba(255,255,255,0.2);
+    border: 2px solid var(--border);
   }
   .home-icon .grid-icon {
     font-size: 48px;
-    color: white;
+    color: var(--accent);
   }
   .home-title {
     font-family: 'Google Sans', 'Roboto', sans-serif;
     font-size: 32px;
     font-weight: 700;
-    color: white;
+    color: var(--on-surface);
     letter-spacing: -0.5px;
   }
   .home-subtitle {
     font-size: 15px;
-    color: rgba(255,255,255,0.7);
-    margin-bottom: 40px;
+    color: var(--on-surface-muted);
+    margin-bottom: 36px;
   }
   .home-buttons {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
     width: 100%;
   }
   .btn-filled {
     display: flex; align-items: center; justify-content: center; gap: 10px;
-    background: white;
-    color: var(--primary);
+    background: var(--accent-dim);
+    color: #FFFFFF;
     border: none;
     border-radius: 28px;
-    padding: 16px 24px;
+    padding: 15px 24px;
     font-size: 15px;
     font-weight: 600;
     font-family: 'Google Sans', 'Roboto', sans-serif;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 12px rgba(92,107,196,0.3);
   }
   .btn-outlined {
     display: flex; align-items: center; justify-content: center; gap: 10px;
     background: transparent;
-    color: white;
-    border: 2px solid rgba(255,255,255,0.5);
+    color: var(--accent);
+    border: 1.5px solid rgba(159,168,218,0.35);
     border-radius: 28px;
     padding: 14px 24px;
     font-size: 15px;
@@ -217,12 +222,24 @@
     font-family: 'Google Sans', 'Roboto', sans-serif;
     cursor: pointer;
   }
+  .btn-tonal {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    background: rgba(159,168,218,0.12);
+    color: var(--accent);
+    border: none;
+    border-radius: 28px;
+    padding: 15px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    cursor: pointer;
+  }
   .btn-icon { font-size: 20px; }
 
-  /* ─── Screen 2: Camera ─── */
+  /* --- Screen 2: Camera --- */
   .camera-body {
     flex: 1;
-    background: #F5F5F5;
+    background: var(--bg);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -232,10 +249,10 @@
   }
   .scanner-frame {
     width: 180px; height: 180px;
-    border: 3px dashed var(--primary-light);
+    border: 2px dashed var(--border);
     border-radius: 16px;
     display: flex; align-items: center; justify-content: center;
-    background: rgba(26,35,126,0.04);
+    background: rgba(159,168,218,0.04);
     position: relative;
   }
   .scanner-frame::before,
@@ -243,23 +260,23 @@
     content: '';
     position: absolute;
     width: 28px; height: 28px;
-    border-color: var(--primary);
+    border-color: var(--accent-dim);
     border-style: solid;
   }
   .scanner-frame::before {
     top: -2px; left: -2px;
-    border-width: 4px 0 0 4px;
+    border-width: 3px 0 0 3px;
     border-radius: 8px 0 0 0;
   }
   .scanner-frame::after {
     bottom: -2px; right: -2px;
-    border-width: 0 4px 4px 0;
+    border-width: 0 3px 3px 0;
     border-radius: 0 0 8px 0;
   }
-  .scanner-icon { font-size: 56px; color: var(--primary-light); opacity: 0.6; }
+  .scanner-icon { font-size: 56px; color: var(--accent-dim); opacity: 0.5; }
   .camera-text {
     font-size: 14px;
-    color: var(--on-surface-variant);
+    color: var(--on-surface-muted);
     text-align: center;
     line-height: 1.5;
     padding: 0 8px;
@@ -272,8 +289,8 @@
   }
   .btn-filled-sm {
     display: flex; align-items: center; justify-content: center; gap: 8px;
-    background: var(--primary);
-    color: white;
+    background: var(--accent-dim);
+    color: #FFFFFF;
     border: none;
     border-radius: 24px;
     padding: 14px 20px;
@@ -281,13 +298,13 @@
     font-weight: 600;
     font-family: 'Google Sans', 'Roboto', sans-serif;
     cursor: pointer;
-    box-shadow: 0 2px 6px rgba(26,35,126,0.3);
+    box-shadow: 0 2px 8px rgba(92,107,196,0.25);
   }
   .btn-outlined-sm {
     display: flex; align-items: center; justify-content: center; gap: 8px;
     background: transparent;
-    color: var(--primary);
-    border: 2px solid var(--primary);
+    color: var(--accent);
+    border: 1.5px solid rgba(159,168,218,0.35);
     border-radius: 24px;
     padding: 12px 20px;
     font-size: 14px;
@@ -296,22 +313,22 @@
     cursor: pointer;
   }
 
-  /* ─── Corner accents for scanner ─── */
+  /* Corner accents for scanner */
   .corner-tl, .corner-tr, .corner-bl, .corner-br {
     position: absolute;
     width: 28px; height: 28px;
-    border-color: var(--primary);
+    border-color: var(--accent-dim);
     border-style: solid;
   }
-  .corner-tl { top: -2px; left: -2px; border-width: 4px 0 0 4px; border-radius: 8px 0 0 0; }
-  .corner-tr { top: -2px; right: -2px; border-width: 4px 4px 0 0; border-radius: 0 8px 0 0; }
-  .corner-bl { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; border-radius: 0 0 0 8px; }
-  .corner-br { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; border-radius: 0 0 8px 0; }
+  .corner-tl { top: -2px; left: -2px; border-width: 3px 0 0 3px; border-radius: 8px 0 0 0; }
+  .corner-tr { top: -2px; right: -2px; border-width: 3px 3px 0 0; border-radius: 0 8px 0 0; }
+  .corner-bl { bottom: -2px; left: -2px; border-width: 0 0 3px 3px; border-radius: 0 0 0 8px; }
+  .corner-br { bottom: -2px; right: -2px; border-width: 0 3px 3px 0; border-radius: 0 0 8px 0; }
 
-  /* ─── Screen 3: Puzzle ─── */
+  /* --- Screen 3: Puzzle --- */
   .puzzle-body {
     flex: 1;
-    background: #FAFAFA;
+    background: var(--bg);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -326,20 +343,20 @@
   .progress-track {
     flex: 1;
     height: 6px;
-    background: #E0E0E0;
+    background: var(--card);
     border-radius: 3px;
     overflow: hidden;
   }
   .progress-fill {
     width: 42%;
     height: 100%;
-    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    background: linear-gradient(90deg, var(--accent-dim), var(--accent));
     border-radius: 3px;
   }
   .progress-text {
     font-size: 11px;
     font-weight: 600;
-    color: var(--primary);
+    color: var(--accent);
     min-width: 32px;
     text-align: right;
   }
@@ -356,9 +373,9 @@
     grid-template-rows: repeat(9, 1fr);
     width: 270px;
     height: 270px;
-    border: 2.5px solid #1A237E;
-    background: white;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    border: 2.5px solid var(--accent-dim);
+    background: var(--surface);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
   }
 
   .cell {
@@ -367,21 +384,23 @@
     justify-content: center;
     font-size: 15px;
     font-weight: 400;
-    color: var(--on-surface);
-    border: 0.5px solid #BDBDBD;
+    color: var(--on-surface-muted);
+    border: 0.5px solid var(--border);
     position: relative;
-    background: white;
+    background: var(--surface);
   }
-  .cell.given { font-weight: 700; color: #212121; }
+  .cell.given { font-weight: 700; color: var(--on-surface); }
   .cell.user-entered { color: var(--user-entry); font-weight: 500; }
-  .cell.selected { background: var(--highlight) !important; }
-  .cell.same-group { background: var(--highlight-soft); }
+  .cell.selected { background: var(--card) !important; }
+  .cell.same-group { background: rgba(159,168,218,0.04); }
+  .cell.error { background: var(--error-tint); }
+  .cell.hint-highlight { background: var(--hint-tint); }
 
   /* Thick borders for 3x3 boxes */
-  .cell.border-right { border-right: 2px solid #1A237E; }
-  .cell.border-bottom { border-bottom: 2px solid #1A237E; }
-  .cell.border-left { border-left: 2px solid #1A237E; }
-  .cell.border-top { border-top: 2px solid #1A237E; }
+  .cell.border-right { border-right: 2px solid var(--accent-dim); }
+  .cell.border-bottom { border-bottom: 2px solid var(--accent-dim); }
+  .cell.border-left { border-left: 2px solid var(--accent-dim); }
+  .cell.border-top { border-top: 2px solid var(--accent-dim); }
 
   .cell .candidates {
     display: grid;
@@ -409,8 +428,8 @@
   }
   .tool-btn {
     display: flex; align-items: center; gap: 6px;
-    background: var(--primary-container);
-    color: var(--primary);
+    background: var(--card);
+    color: var(--accent);
     border: none;
     border-radius: 20px;
     padding: 8px 16px;
@@ -420,6 +439,10 @@
     cursor: pointer;
   }
   .tool-btn .tool-icon { font-size: 18px; }
+  .tool-btn.active {
+    background: var(--accent-dim);
+    color: #FFFFFF;
+  }
 
   .numpad {
     display: grid;
@@ -432,67 +455,67 @@
     align-items: center;
     justify-content: center;
     height: 40px;
-    background: white;
-    border: 1.5px solid #E0E0E0;
+    background: var(--card);
+    border: 1px solid var(--border);
     border-radius: 12px;
     font-size: 17px;
     font-weight: 600;
-    color: var(--primary);
+    color: var(--accent);
     font-family: 'Google Sans', 'Roboto', sans-serif;
     cursor: pointer;
   }
-  .num-btn:hover { background: var(--primary-container); }
+  .num-btn:hover { background: rgba(159,168,218,0.12); }
   .num-btn.clear-btn {
     font-size: 11px;
     font-weight: 500;
-    color: var(--on-surface-variant);
+    color: var(--on-surface-muted);
   }
 
-  /* ─── Screen 4: Hint Sheet ─── */
+  /* --- Screen 4: Hint Sheet --- */
   .hint-overlay {
     flex: 1;
     position: relative;
-    background: #FAFAFA;
+    background: var(--bg);
   }
   .hint-puzzle-bg {
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 100%;
-    opacity: 0.3;
+    opacity: 0.15;
     background: repeating-linear-gradient(
       0deg,
       transparent,
       transparent 29px,
-      #E0E0E0 29px,
-      #E0E0E0 30px
+      var(--border) 29px,
+      var(--border) 30px
     ),
     repeating-linear-gradient(
       90deg,
       transparent,
       transparent 29px,
-      #E0E0E0 29px,
-      #E0E0E0 30px
+      var(--border) 29px,
+      var(--border) 30px
     );
   }
   .hint-scrim {
     position: absolute;
     bottom: 0; left: 0; right: 0;
     top: 0;
-    background: rgba(0,0,0,0.32);
+    background: rgba(0,0,0,0.5);
     z-index: 1;
   }
   .hint-sheet {
     position: absolute;
     bottom: 0; left: 0; right: 0;
-    background: white;
+    background: var(--surface);
     border-radius: 24px 24px 0 0;
     padding: 12px 24px 24px;
     z-index: 2;
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.12);
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.4);
   }
   .hint-handle {
     width: 40px; height: 4px;
-    background: #DDD;
+    background: var(--border);
     border-radius: 2px;
     margin: 0 auto 16px;
   }
@@ -507,8 +530,8 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    background: #E8F5E9;
-    color: var(--success);
+    background: rgba(129,199,132,0.12);
+    color: var(--easy);
     border-radius: 16px;
     padding: 4px 14px;
     font-size: 12px;
@@ -517,36 +540,40 @@
   }
   .difficulty-badge .dot {
     width: 6px; height: 6px;
-    background: var(--success);
+    background: var(--easy);
     border-radius: 50%;
   }
   .hint-explanation {
     font-size: 13.5px;
-    color: var(--on-surface-variant);
+    color: var(--on-surface-dim);
     line-height: 1.6;
     margin-bottom: 14px;
+  }
+  .hint-explanation strong {
+    color: var(--accent);
   }
   .hint-placement {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: var(--primary-container);
+    background: var(--card);
     border-radius: 12px;
     padding: 10px 14px;
     margin-bottom: 20px;
     font-size: 13px;
     font-weight: 500;
-    color: var(--primary);
+    color: var(--accent);
   }
   .hint-placement .place-icon { font-size: 18px; }
+  .hint-placement strong { color: var(--on-surface); }
   .hint-buttons {
     display: flex;
     gap: 12px;
   }
   .hint-btn-apply {
     flex: 1;
-    background: var(--primary);
-    color: white;
+    background: var(--accent-dim);
+    color: #FFFFFF;
     border: none;
     border-radius: 24px;
     padding: 14px;
@@ -554,12 +581,12 @@
     font-weight: 600;
     font-family: 'Google Sans', 'Roboto', sans-serif;
     cursor: pointer;
-    box-shadow: 0 2px 6px rgba(26,35,126,0.3);
+    box-shadow: 0 2px 8px rgba(92,107,196,0.3);
   }
   .hint-btn-dismiss {
     flex: 1;
     background: transparent;
-    color: var(--primary);
+    color: var(--on-surface-muted);
     border: none;
     padding: 14px;
     font-size: 14px;
@@ -597,7 +624,7 @@
 
 <div class="grid">
 
-  <!-- ════════════ Screen 1: Home ════════════ -->
+  <!-- Screen 1: Home -->
   <div class="mockup-container">
     <div class="mockup-label">1. Home Screen</div>
     <div class="phone-frame">
@@ -624,12 +651,16 @@
             <span class="material-symbols-rounded btn-icon">grid_on</span>
             Enter Manually
           </button>
+          <button class="btn-tonal">
+            <span class="material-symbols-rounded btn-icon">shuffle</span>
+            Random Puzzle
+          </button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ════════════ Screen 2: Camera ════════════ -->
+  <!-- Screen 2: Camera -->
   <div class="mockup-container">
     <div class="mockup-label">2. Camera Screen</div>
     <div class="phone-frame">
@@ -668,7 +699,7 @@
     </div>
   </div>
 
-  <!-- ════════════ Screen 3: Puzzle ════════════ -->
+  <!-- Screen 3: Puzzle -->
   <div class="mockup-container">
     <div class="mockup-label">3. Puzzle Screen</div>
     <div class="phone-frame">
@@ -704,7 +735,7 @@
             <span class="material-symbols-rounded tool-icon">auto_fix_high</span>
             Solve
           </button>
-          <button class="tool-btn" style="background:var(--primary);color:white;">
+          <button class="tool-btn active">
             <span class="material-symbols-rounded tool-icon">edit</span>
             Pencil
           </button>
@@ -720,14 +751,14 @@
           <button class="num-btn">8</button>
           <button class="num-btn">9</button>
           <button class="num-btn clear-btn">
-            <span class="material-symbols-rounded" style="font-size:18px;color:#78909C">backspace</span>
+            <span class="material-symbols-rounded" style="font-size:18px;color:#787878">backspace</span>
           </button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ════════════ Screen 4: Hint Sheet ════════════ -->
+  <!-- Screen 4: Hint Sheet -->
   <div class="mockup-container">
     <div class="mockup-label">4. Hint Bottom Sheet</div>
     <div class="phone-frame">

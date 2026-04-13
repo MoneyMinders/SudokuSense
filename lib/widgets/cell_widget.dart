@@ -23,7 +23,7 @@ class CellWidget extends StatelessWidget {
     if (isHinted) return AppColors.hintHighlight;
     if (isSelected) return AppColors.selectedCell;
     if (isHighlighted) return AppColors.highlightedRegion;
-    return Colors.white;
+    return AppColors.cellBackground;
   }
 
   @override
