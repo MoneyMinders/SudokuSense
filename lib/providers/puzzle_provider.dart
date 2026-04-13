@@ -32,6 +32,10 @@ class PuzzleProvider extends ChangeNotifier {
   final List<BoardState> _redoStack = [];
   HintResult? _activeHint;
 
+  // Timer
+  final Stopwatch _stopwatch = Stopwatch();
+  Duration _savedElapsed = Duration.zero; // accumulated time from previous sessions
+
   // ---------------------------------------------------------------------------
   // Getters
   // ---------------------------------------------------------------------------
@@ -47,6 +51,8 @@ class PuzzleProvider extends ChangeNotifier {
   HintResult? get activeHint => _activeHint;
   bool get canUndo => _history.isNotEmpty;
   bool get canRedo => _redoStack.isNotEmpty;
+  Duration get elapsed => _savedElapsed + _stopwatch.elapsed;
+  bool get timerRunning => _stopwatch.isRunning;
 
   /// Fraction of the board that is filled (0.0 to 1.0).
   double get progress {
@@ -126,6 +132,10 @@ class PuzzleProvider extends ChangeNotifier {
     _setupMode = false;
     _originalGrid = _board.toGrid();
     _currentPuzzleId = DateTime.now().millisecondsSinceEpoch.toString();
+    // Start the timer
+    _savedElapsed = Duration.zero;
+    _stopwatch.reset();
+    _stopwatch.start();
     notifyListeners();
     return null;
   }
@@ -176,10 +186,26 @@ class PuzzleProvider extends ChangeNotifier {
     _solution = result.solution;
     _solutionCount = result.solutionCount;
 
-    // Don't auto-show candidates to user. The hint engine calculates
-    // them internally when needed. Users add pencil marks manually.
+    // Start timer
+    _savedElapsed = Duration.zero;
+    _stopwatch.reset();
+    _stopwatch.start();
 
     notifyListeners();
+  }
+
+  /// Pause the timer (when navigating away).
+  void pauseTimer() {
+    if (_stopwatch.isRunning) {
+      _stopwatch.stop();
+    }
+  }
+
+  /// Resume the timer (when returning to puzzle).
+  void resumeTimer() {
+    if (!_stopwatch.isRunning && !_setupMode && !isSolved) {
+      _stopwatch.start();
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -235,6 +261,9 @@ class PuzzleProvider extends ChangeNotifier {
       cell.isError = (solutionValue != null && value != solutionValue);
     }
 
+    // Stop timer if puzzle is now complete
+    if (isSolved) _stopwatch.stop();
+
     notifyListeners();
   }
 
@@ -265,6 +294,7 @@ class PuzzleProvider extends ChangeNotifier {
     _pushHistory();
 
     cell.value = null;
+    cell.candidates.clear();
     cell.isError = false;
 
     notifyListeners();
@@ -362,6 +392,7 @@ class PuzzleProvider extends ChangeNotifier {
       }
     }
 
+    _stopwatch.stop();
     notifyListeners();
   }
 

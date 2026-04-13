@@ -14,17 +14,38 @@ class PuzzleScreen extends StatefulWidget {
   State<PuzzleScreen> createState() => _PuzzleScreenState();
 }
 
-class _PuzzleScreenState extends State<PuzzleScreen> {
+class _PuzzleScreenState extends State<PuzzleScreen> with WidgetsBindingObserver {
   bool _solvedDialogShown = false;
+  late final _timerTicker = Stream.periodic(const Duration(seconds: 1));
+  Object? _timerSub;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     // Reset pencil mode every time puzzle screen opens
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = context.read<PuzzleProvider>();
       if (provider.pencilMode) provider.togglePencilMode();
+      provider.resumeTimer();
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final provider = context.read<PuzzleProvider>();
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive) {
+      provider.pauseTimer();
+    } else if (state == AppLifecycleState.resumed) {
+      provider.resumeTimer();
+    }
   }
 
   @override
@@ -252,6 +273,14 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
     );
   }
 
+  String _formatDuration(Duration d) {
+    final h = d.inHours;
+    final m = d.inMinutes.remainder(60);
+    final s = d.inSeconds.remainder(60);
+    if (h > 0) return '${h}h ${m.toString().padLeft(2, '0')}m';
+    return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
+  }
+
   Widget _buildProgressBar(ThemeConfig colors, PuzzleProvider provider) {
     final pct = (provider.progress * 100).round();
 
@@ -271,6 +300,22 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
                 ),
               ),
               const Spacer(),
+              // Timer display — updates every second
+              StreamBuilder(
+                stream: Stream.periodic(const Duration(seconds: 1)),
+                builder: (_, __) {
+                  return Text(
+                    _formatDuration(provider.elapsed),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontFamily: 'Serif',
+                      fontStyle: FontStyle.italic,
+                      color: colors.candidateText,
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(width: 12),
               Text(
                 '$pct%',
                 style: TextStyle(
