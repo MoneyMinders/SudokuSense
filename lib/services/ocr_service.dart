@@ -3,58 +3,68 @@ import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart
 import '../models/board.dart';
 import '../utils/grid_parser.dart';
 import 'image_preprocessor.dart';
+import 'cell_ocr_service.dart';
 
 class OcrService {
   static const double _minConfidence = 0.3;
 
   /// Recognize a Sudoku grid from a photo.
-  /// Runs OCR on both the original and a preprocessed version,
-  /// then picks whichever detects more valid digits.
+  /// Runs three strategies in parallel and picks the best result:
+  /// 1. Whole-image ML Kit on original
+  /// 2. Whole-image ML Kit on preprocessed image
+  /// 3. Cell-by-cell ML Kit (crop each of 81 cells individually)
   Future<Board?> recognizeFromImage(String imagePath) async {
-    // Run OCR on original image
-    final originalDigits = await _extractDigits(imagePath);
+    // Run all three strategies
+    final results = await Future.wait([
+      _wholeImageOcr(imagePath),
+      _preprocessedOcr(imagePath),
+      CellOcrService().recognizeFromImage(imagePath),
+    ]);
 
-    // Preprocess and run OCR on cleaned image
-    final preprocessedPath = await ImagePreprocessor.preprocess(imagePath);
-    List<RecognizedDigit>? preprocessedDigits;
-    if (preprocessedPath != null) {
-      preprocessedDigits = await _extractDigits(preprocessedPath);
+    // Pick the board with the most filled cells
+    Board? best;
+    int bestCount = 0;
+
+    for (final board in results) {
+      if (board == null) continue;
+      final count = _countFilled(board);
+      if (count > bestCount) {
+        bestCount = count;
+        best = board;
+      }
     }
 
-    // Pick the result with more digits detected (better recognition)
-    final digits = _pickBest(originalDigits, preprocessedDigits);
-    if (digits == null || digits.isEmpty) return null;
+    return best;
+  }
 
+  int _countFilled(Board board) {
+    int count = 0;
+    for (int r = 0; r < 9; r++) {
+      for (int c = 0; c < 9; c++) {
+        if (board.getCell(r, c).value != null) count++;
+      }
+    }
+    return count;
+  }
+
+  /// Strategy 1: Run ML Kit on the original image.
+  Future<Board?> _wholeImageOcr(String imagePath) async {
+    final digits = await _extractDigits(imagePath);
+    if (digits.isEmpty) return null;
     final grid = GridParser.toGrid(digits);
     if (grid == null) return null;
-
     return Board.fromGrid(grid);
   }
 
-  /// Pick the digit list that produces a more valid sudoku grid.
-  List<RecognizedDigit>? _pickBest(
-    List<RecognizedDigit>? a,
-    List<RecognizedDigit>? b,
-  ) {
-    if (a == null || a.isEmpty) return b;
-    if (b == null || b.isEmpty) return a;
-
-    // Try both and see which produces a grid with more filled cells
-    final gridA = GridParser.toGrid(a);
-    final gridB = GridParser.toGrid(b);
-
-    if (gridA == null) return b;
-    if (gridB == null) return a;
-
-    final countA = gridA.expand((r) => r).where((v) => v != 0).length;
-    final countB = gridB.expand((r) => r).where((v) => v != 0).length;
-
-    // Prefer the one with more digits, but cap at 35 (typical max for a puzzle)
-    // If one has way too many, prefer the other
-    if (countA > 35 && countB <= 35) return b;
-    if (countB > 35 && countA <= 35) return a;
-
-    return countA >= countB ? a : b;
+  /// Strategy 2: Preprocess then run ML Kit.
+  Future<Board?> _preprocessedOcr(String imagePath) async {
+    final preprocessedPath = await ImagePreprocessor.preprocess(imagePath);
+    if (preprocessedPath == null) return null;
+    final digits = await _extractDigits(preprocessedPath);
+    if (digits.isEmpty) return null;
+    final grid = GridParser.toGrid(digits);
+    if (grid == null) return null;
+    return Board.fromGrid(grid);
   }
 
   /// Extract digits from an image using ML Kit text recognition.
