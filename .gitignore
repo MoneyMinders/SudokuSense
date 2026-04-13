@@ -47,3 +47,18 @@ app.*.map.json
 
 # Web dist (deployed via rsync, not committed)
 /web-dist/
+
+# Downloaded web pages / screenshots
+*.html
+!lib/**
+!test/**
+!web/**
+!docs/**/*.html
+Screenshot*
+*.jpeg
+*.png
+!assets/**
+!android/**/ic_launcher*.png
+!android/**/ic_launcher*.xml
+!ios/**/*.png
+!web/**/*.png
