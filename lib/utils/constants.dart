@@ -1,33 +1,27 @@
 import 'package:flutter/material.dart';
 import '../models/hint_result.dart';
+import '../providers/theme_provider.dart';
 
 class AppColors {
-  // Dark theme colors — soft pastel accents on dark surface
-  static const Color primaryBlue = Color(0xFF9FA8DA);    // Soft indigo pastel
-  static const Color selectedCell = Color(0xFF2A2D3E);   // Subtle dark highlight
-  static const Color highlightedRegion = Color(0xFF1A1C2A); // Very subtle region
-  static const Color fixedText = Color(0xFFE0E0E0);     // Light gray for clues
-  static const Color userText = Color(0xFF9FA8DA);       // Pastel indigo for user values
-  static const Color errorBackground = Color(0x33EF5350); // Muted red tint
-  static const Color hintHighlight = Color(0x3381C784);  // Soft green tint
-  static const Color gridBorderThick = Color(0xFF5C6BC0); // Indigo border
-  static const Color gridBorderThin = Color(0xFF333333); // Subtle dark gray
-  static const Color candidateText = Color(0xFF787878);  // Muted gray
-  static const Color cellBackground = Color(0xFF1E1E2E); // Dark cell bg
-  static const Color surfaceColor = Color(0xFF121212);   // App background
+  /// Get colors from the active theme config.
+  static ThemeConfig of(BuildContext context) {
+    // This can be called without context for static access (tests, etc.)
+    throw UnimplementedError('Use AppColors.from(config) instead');
+  }
 
+  // Difficulty colors stay constant across themes
   static Color difficultyColor(Difficulty difficulty) {
     switch (difficulty) {
       case Difficulty.easy:
-        return const Color(0xFF81C784);  // Pastel green
+        return const Color(0xFF81C784);
       case Difficulty.medium:
-        return const Color(0xFFFFD54F);  // Soft amber
+        return const Color(0xFFFFD54F);
       case Difficulty.hard:
-        return const Color(0xFFFFB74D);  // Soft orange
+        return const Color(0xFFFFB74D);
       case Difficulty.expert:
-        return const Color(0xFFE57373);  // Soft red
+        return const Color(0xFFE57373);
       case Difficulty.evil:
-        return const Color(0xFFCE93D8);  // Pastel purple
+        return const Color(0xFFCE93D8);
     }
   }
 

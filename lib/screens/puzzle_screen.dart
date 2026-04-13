@@ -26,14 +26,40 @@ class PuzzleScreen extends StatelessWidget {
           ),
           PopupMenuButton<String>(
             onSelected: (value) {
+              final provider = context.read<PuzzleProvider>();
               if (value == 'clear') {
-                context.read<PuzzleProvider>().clearGrid();
+                provider.clearGrid();
+              } else if (value == 'save') {
+                provider.savePuzzle();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Puzzle saved!'),
+                    behavior: SnackBarBehavior.floating,
+                    duration: Duration(seconds: 2),
+                  ),
+                );
               }
             },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
+            itemBuilder: (context) => const [
+              PopupMenuItem(
+                value: 'save',
+                child: Row(
+                  children: [
+                    Icon(Icons.bookmark_add_outlined, size: 20),
+                    SizedBox(width: 8),
+                    Text('Save Puzzle'),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
                 value: 'clear',
-                child: Text('Clear Grid'),
+                child: Row(
+                  children: [
+                    Icon(Icons.clear_all, size: 20),
+                    SizedBox(width: 8),
+                    Text('Clear Grid'),
+                  ],
+                ),
               ),
             ],
           ),

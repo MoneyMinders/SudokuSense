@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/puzzle_provider.dart';
+import '../providers/theme_provider.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -10,6 +11,16 @@ class HomeScreen extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.palette_outlined),
+            tooltip: 'Change Theme',
+            onPressed: () => _showThemePicker(context),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -82,11 +93,106 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: OutlinedButton.icon(
+                    onPressed: () => Navigator.pushNamed(context, '/saved'),
+                    icon: const Icon(Icons.bookmark_rounded),
+                    label: const Text(
+                      'Saved Puzzles',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  void _showThemePicker(BuildContext context) {
+    final themeProvider = context.read<ThemeProvider>();
+
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (context) {
+        return Consumer<ThemeProvider>(
+          builder: (context, tp, _) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8, bottom: 16),
+                    child: Text(
+                      'Choose Theme',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                  ),
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    children: AppTheme.values.map((appTheme) {
+                      final config = ThemeProvider.themes[appTheme]!;
+                      final isSelected = tp.currentTheme == appTheme;
+                      return GestureDetector(
+                        onTap: () => themeProvider.setTheme(appTheme),
+                        child: Container(
+                          width: 100,
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: config.surface,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isSelected
+                                  ? config.accent
+                                  : config.gridBorderThin,
+                              width: isSelected ? 2 : 1,
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              Container(
+                                width: 32,
+                                height: 32,
+                                decoration: BoxDecoration(
+                                  color: config.accent,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                config.name,
+                                style: TextStyle(
+                                  color: config.fixedText,
+                                  fontSize: 11,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
+                                textAlign: TextAlign.center,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

@@ -7,6 +7,7 @@ import '../models/hint_result.dart';
 import '../services/solver_service.dart';
 import '../services/candidate_service.dart';
 import '../services/hint_service.dart';
+import '../services/storage_service.dart';
 
 /// Snapshot of board state for undo support.
 class BoardState {
@@ -19,6 +20,8 @@ class PuzzleProvider extends ChangeNotifier {
   Board _board = Board.empty();
   Board? _solution;
   int? _solutionCount;
+  List<List<int>>? _originalGrid; // The puzzle as originally entered
+  String? _currentPuzzleId; // ID for save/load
   int? _selectedRow;
   int? _selectedCol;
   bool _pencilMode = false;
@@ -116,9 +119,12 @@ class PuzzleProvider extends ChangeNotifier {
   }
 
   /// Load a puzzle from an int grid where 0 = empty.
-  void loadPuzzle(List<List<int>> grid) {
+  void loadPuzzle(List<List<int>> grid, {String? puzzleId}) {
     _board = Board.fromGrid(grid);
+    _originalGrid = grid.map((r) => List<int>.from(r)).toList();
+    _currentPuzzleId = puzzleId ?? DateTime.now().millisecondsSinceEpoch.toString();
     _history.clear();
+    _redoStack.clear();
     _activeHint = null;
     _selectedRow = null;
     _selectedCol = null;
@@ -436,12 +442,70 @@ class PuzzleProvider extends ChangeNotifier {
   }
 
   // ---------------------------------------------------------------------------
+  // Save / Load
+  // ---------------------------------------------------------------------------
+
+  /// Save current puzzle state to device storage.
+  Future<void> savePuzzle({String? name}) async {
+    if (_originalGrid == null) return;
+
+    final puzzle = SavedPuzzle(
+      id: _currentPuzzleId ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      name: name ?? 'Puzzle ${DateTime.now().month}/${DateTime.now().day}',
+      originalGrid: _originalGrid!,
+      currentGrid: _board.toGrid(),
+      savedAt: DateTime.now(),
+      progress: progress,
+    );
+
+    await StorageService().save(puzzle);
+  }
+
+  /// Load a saved puzzle (resumes from where user left off).
+  void loadSavedPuzzle(SavedPuzzle saved) {
+    _originalGrid = saved.originalGrid;
+    _currentPuzzleId = saved.id;
+
+    // Load original as fixed clues
+    final original = Board.fromGrid(saved.originalGrid);
+
+    // Apply current progress on top
+    _board = Board.fromGrid(saved.originalGrid);
+    for (int r = 0; r < 9; r++) {
+      for (int c = 0; c < 9; c++) {
+        final originalVal = saved.originalGrid[r][c];
+        final currentVal = saved.currentGrid[r][c];
+        if (originalVal == 0 && currentVal != 0) {
+          // User had entered this value
+          _board.getCell(r, c).value = currentVal;
+          _board.getCell(r, c).isFixed = false;
+        }
+      }
+    }
+
+    _history.clear();
+    _redoStack.clear();
+    _activeHint = null;
+    _selectedRow = null;
+    _selectedCol = null;
+    _pencilMode = false;
+
+    final solver = SolverService();
+    final result = solver.solve(original);
+    _solution = result.solution;
+    _solutionCount = result.solutionCount;
+
+    CandidateService().calculateAllCandidates(_board);
+    notifyListeners();
+  }
+
+  // ---------------------------------------------------------------------------
   // Internals
   // ---------------------------------------------------------------------------
 
   /// Push a deep copy of the current board onto the undo stack.
   void _pushHistory() {
-    _redoStack.clear(); // Clear redo stack on new action.
+    _redoStack.clear();
     _history.add(BoardState(_board.deepCopy()));
   }
 }

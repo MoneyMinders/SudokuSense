@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/puzzle_provider.dart';
+import '../providers/theme_provider.dart';
 import '../models/board.dart';
 import '../utils/constants.dart';
 import 'cell_widget.dart';
@@ -10,6 +11,8 @@ class SudokuGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.watch<ThemeProvider>().config;
+
     return Consumer<PuzzleProvider>(
       builder: (context, provider, _) {
         final board = provider.board;
@@ -27,7 +30,7 @@ class SudokuGrid extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: AppColors.gridBorderThick,
+                  color: colors.gridBorderThick,
                   width: GridConstants.thickBorder,
                 ),
                 borderRadius: BorderRadius.circular(4),
@@ -43,7 +46,6 @@ class SudokuGrid extends StatelessWidget {
                           final isSelected =
                               row == selectedRow && col == selectedCol;
 
-                          // Highlight cells in same row, col, or box as selected
                           bool isHighlighted = false;
                           if (selectedRow != null && selectedCol != null) {
                             isHighlighted = row == selectedRow ||
@@ -55,7 +57,6 @@ class SudokuGrid extends StatelessWidget {
 
                           final isHinted = hintCells.contains((row, col));
 
-                          // Determine borders for 3x3 box separation
                           final rightBorder = (col + 1) % 3 == 0 && col < 8
                               ? GridConstants.thickBorder
                               : GridConstants.thinBorder;
@@ -70,15 +71,15 @@ class SudokuGrid extends StatelessWidget {
                                   right: BorderSide(
                                     color: rightBorder ==
                                             GridConstants.thickBorder
-                                        ? AppColors.gridBorderThick
-                                        : AppColors.gridBorderThin,
+                                        ? colors.gridBorderThick
+                                        : colors.gridBorderThin,
                                     width: rightBorder,
                                   ),
                                   bottom: BorderSide(
                                     color: bottomBorder ==
                                             GridConstants.thickBorder
-                                        ? AppColors.gridBorderThick
-                                        : AppColors.gridBorderThin,
+                                        ? colors.gridBorderThick
+                                        : colors.gridBorderThin,
                                     width: bottomBorder,
                                   ),
                                 ),

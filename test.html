@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SudokuSense Mockups - Design Concept</title>
+    <style>
+        :root {
+            /* Theme: Deep Blue & Amber Accent */
+            --primary: #1A237E;
+            --primary-light: #534BAE;
+            --secondary: #FFC107;
+            --bg: #F5F5F7;
+            --surface: #FFFFFF;
+            --text-main: #1C1B1F;
+            --text-sub: #49454F;
+            --error: #B00020;
+            --success: #2E7D32;
+            --grid-border: #1C1B1F;
+            --cell-selected: #E8EAF6;
+            --font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* High Contrast / Alternative Theme Support via Class */
+        .theme-high-contrast {
+            --primary: #000000;
+            --secondary: #FFFF00;
+            --bg: #FFFFFF;
+            --text-main: #000000;
+            --grid-border: #000000;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            background-color: var(--bg);
+            font-family: var(--font-family);
+            margin: 0;
+            padding: 40px 20px;
+            color: var(--text-main);
+        }
+
+        h1 { text-align: center; color: var(--primary); margin-bottom: 40px; }
+
+        /* 2x2 Grid Layout */
+        .mockup-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Phone Frame */
+        .phone-frame {
+            background: #222;
+            width: 320px;
+            height: 640px;
+            margin: 0 auto;
+            border-radius: 36px;
+            border: 8px solid #333;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .screen-label {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        .screen-content {
+            background: var(--surface);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Top Status Bar */
+        .status-bar {
+            height: 24px;
+            padding: 0 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Components */
+        .app-bar {
+            background: var(--primary);
+            color: white;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 25px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-filled { background: var(--primary); color: white; }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        .btn-ghost { background: transparent; color: var(--primary); }
+
+        /* Screen 1: Home */
+        .home-center {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 32px;
+            text-align: center;
+        }
+        .app-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            color: var(--primary);
+        }
+        .saved-badge {
+            background: var(--secondary);
+            font-size: 10px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-top: 20px;
+            display: inline-block;
+        }
+
+        /* Screen 2: Camera */
+        .camera-view {
+            flex: 1;
+            background: #eee;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+        }
+        .scanner-rect {
+            width: 200px;
+            height: 200px;
+            border: 2px dashed var(--primary);
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        /* Screen 3: Puzzle */
+        .sudoku-grid {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            border: 2px solid var(--grid-border);
+            margin: 8px;
+            background: var(--grid-border);
+            gap: 1px;
+        }
+        .cell {
+            background: white;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            position: relative;
+        }
+        .cell.bold { font-weight: 900; }
+        .cell.user { color: var(--primary-light); }
+        .cell.error { color: var(--error); background: #FFEBEE; }
+        .cell.selected { background: var(--cell-selected); }
+        .cell.highlight-axis { background: #F0F0F0; }
+        
+        /* 3x3 Borders */
+        .cell:nth-child(3n) { border-right: 1px solid var(--grid-border); }
+        .cell:nth-child(9n) { border-right: none; }
+        .sudoku-grid div:nth-child(n+19):nth-child(-n+27),
+        .sudoku-grid div:nth-child(n+46):nth-child(-n+54) {
+            border-bottom: 2px solid var(--grid-border);
+        }
+
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 4px;
+            padding: 8px;
+            background: #eee;
+        }
+        .num-btn {
+            background: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        /* Screen 4: Hint Bottom Sheet */
+        .bottom-sheet {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 -10px 20px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+        .chip {
+            background: #E8F5E9;
+            color: #2E7D32;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+
+        .progress-container {
+            height: 4px;
+            background: #E0E0E0;
+            width: 100%;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--secondary);
+            width: 65%;
+        }
+
+        /* Accessibility: Visual Focus Indicators */
+        .btn:focus, .num-btn:focus {
+            outline: 3px solid var(--secondary);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>SudokuSense App Architecture</h1>
+
+    <div class="mockup-grid">
+        
+        <div>
+            <div class="phone-frame" role="region" aria-label="Home Screen">
+                <div class="screen-content">
+                    <div class="status-bar"><span>9:41</span> <span>📶🔋</span></div>
+                    <div class="home-center">
+                        <div class="app-icon" aria-hidden="true">▦</div>
+                        <h2 style="margin:0; color:var(--primary)">SudokuSense</h2>
+                        <p style="color:var(--text-sub)">Scan, solve, and learn</p>
+                        
+                        <div style="margin-top:40px">
+                            <button class="btn btn-filled" aria-label="Scan new puzzle">
+                                📷 Scan Puzzle
+                            </button>
+                            <button class="btn btn-outline" aria-label="Manual entry">
+                                ⌨️ Enter Manually
+                            </button>
+                        </div>
+
+                        <div class="saved-badge">
+                            💾 3 Games in Local Storage
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="screen-label">1. Home Screen</div>
+        </div>
+
+        <div>
+            <div class="phone-frame" role="region" aria-label="Scanner Screen">
+                <div class="screen-content">
+                    <div class="status-bar"><span>9:41</span></div>
+                    <div class="app-bar">
+                        <span>Scan Puzzle</span>
+                    </div>
+                    <div class="camera-view">
+                        <div class="scanner-rect"></div>
+                        <p style="font-size: 14px; color: var(--text-sub)">Align puzzle within the square</p>
+                        <div style="width:100%; margin-top: auto;">
+                            <button class="btn btn-filled">Capture Frame</button>
+                            <button class="btn btn-outline">Pick from Gallery</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="screen-label">2. Camera Scanner</div>
+        </div>
+
+        <div>
+            <div class="phone-frame" role="region" aria-label="Sudoku Solver Screen">
+                <div class="screen-content">
+                    <div class="status-bar"><span>9:41</span></div>
+                    <div class="app-bar">
+                        <span style="font-size:16px">SudokuSense</span>
+                        <div>
+                            <span title="Undo" style="cursor:pointer; margin-right:15px">↩️</span>
+                            <span title="Save Progress" style="cursor:pointer; margin-right:15px">💾</span>
+                            <span title="Validate" style="cursor:pointer">✔️</span>
+                        </div>
+                    </div>
+                    <div class="progress-container" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-fill"></div>
+                    </div>
+                    
+                    <div class="sudoku-grid" role="grid">
+                        <div class="cell bold">5</div><div class="cell bold">3</div><div class="cell highlight-axis"></div>
+                        <div class="cell highlight-axis"></div><div class="cell bold highlight-axis">7</div><div class="cell highlight-axis"></div>
+                        <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+                        
+                        <div class="cell bold">6</div><div class="cell"></div><div class="cell"></div>
+                        <div class="cell bold">1</div><div class="cell bold">9</div><div class="cell bold">5</div>
+                        <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+
+                        <div class="cell highlight-axis"></div><div class="cell bold highlight-axis">9</div><div class="cell highlight-axis">8</div>
+                        <div class="cell highlight-axis"></div><div class="cell highlight-axis"></div><div class="cell highlight-axis"></div>
+                        <div class="cell highlight-axis"></div><div class="cell bold highlight-axis">6</div><div class="cell"></div>
+
+                        <div class="cell highlight-axis">8</div><div class="cell highlight-axis"></div><div class="cell highlight-axis"></div>
+                        <div class="cell highlight-axis"></div><div class="cell bold selected" aria-label="Selected cell row 4 col 5">7</div><div class="cell highlight-axis"></div>
+                        <div class="cell highlight-axis"></div><div class="cell highlight-axis"></div><div class="cell bold highlight-axis">3</div>
+
+                        <div class="cell bold">4</div><div class="cell"></div><div class="cell"></div>
+                        <div class="cell bold">8</div><div class="cell"></div><div class="cell bold">3</div>
+                        <div class="cell"></div><div class="cell"></div><div class="cell bold">1</div>
+
+                        <div class="cell">7</div><div class="cell error" title="Conflict detected">2</div><div class="cell"></div>
+                        <div class="cell"></div><div class="cell bold">2</div><div class="cell"></div>
+                        <div class="cell"></div><div class="cell user">5</div><div class="cell"></div>
+                        
+                        <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+                        <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+                        <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+                    </div>
+
+                    <div style="display:flex; justify-content: space-around; padding: 10px; border-top: 1px solid #ddd">
+                        <button class="btn-ghost" style="font-size:12px">💡 Hint</button>
+                        <button class="btn-ghost" style="font-size:12px">🪄 Solve</button>
+                        <button class="btn-ghost" style="font-size:12px">✏️ Notes</button>
+                    </div>
+
+                    <div class="numpad">
+                        <button class="num-btn">1</button><button class="num-btn">2</button><button class="num-btn">3</button><button class="num-btn">4</button><button class="num-btn">5</button>
+                        <button class="num-btn">6</button><button class="num-btn">7</button><button class="num-btn">8</button><button class="num-btn">9</button><button class="num-btn" style="color:var(--error)">✖</button>
+                    </div>
+                </div>
+            </div>
+            <div class="screen-label">3. Puzzle Core</div>
+        </div>
+
+        <div>
+            <div class="phone-frame" role="region" aria-label="Strategy Explanation Screen">
+                <div class="screen-content">
+                    <div class="status-bar"><span>9:41</span></div>
+                    <div style="opacity: 0.4">
+                         <div class="app-bar"><span>SudokuSense</span></div>
+                         <div class="sudoku-grid">
+                            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+                         </div>
+                    </div>
+                    
+                    <div class="bottom-sheet">
+                        <div class="chip">Easy</div>
+                        <h3 style="margin-top:0">Naked Single</h3>
+                        <p style="font-size: 13px; line-height: 1.4; color: var(--text-sub)">
+                            Cell <strong>(3, 5)</strong> can only be <strong>7</strong>. All other numbers are already present in its row, column, or 3x3 box.
+                        </p>
+                        <div style="background: #F5F5F5; padding: 10px; border-radius: 8px; margin-bottom: 20px; font-size: 14px;">
+                            🎯 Suggestion: Place 7 at (3,5)
+                        </div>
+                        <button class="btn btn-filled">Apply Hint</button>
+                        <button class="btn btn-ghost">Dismiss</button>
+                    </div>
+                </div>
+            </div>
+            <div class="screen-label">4. Hint Logic</div>
+        </div>
+
+    </div>
+
+    <div style="max-width: 800px; margin: 50px auto; background: white; padding: 30px; border-radius: 16px;">
+        <h3>Technical Design Notes</h3>
+        <ul>
+            <li><strong>Theme Consistency:</strong> The deep blue (#1A237E) paired with amber (#FFC107) ensures AA-level contrast for accessibility while maintaining a professional "Sense" feel.</li>
+            <li><strong>State Management:</strong> In Flutter, we would use <code>HydratedBloc</code> or <code>shared_preferences</code> to achieve the "Save on Device" feature you requested, allowing users to resume their specific session.</li>
+            <li><strong>Accessibility:</strong> Every screen uses ARIA roles (grid, progressbar, region). The Sudoku cells would be mapped to a focus node tree for D-pad/keyboard navigation.</li>
+            <li><strong>Visual Feedback:</strong> Conflict detection is handled by the <code>.error</code> CSS class (red text on light red background), which is easy to spot for color-blind users due to the background shift.</li>
+        </ul>
+    </div>
+
+</body>
+</html>

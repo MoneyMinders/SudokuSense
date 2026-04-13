@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/cell.dart';
-import '../utils/constants.dart';
+import '../providers/theme_provider.dart';
 
 class CellWidget extends StatelessWidget {
   final Cell cell;
@@ -18,50 +19,48 @@ class CellWidget extends StatelessWidget {
     required this.onTap,
   });
 
-  Color _backgroundColor() {
-    if (cell.isError) return AppColors.errorBackground;
-    if (isHinted) return AppColors.hintHighlight;
-    if (isSelected) return AppColors.selectedCell;
-    if (isHighlighted) return AppColors.highlightedRegion;
-    return AppColors.cellBackground;
-  }
-
   @override
   Widget build(BuildContext context) {
+    final colors = context.watch<ThemeProvider>().config;
+
+    Color backgroundColor() {
+      if (cell.isError) return colors.errorBg;
+      if (isHinted) return colors.hintHighlight;
+      if (isSelected) return colors.selectedCell;
+      if (isHighlighted) return colors.highlightedRegion;
+      return colors.cellBg;
+    }
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        color: _backgroundColor(),
+        color: backgroundColor(),
         child: cell.value != null
-            ? _buildValueDisplay()
-            : _buildCandidatesDisplay(),
+            ? Center(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Padding(
+                    padding: const EdgeInsets.all(2),
+                    child: Text(
+                      '${cell.value}',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight:
+                            cell.isFixed ? FontWeight.bold : FontWeight.normal,
+                        color: cell.isFixed
+                            ? colors.fixedText
+                            : colors.userText,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : _buildCandidates(colors),
       ),
     );
   }
 
-  Widget _buildValueDisplay() {
-    return Center(
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        child: Padding(
-          padding: const EdgeInsets.all(2),
-          child: Text(
-            '${cell.value}',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight:
-                  cell.isFixed ? FontWeight.bold : FontWeight.normal,
-              color: cell.isFixed
-                  ? AppColors.fixedText
-                  : AppColors.userText,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCandidatesDisplay() {
+  Widget _buildCandidates(ThemeConfig colors) {
     if (cell.candidates.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -81,9 +80,9 @@ class CellWidget extends StatelessWidget {
                     fit: BoxFit.scaleDown,
                     child: Text(
                       '$number',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 9,
-                        color: AppColors.candidateText,
+                        color: colors.candidateText,
                         height: 1,
                       ),
                     ),
