@@ -20,57 +20,35 @@ class TesseractOcrStrategy implements OcrStrategy {
     final blobUrl = web.URL.createObjectURL(blob);
 
     try {
-      final result = await _runTesseract(blobUrl);
+      final result = await _tesseractRecognize(blobUrl.toJS, 'eng'.toJS).toDart;
       return _parseResult(result);
     } finally {
       web.URL.revokeObjectURL(blobUrl);
     }
   }
 
-  /// Call Tesseract.js recognize() and return the raw result object.
-  Future<JSObject> _runTesseract(String imageUrl) {
-    final completer = Completer<JSObject>();
-
-    final promise = _tesseractRecognize(imageUrl.toJS, 'eng'.toJS);
-    promise.thenOrCatch(
-      ((JSObject result) {
-        completer.complete(result);
-      }).toJS,
-      ((JSAny error) {
-        completer.completeError('Tesseract.js error: $error');
-      }).toJS,
-    );
-
-    return completer.future;
-  }
-
   /// Parse Tesseract.js result into RecognizedDigits.
-  List<RecognizedDigit> _parseResult(JSObject result) {
+  List<RecognizedDigit> _parseResult(TesseractResult result) {
     final digits = <RecognizedDigit>[];
     final digitPattern = RegExp(r'[1-9]');
 
-    final data = result.getProperty('data'.toJS) as JSObject;
-    final symbols = data.getProperty('symbols'.toJS) as JSArray;
+    final data = result.data;
+    final symbols = data.symbols;
 
     for (int i = 0; i < symbols.length; i++) {
-      final symbol = symbols[i] as JSObject;
-      final text = (symbol.getProperty('text'.toJS) as JSString).toDart.trim();
+      final symbol = symbols[i];
+      final text = symbol.text.toDart.trim();
       if (text.length != 1 || !digitPattern.hasMatch(text)) continue;
 
-      final confidence =
-          (symbol.getProperty('confidence'.toJS) as JSNumber).toDartDouble / 100.0;
+      final confidence = symbol.confidence.toDartDouble / 100.0;
       if (confidence < 0.3) continue;
 
-      final bbox = symbol.getProperty('bbox'.toJS) as JSObject;
-      final x0 = (bbox.getProperty('x0'.toJS) as JSNumber).toDartDouble;
-      final y0 = (bbox.getProperty('y0'.toJS) as JSNumber).toDartDouble;
-      final x1 = (bbox.getProperty('x1'.toJS) as JSNumber).toDartDouble;
-      final y1 = (bbox.getProperty('y1'.toJS) as JSNumber).toDartDouble;
+      final bbox = symbol.bbox;
 
       digits.add(RecognizedDigit(
         value: int.parse(text),
-        centerX: (x0 + x1) / 2,
-        centerY: (y0 + y1) / 2,
+        centerX: (bbox.x0.toDartDouble + bbox.x1.toDartDouble) / 2,
+        centerY: (bbox.y0.toDartDouble + bbox.y1.toDartDouble) / 2,
         confidence: confidence,
       ));
     }
@@ -79,14 +57,29 @@ class TesseractOcrStrategy implements OcrStrategy {
   }
 }
 
-/// JS interop binding for Tesseract.recognize()
-@JS('Tesseract.recognize')
-external JSPromise<JSObject> _tesseractRecognize(JSString image, JSString lang);
+// -- JS interop types for Tesseract.js result structure --
 
-/// Extension to use Promise.then/catch from Dart.
-extension on JSPromise<JSObject> {
-  void thenOrCatch(JSFunction onResolve, JSFunction onReject) {
-    final thenResult = callMethod('then'.toJS, onResolve) as JSPromise;
-    thenResult.callMethod('catch'.toJS, onReject);
-  }
+@JS('Tesseract.recognize')
+external JSPromise<TesseractResult> _tesseractRecognize(
+    JSString image, JSString lang);
+
+extension type TesseractResult(JSObject _) implements JSObject {
+  external TesseractData get data;
+}
+
+extension type TesseractData(JSObject _) implements JSObject {
+  external JSArray<TesseractSymbol> get symbols;
+}
+
+extension type TesseractSymbol(JSObject _) implements JSObject {
+  external JSString get text;
+  external JSNumber get confidence;
+  external TesseractBBox get bbox;
+}
+
+extension type TesseractBBox(JSObject _) implements JSObject {
+  external JSNumber get x0;
+  external JSNumber get y0;
+  external JSNumber get x1;
+  external JSNumber get y1;
 }
