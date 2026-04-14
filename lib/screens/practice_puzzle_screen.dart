@@ -45,6 +45,11 @@ class _PracticePuzzleScreenState extends State<PracticePuzzleScreen> {
   }
 
   void _checkAnswer(int row, int col, int value) {
+    // Always place the value on the board so user sees it
+    final provider = context.read<PuzzleProvider>();
+    provider.selectCell(row, col);
+    provider.setValue(value);
+
     if (row == _puzzle.answerRow &&
         col == _puzzle.answerCol &&
         value == _puzzle.answerValue) {
@@ -52,13 +57,21 @@ class _PracticePuzzleScreenState extends State<PracticePuzzleScreen> {
       setState(() => _solved = true);
     } else {
       HapticFeedback.vibrate();
+      // Validate to show error highlighting
+      provider.validate();
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Not quite — try again or tap "Show How" for help.'),
+          content: Text('Not quite — try again or tap Hint for help.'),
           behavior: SnackBarBehavior.floating,
           duration: Duration(seconds: 2),
         ),
       );
+
+      // Undo after a short delay so user sees the wrong value briefly
+      Future.delayed(const Duration(milliseconds: 800), () {
+        if (mounted) provider.undo();
+      });
     }
   }
 
@@ -372,12 +385,14 @@ class _PracticePuzzleScreenState extends State<PracticePuzzleScreen> {
   }
 
   void _showHintSheet(BuildContext context, ThemeConfig colors, HintResult? hint) {
-    if (hint == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No hint available for this board state.'), behavior: SnackBarBehavior.floating),
-      );
-      return;
-    }
+    // If hint engine found nothing, create a fallback hint from the puzzle's static data
+    final actualHint = hint ?? HintResult(
+      strategyName: widget.group.name,
+      difficulty: Difficulty.easy,
+      explanation: _puzzle.explanation,
+      placements: [Placement(row: _puzzle.answerRow, col: _puzzle.answerCol, value: _puzzle.answerValue)],
+    );
+    _hintResult = actualHint;
 
     showModalBottomSheet<void>(
       context: context,
@@ -385,21 +400,21 @@ class _PracticePuzzleScreenState extends State<PracticePuzzleScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (_) {
+        final h = actualHint;
         String? placementText;
-        if (hint.placements.isNotEmpty) {
-          placementText = hint.placements
+        if (h.placements.isNotEmpty) {
+          placementText = h.placements
               .map((p) => 'Place ${p.value} at Row ${p.row + 1}, Col ${p.col + 1}')
               .join('\n');
         }
         String? eliminationText;
-        if (hint.eliminations.isNotEmpty) {
-          // Limit to first 5 eliminations to keep it readable
-          final elims = hint.eliminations.take(5).toList();
+        if (h.eliminations.isNotEmpty) {
+          final elims = h.eliminations.take(5).toList();
           eliminationText = elims
               .map((e) => 'Remove ${e.value} from R${e.row + 1}C${e.col + 1}')
               .join('\n');
-          if (hint.eliminations.length > 5) {
-            eliminationText += '\n...and ${hint.eliminations.length - 5} more';
+          if (h.eliminations.length > 5) {
+            eliminationText += '\n...and ${h.eliminations.length - 5} more';
           }
         }
 
@@ -424,7 +439,7 @@ class _PracticePuzzleScreenState extends State<PracticePuzzleScreen> {
               Row(
                 children: [
                   Text(
-                    hint.strategyName,
+                    h.strategyName,
                     style: TextStyle(
                       fontSize: 20,
                       fontStyle: FontStyle.italic,
@@ -447,7 +462,7 @@ class _PracticePuzzleScreenState extends State<PracticePuzzleScreen> {
               const SizedBox(height: 12),
               // Explanation
               Text(
-                hint.explanation,
+                h.explanation,
                 style: TextStyle(
                   fontSize: 14,
                   fontStyle: FontStyle.italic,
@@ -481,18 +496,49 @@ class _PracticePuzzleScreenState extends State<PracticePuzzleScreen> {
                 ),
               ],
               const SizedBox(height: 16),
-              // Dismiss
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: OutlinedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: colors.gridBorderThin),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+              // Apply + Dismiss
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 48,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          // Apply the hint — place the value
+                          if (h.placements.isNotEmpty) {
+                            final p = h.placements.first;
+                            final provider = context.read<PuzzleProvider>();
+                            provider.selectCell(p.row, p.col);
+                            provider.setValue(p.value);
+                            _checkAnswer(p.row, p.col, p.value);
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: colors.fixedText,
+                          foregroundColor: colors.background,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                          elevation: 0,
+                        ),
+                        child: const Text('Apply'),
+                      ),
+                    ),
                   ),
-                  child: Text('Got it', style: TextStyle(color: colors.fixedText)),
-                ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: SizedBox(
+                      height: 48,
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: colors.gridBorderThin),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                        ),
+                        child: Text('Dismiss', style: TextStyle(color: colors.candidateText)),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
