@@ -46,6 +46,20 @@ class SudokuGrid extends StatelessWidget {
                     borderRadius: BorderRadius.circular(6),
                     child: Stack(
                       children: [
+                        // OCR image peek overlay (behind cells)
+                        if (provider.peeking &&
+                            provider.ocrImageBytes != null)
+                          Positioned.fill(
+                            child: Opacity(
+                              opacity: 0.85,
+                              child: Image.memory(
+                                provider.ocrImageBytes!,
+                                fit: BoxFit.fill,
+                                color: Colors.grey,
+                                colorBlendMode: BlendMode.saturation,
+                              ),
+                            ),
+                          ),
                         // Cell backgrounds and content
                         Column(
                           children: List.generate(9, (row) {

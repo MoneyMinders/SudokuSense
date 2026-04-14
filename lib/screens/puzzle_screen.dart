@@ -369,6 +369,29 @@ class _PuzzleScreenState extends State<PuzzleScreen> with WidgetsBindingObserver
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        if (provider.ocrImageBytes != null) ...[
+          GestureDetector(
+            onLongPressStart: (_) => provider.setPeeking(true),
+            onLongPressEnd: (_) => provider.setPeeking(false),
+            child: Container(
+              height: 40,
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              decoration: BoxDecoration(
+                border: Border.all(color: colors.gridBorderThin),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.visibility_outlined, size: 18, color: colors.fixedText),
+                  const SizedBox(width: 6),
+                  Text('Peek', style: TextStyle(color: colors.fixedText, fontSize: 14)),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+        ],
         OutlinedButton.icon(
           onPressed: () {
             provider.savePuzzle(name: 'Draft ${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}');

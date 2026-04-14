@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import '../models/board.dart';
@@ -27,6 +28,8 @@ class PuzzleProvider extends ChangeNotifier {
   bool _pencilMode = false;
   bool _setupMode = false;
   bool _setupFromOcr = false;
+  Uint8List? _ocrImageBytes; // Cropped scan image for peek overlay
+  bool _peeking = false; // Whether user is holding the peek button
   int? _digitFirst; // "Select Digit First" mode: selected digit to place
   final List<BoardState> _history = [];
   final List<BoardState> _redoStack = [];
@@ -47,6 +50,8 @@ class PuzzleProvider extends ChangeNotifier {
   bool get pencilMode => _pencilMode;
   bool get setupMode => _setupMode;
   bool get setupFromOcr => _setupFromOcr;
+  Uint8List? get ocrImageBytes => _ocrImageBytes;
+  bool get peeking => _peeking;
   int? get digitFirst => _digitFirst;
   HintResult? get activeHint => _activeHint;
   bool get canUndo => _history.isNotEmpty;
@@ -130,6 +135,8 @@ class PuzzleProvider extends ChangeNotifier {
     }
 
     _setupMode = false;
+    _ocrImageBytes = null;
+    _peeking = false;
     _originalGrid = _board.toGrid();
     _currentPuzzleId = DateTime.now().millisecondsSinceEpoch.toString();
     // Start the timer
@@ -211,6 +218,17 @@ class PuzzleProvider extends ChangeNotifier {
   // ---------------------------------------------------------------------------
   // Selection
   // ---------------------------------------------------------------------------
+
+  /// Store the cropped scan image for the peek overlay.
+  void setOcrImageBytes(Uint8List? bytes) {
+    _ocrImageBytes = bytes;
+  }
+
+  /// Toggle the peek overlay on/off (called by long press).
+  void setPeeking(bool value) {
+    _peeking = value;
+    notifyListeners();
+  }
 
   void selectCell(int row, int col) {
     _selectedRow = row;

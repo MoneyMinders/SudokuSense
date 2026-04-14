@@ -54,6 +54,7 @@ class _CameraScreenState extends State<CameraScreen> {
       if (board != null) {
         final provider = context.read<PuzzleProvider>();
         provider.startSetupMode(fromOcr: true);
+        provider.setOcrImageBytes(bytes);
         final grid = board.toGrid();
         for (int r = 0; r < 9; r++) {
           for (int c = 0; c < 9; c++) {

@@ -5,6 +5,7 @@ import 'screens/home_screen.dart';
 import 'screens/puzzle_screen.dart';
 import 'screens/camera_screen.dart';
 import 'screens/saved_puzzles_screen.dart';
+import 'screens/practice_list_screen.dart';
 
 class SudokuSenseApp extends StatelessWidget {
   const SudokuSenseApp({super.key});
@@ -25,6 +26,7 @@ class SudokuSenseApp extends StatelessWidget {
             '/camera': (context) => const CameraScreen(),
             '/puzzle': (context) => const PuzzleScreen(),
             '/saved': (context) => const SavedPuzzlesScreen(),
+            '/practice': (context) => const PracticeListScreen(),
           },
         );
       },

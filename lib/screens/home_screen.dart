@@ -142,21 +142,41 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
 
-                // Tertiary — Library (text button, least prominent)
+                // Practice — learn techniques
+                const SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,
-                  height: 44,
-                  child: TextButton.icon(
-                    onPressed: () => Navigator.pushNamed(context, '/saved'),
-                    icon: Icon(Icons.bookmark_outline, size: 16, color: colors.candidateText),
+                  height: 52,
+                  child: OutlinedButton.icon(
+                    onPressed: () => Navigator.pushNamed(context, '/practice'),
+                    icon: Icon(Icons.school_outlined, size: 18, color: colors.fixedText),
                     label: Text(
-                      'Saved Puzzles',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: colors.candidateText,
+                      'Practice Techniques',
+                      style: TextStyle(fontSize: 15, color: colors.fixedText),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: colors.gridBorderThin),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
                       ),
                     ),
                   ),
+                ),
+
+                // Tertiary — Library + Saved (text buttons)
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton.icon(
+                      onPressed: () => Navigator.pushNamed(context, '/saved'),
+                      icon: Icon(Icons.bookmark_outline, size: 14, color: colors.candidateText),
+                      label: Text(
+                        'Library',
+                        style: TextStyle(fontSize: 13, color: colors.candidateText),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
