@@ -37,8 +37,7 @@ class _CameraScreenState extends State<CameraScreen> {
 
     if (image == null || !mounted) return;
 
-    // On native platforms, let the user crop to just the grid area.
-    // On web, skip cropping (image_cropper has no web support).
+    // Let the user crop to just the grid area (all platforms).
     final bytes = await _getProcessedBytes(image);
     if (bytes == null || !mounted) return;
 
@@ -82,13 +81,8 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
-  /// On native: crop then read bytes. On web: read bytes directly.
+  /// Crop the image then return bytes. Works on all platforms.
   Future<Uint8List?> _getProcessedBytes(XFile image) async {
-    if (kIsWeb) {
-      return await image.readAsBytes();
-    }
-
-    // Native: offer crop UI
     final colors = context.read<ThemeProvider>().config;
     final cropped = await ImageCropper().cropImage(
       sourcePath: image.path,
@@ -105,6 +99,11 @@ class _CameraScreenState extends State<CameraScreen> {
           title: 'Crop to grid',
           aspectRatioLockEnabled: false,
           resetAspectRatioEnabled: true,
+        ),
+        WebUiSettings(
+          context: context,
+          presentStyle: WebPresentStyle.dialog,
+          size: const CropperSize(width: 400, height: 400),
         ),
       ],
     );
