@@ -180,9 +180,9 @@ class _PracticePuzzleScreenState extends State<PracticePuzzleScreen> {
 
           const SizedBox(height: 8),
 
-          // Hint / explanation
-          if (_showHint || _solved)
-            _buildExplanation(colors),
+          // Show explanation only after solving (compact)
+          if (_solved)
+            _buildSolvedExplanation(colors),
 
           // Action buttons
           Padding(
@@ -196,10 +196,8 @@ class _PracticePuzzleScreenState extends State<PracticePuzzleScreen> {
                         // Run the real hint engine on this puzzle
                         final board = Board.fromGrid(_puzzle.grid);
                         final hint = HintService().findHint(board);
-                        setState(() {
-                          _showHint = true;
-                          _hintResult = hint;
-                        });
+                        _hintResult = hint;
+
                         // Highlight the target cell
                         if (hint != null && hint.placements.isNotEmpty) {
                           context.read<PuzzleProvider>().selectCell(
@@ -207,6 +205,9 @@ class _PracticePuzzleScreenState extends State<PracticePuzzleScreen> {
                             hint.placements.first.col,
                           );
                         }
+
+                        // Show as bottom sheet popup
+                        _showHintSheet(context, colors, hint);
                       },
                       icon: Icon(Icons.lightbulb_outline, size: 16, color: colors.fixedText),
                       label: Text('Hint', style: TextStyle(color: colors.fixedText)),
@@ -370,125 +371,155 @@ class _PracticePuzzleScreenState extends State<PracticePuzzleScreen> {
     );
   }
 
-  Widget _buildExplanation(ThemeConfig colors) {
-    // Use the real hint engine result if available, otherwise fallback to static
-    final hintText = _hintResult?.explanation ?? _puzzle.explanation;
-    final strategyName = _hintResult?.strategyName ?? widget.group.name;
-
-    String? placementText;
-    if (_hintResult != null && _hintResult!.placements.isNotEmpty) {
-      placementText = _hintResult!.placements
-          .map((p) => 'Place ${p.value} at Row ${p.row + 1}, Column ${p.col + 1}')
-          .join('\n');
-    }
-    String? eliminationText;
-    if (_hintResult != null && _hintResult!.eliminations.isNotEmpty) {
-      eliminationText = _hintResult!.eliminations
-          .map((e) => 'Remove ${e.value} from Row ${e.row + 1}, Column ${e.col + 1}')
-          .join('\n');
+  void _showHintSheet(BuildContext context, ThemeConfig colors, HintResult? hint) {
+    if (hint == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No hint available for this board state.'), behavior: SnackBarBehavior.floating),
+      );
+      return;
     }
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colors.highlightedRegion,
-        borderRadius: BorderRadius.circular(14),
+    showModalBottomSheet<void>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Strategy name
-          Row(
+      builder: (_) {
+        String? placementText;
+        if (hint.placements.isNotEmpty) {
+          placementText = hint.placements
+              .map((p) => 'Place ${p.value} at Row ${p.row + 1}, Col ${p.col + 1}')
+              .join('\n');
+        }
+        String? eliminationText;
+        if (hint.eliminations.isNotEmpty) {
+          // Limit to first 5 eliminations to keep it readable
+          final elims = hint.eliminations.take(5).toList();
+          eliminationText = elims
+              .map((e) => 'Remove ${e.value} from R${e.row + 1}C${e.col + 1}')
+              .join('\n');
+          if (hint.eliminations.length > 5) {
+            eliminationText += '\n...and ${hint.eliminations.length - 5} more';
+          }
+        }
+
+        return Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.lightbulb_outline, size: 16, color: colors.accent),
-              const SizedBox(width: 8),
+              // Handle
+              Center(
+                child: Container(
+                  width: 40, height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: colors.gridBorderThin,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              // Strategy name
+              Row(
+                children: [
+                  Text(
+                    hint.strategyName,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontStyle: FontStyle.italic,
+                      fontFamily: 'Serif',
+                      fontWeight: FontWeight.w600,
+                      color: colors.fixedText,
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    'LOGIC STEP',
+                    style: TextStyle(
+                      fontSize: 10,
+                      letterSpacing: 1.5,
+                      color: colors.candidateText,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              // Explanation
               Text(
-                strategyName,
+                hint.explanation,
                 style: TextStyle(
                   fontSize: 14,
-                  fontWeight: FontWeight.w600,
                   fontStyle: FontStyle.italic,
                   fontFamily: 'Serif',
-                  color: colors.fixedText,
+                  color: colors.candidateText,
+                  height: 1.5,
+                ),
+              ),
+              if (placementText != null) ...[
+                const SizedBox(height: 12),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0x1A4CAF50),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(placementText, style: TextStyle(fontSize: 13, color: colors.fixedText, fontWeight: FontWeight.w500, height: 1.4)),
+                ),
+              ],
+              if (eliminationText != null) ...[
+                const SizedBox(height: 8),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0x1AE57373),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(eliminationText, style: TextStyle(fontSize: 12, color: colors.fixedText, height: 1.4)),
+                ),
+              ],
+              const SizedBox(height: 16),
+              // Dismiss
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: OutlinedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: colors.gridBorderThin),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                  ),
+                  child: Text('Got it', style: TextStyle(color: colors.fixedText)),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+        );
+      },
+    );
+  }
 
-          // Explanation from hint engine
-          Text(
-            hintText,
-            style: TextStyle(
-              fontSize: 13,
-              fontStyle: FontStyle.italic,
-              fontFamily: 'Serif',
-              color: colors.candidateText,
-              height: 1.5,
-            ),
-          ),
+  Widget _buildSolvedExplanation(ThemeConfig colors) {
+    final text = _hintResult?.explanation ?? _puzzle.explanation;
 
-          // Placements
-          if (placementText != null) ...[
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: const Color(0x1A4CAF50),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(Icons.add_circle_outline, size: 14, color: Color(0xFF4CAF50)),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      placementText,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: colors.fixedText,
-                        height: 1.4,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-
-          // Eliminations
-          if (eliminationText != null) ...[
-            const SizedBox(height: 6),
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: const Color(0x1AE57373),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(Icons.remove_circle_outline, size: 14, color: Color(0xFFE57373)),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      eliminationText,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: colors.fixedText,
-                        height: 1.4,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ],
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: colors.highlightedRegion,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 13,
+          fontStyle: FontStyle.italic,
+          fontFamily: 'Serif',
+          color: colors.candidateText,
+          height: 1.4,
+        ),
       ),
     );
   }
