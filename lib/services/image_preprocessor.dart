@@ -7,8 +7,9 @@ import 'package:image/image.dart' as img;
 /// Works on all platforms (no dart:io dependency).
 class ImagePreprocessor {
   /// Process raw image bytes and return cleaned PNG bytes.
+  /// [highContrast] uses more aggressive settings and dilation for faint digits.
   /// Returns null if processing fails.
-  static Uint8List? preprocessBytes(Uint8List inputBytes) {
+  static Uint8List? preprocessBytes(Uint8List inputBytes, {bool highContrast = false}) {
     try {
       var image = img.decodeImage(inputBytes);
       if (image == null) return null;
@@ -28,7 +29,7 @@ class ImagePreprocessor {
       image = img.grayscale(image);
 
       // Boost contrast — makes digits stand out from paper
-      image = img.contrast(image, contrast: 150);
+      image = img.contrast(image, contrast: highContrast ? 200 : 150);
 
       // Normalize brightness
       image = img.normalize(image, min: 0, max: 255);
@@ -41,7 +42,16 @@ class ImagePreprocessor {
       ], div: 1);
 
       // Adaptive threshold — handles shadows and uneven lighting
-      image = _adaptiveThreshold(image, blockSize: 15, c: 10);
+      image = _adaptiveThreshold(
+        image,
+        blockSize: highContrast ? 21 : 15,
+        c: highContrast ? 6 : 10,
+      );
+
+      // Dilate black pixels to thicken thin/faint digit strokes
+      if (highContrast) {
+        image = _dilateBlack(image);
+      }
 
       return Uint8List.fromList(img.encodePng(image));
     } catch (e) {
@@ -95,6 +105,34 @@ class ImagePreprocessor {
           result.setPixelRgb(x, y, 0, 0, 0);
         } else {
           result.setPixelRgb(x, y, 255, 255, 255);
+        }
+      }
+    }
+
+    return result;
+  }
+
+  /// Dilate black pixels (foreground) using a 3x3 kernel.
+  /// If any neighbor is black, the pixel becomes black.
+  /// This thickens thin digit strokes for better OCR recognition.
+  static img.Image _dilateBlack(img.Image src) {
+    final w = src.width;
+    final h = src.height;
+    final result = img.Image.from(src);
+
+    for (int y = 1; y < h - 1; y++) {
+      for (int x = 1; x < w - 1; x++) {
+        // Check if any pixel in the 3x3 neighborhood is black
+        bool hasBlack = false;
+        for (int dy = -1; dy <= 1 && !hasBlack; dy++) {
+          for (int dx = -1; dx <= 1 && !hasBlack; dx++) {
+            if (src.getPixel(x + dx, y + dy).r.toInt() == 0) {
+              hasBlack = true;
+            }
+          }
+        }
+        if (hasBlack) {
+          result.setPixelRgb(x, y, 0, 0, 0);
         }
       }
     }

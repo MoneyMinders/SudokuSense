@@ -41,7 +41,7 @@ class TesseractOcrStrategy implements OcrStrategy {
       if (text.length != 1 || !digitPattern.hasMatch(text)) continue;
 
       final confidence = symbol.confidence.toDartDouble / 100.0;
-      if (confidence < 0.3) continue;
+      if (confidence < 0.5) continue;
 
       final bbox = symbol.bbox;
 

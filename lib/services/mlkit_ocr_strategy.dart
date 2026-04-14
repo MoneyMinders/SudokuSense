@@ -9,7 +9,7 @@ import 'ocr_strategy.dart';
 OcrStrategy createOcrStrategy() => MlKitOcrStrategy();
 
 class MlKitOcrStrategy implements OcrStrategy {
-  static const double _minConfidence = 0.3;
+  static const double _minConfidence = 0.5;
 
   @override
   Future<List<RecognizedDigit>> extractDigits(Uint8List imageBytes) async {

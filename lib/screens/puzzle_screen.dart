@@ -366,54 +366,72 @@ class _PuzzleScreenState extends State<PuzzleScreen> with WidgetsBindingObserver
     PuzzleProvider provider,
     ThemeConfig colors,
   ) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        if (provider.ocrImageBytes != null) ...[
-          GestureDetector(
-            onLongPressStart: (_) => provider.setPeeking(true),
-            onLongPressEnd: (_) => provider.setPeeking(false),
-            child: Container(
-              height: 40,
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              decoration: BoxDecoration(
-                border: Border.all(color: colors.gridBorderThin),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (provider.ocrImageBytes != null) ...[
+            OutlinedButton.icon(
+              onPressed: () {
+                showDialog<void>(
+                  context: context,
+                  builder: (ctx) => GestureDetector(
+                    onTap: () => Navigator.pop(ctx),
+                    child: Dialog(
+                      backgroundColor: Colors.transparent,
+                      insetPadding: const EdgeInsets.all(24),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: InteractiveViewer(
+                          minScale: 0.5,
+                          maxScale: 4.0,
+                          child: Image.memory(
+                            provider.ocrImageBytes!,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+              icon: Icon(Icons.visibility_outlined, size: 16, color: colors.fixedText),
+              label: Text('Preview', style: TextStyle(color: colors.fixedText, fontSize: 13)),
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: colors.gridBorderThin),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+              ),
+            ),
+            const SizedBox(width: 8),
+          ],
+          OutlinedButton.icon(
+            onPressed: () {
+              provider.savePuzzle(name: 'Draft ${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}');
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Puzzle saved!'),
+                  behavior: SnackBarBehavior.floating,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+            },
+            icon: Icon(Icons.bookmark_add_outlined, size: 16, color: colors.fixedText),
+            label: Text('Save', style: TextStyle(color: colors.fixedText, fontSize: 13)),
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(color: colors.gridBorderThin),
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.visibility_outlined, size: 18, color: colors.fixedText),
-                  const SizedBox(width: 6),
-                  Text('Peek', style: TextStyle(color: colors.fixedText, fontSize: 14)),
-                ],
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
             ),
           ),
-          const SizedBox(width: 12),
-        ],
-        OutlinedButton.icon(
-          onPressed: () {
-            provider.savePuzzle(name: 'Draft ${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}');
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Puzzle saved!'),
-                behavior: SnackBarBehavior.floating,
-                duration: Duration(seconds: 2),
-              ),
-            );
-          },
-          icon: Icon(Icons.bookmark_add_outlined, size: 18, color: colors.fixedText),
-          label: Text('Save', style: TextStyle(color: colors.fixedText)),
-          style: OutlinedButton.styleFrom(
-            side: BorderSide(color: colors.gridBorderThin),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14),
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        ElevatedButton.icon(
+          const SizedBox(width: 8),
+          ElevatedButton.icon(
           onPressed: () {
             final error = provider.finishSetup();
             if (error != null) {
@@ -436,7 +454,8 @@ class _PuzzleScreenState extends State<PuzzleScreen> with WidgetsBindingObserver
             ),
           ),
         ),
-      ],
+        ],
+      ),
     );
   }
 
