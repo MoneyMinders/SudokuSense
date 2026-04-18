@@ -9,6 +9,7 @@ import '../services/solver_service.dart';
 import '../services/candidate_service.dart';
 import '../services/hint_service.dart';
 import '../services/storage_service.dart';
+import '../utils/puzzle_tier.dart';
 
 /// Snapshot of board state for undo support.
 class BoardState {
@@ -398,29 +399,7 @@ class PuzzleProvider extends ChangeNotifier {
   /// Stops when the puzzle is complete or no further strategy applies.
   List<HintResult> computeSolutionSteps() {
     if (_originalGrid == null) return [];
-    final workBoard = Board.fromGrid(_originalGrid!);
-    final service = HintService();
-    final steps = <HintResult>[];
-    const maxSteps = 200; // safety cap
-
-    for (int i = 0; i < maxSteps; i++) {
-      if (workBoard.isComplete()) break;
-      final hint = service.findHint(workBoard);
-      if (hint == null) break;
-      steps.add(hint);
-
-      for (final p in hint.placements) {
-        final cell = workBoard.getCell(p.row, p.col);
-        if (!cell.isFixed) {
-          cell.value = p.value;
-          cell.candidates.clear();
-        }
-      }
-      for (final e in hint.eliminations) {
-        workBoard.getCell(e.row, e.col).candidates.remove(e.value);
-      }
-    }
-    return steps;
+    return _replaySolution(_originalGrid!);
   }
 
   /// Fill every empty cell with the value from the stored solution.
@@ -540,17 +519,44 @@ class PuzzleProvider extends ChangeNotifier {
   // Random puzzle
   // ---------------------------------------------------------------------------
 
-  /// Generate a random solvable Sudoku puzzle with a unique solution.
-  /// Algorithm: fill grid randomly, then remove cells while ensuring uniqueness.
-  /// Targets ~45 empty cells (36 clues) for medium difficulty.
-  void loadRandomPuzzle() {
+  /// Generate a random solvable Sudoku puzzle at the requested [tier].
+  /// Produces candidates until one classifies to [tier]; otherwise returns
+  /// the closest-tier candidate seen.
+  void loadRandomPuzzle({PuzzleTier tier = PuzzleTier.medium}) {
     final random = Random();
+    const maxAttempts = 20;
 
-    // Step 1: Generate a fully solved grid using randomized backtracking.
+    List<List<int>>? bestFallback;
+    int bestDistance = 999;
+
+    for (int attempt = 0; attempt < maxAttempts; attempt++) {
+      final grid = _generateCandidate(random, tier.targetBlanks);
+      final steps = _replaySolution(grid);
+      final candidateTier = classifyTier(steps);
+
+      if (candidateTier == tier) {
+        loadPuzzle(grid);
+        return;
+      }
+
+      // Track closest fallback in case no exact match is found.
+      if (candidateTier != null) {
+        final dist = (candidateTier.index - tier.index).abs();
+        if (dist < bestDistance) {
+          bestDistance = dist;
+          bestFallback = grid;
+        }
+      }
+    }
+
+    loadPuzzle(bestFallback ?? _generateCandidate(random, tier.targetBlanks));
+  }
+
+  /// Build one candidate puzzle grid with the requested blank count.
+  List<List<int>> _generateCandidate(Random random, int targetBlanks) {
     final grid = List.generate(9, (_) => List.filled(9, 0));
     _fillGrid(grid, random);
 
-    // Step 2: Remove cells one by one, ensuring unique solution each time.
     final positions = <(int, int)>[];
     for (int r = 0; r < 9; r++) {
       for (int c = 0; c < 9; c++) {
@@ -559,9 +565,7 @@ class PuzzleProvider extends ChangeNotifier {
     }
     positions.shuffle(random);
 
-    const targetBlanks = 45;
     int removed = 0;
-
     for (final (r, c) in positions) {
       if (removed >= targetBlanks) break;
       if (grid[r][c] == 0) continue;
@@ -569,18 +573,42 @@ class PuzzleProvider extends ChangeNotifier {
       final backup = grid[r][c];
       grid[r][c] = 0;
 
-      // Check if puzzle still has exactly 1 solution.
       final testBoard = Board.fromGrid(grid);
       final result = SolverService().solve(testBoard);
       if (result.solutionCount != 1) {
-        // Removing this cell breaks uniqueness — put it back.
         grid[r][c] = backup;
       } else {
         removed++;
       }
     }
+    return grid;
+  }
 
-    loadPuzzle(grid);
+  /// Replay the hint engine on [grid] from scratch and return every step.
+  List<HintResult> _replaySolution(List<List<int>> grid) {
+    final workBoard = Board.fromGrid(grid);
+    final service = HintService();
+    final steps = <HintResult>[];
+    const maxSteps = 200;
+
+    for (int i = 0; i < maxSteps; i++) {
+      if (workBoard.isComplete()) break;
+      final hint = service.findHint(workBoard);
+      if (hint == null) break;
+      steps.add(hint);
+
+      for (final p in hint.placements) {
+        final cell = workBoard.getCell(p.row, p.col);
+        if (!cell.isFixed) {
+          cell.value = p.value;
+          cell.candidates.clear();
+        }
+      }
+      for (final e in hint.eliminations) {
+        workBoard.getCell(e.row, e.col).candidates.remove(e.value);
+      }
+    }
+    return steps;
   }
 
   /// Fill a 9x9 grid with valid random numbers using backtracking.

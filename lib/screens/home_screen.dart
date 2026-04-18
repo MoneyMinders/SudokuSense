@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/puzzle_provider.dart';
 import '../providers/theme_provider.dart';
+import '../utils/puzzle_tier.dart';
+import '../widgets/difficulty_picker_sheet.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -120,10 +122,7 @@ class HomeScreen extends StatelessWidget {
                       child: SizedBox(
                         height: 52,
                         child: OutlinedButton.icon(
-                          onPressed: () {
-                            context.read<PuzzleProvider>().loadRandomPuzzle();
-                            Navigator.pushNamed(context, '/puzzle');
-                          },
+                          onPressed: () => _showDifficultyPicker(context),
                           icon: Icon(Icons.shuffle_rounded, size: 16, color: colors.fixedText),
                           label: Text(
                             'Random',
@@ -184,6 +183,61 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _showDifficultyPicker(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (sheetCtx) => DifficultyPickerSheet(
+        onSelected: (tier) {
+          Navigator.pop(sheetCtx);
+          _generateAndOpen(context, tier);
+        },
+      ),
+    );
+  }
+
+  Future<void> _generateAndOpen(BuildContext context, PuzzleTier tier) async {
+    final provider = context.read<PuzzleProvider>();
+    final navigator = Navigator.of(context);
+    final colors = context.read<ThemeProvider>().config;
+
+    // Spinner dialog — generation can take several seconds for Killer.
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => Center(
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(color: colors.fixedText),
+              const SizedBox(height: 12),
+              Text(
+                'Generating ${tier.label}…',
+                style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                  fontFamily: 'Serif',
+                  color: colors.fixedText,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    // Yield to the event loop so the spinner paints, then generate.
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    provider.loadRandomPuzzle(tier: tier);
+
+    navigator.pop(); // close spinner
+    navigator.pushNamed('/puzzle');
   }
 
   void _showThemePicker(BuildContext context) {
