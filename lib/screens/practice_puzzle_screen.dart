@@ -511,7 +511,9 @@ class _PracticePuzzleScreenState extends State<PracticePuzzleScreen> {
                             // Force pencil off so value is placed, not toggled as candidate.
                             if (provider.pencilMode) provider.togglePencilMode();
                             provider.selectCell(p.row, p.col);
-                            _checkAnswer(p.row, p.col, p.value);
+                            provider.applyHint(h);
+                            HapticFeedback.heavyImpact();
+                            setState(() => _solved = true);
                           }
                         },
                         style: ElevatedButton.styleFrom(
