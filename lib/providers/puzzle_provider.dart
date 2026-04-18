@@ -393,6 +393,36 @@ class PuzzleProvider extends ChangeNotifier {
   // Auto-solve
   // ---------------------------------------------------------------------------
 
+  /// Replay the hint engine from the original puzzle and return the
+  /// full ordered list of logical steps the solver would take.
+  /// Stops when the puzzle is complete or no further strategy applies.
+  List<HintResult> computeSolutionSteps() {
+    if (_originalGrid == null) return [];
+    final workBoard = Board.fromGrid(_originalGrid!);
+    final service = HintService();
+    final steps = <HintResult>[];
+    const maxSteps = 200; // safety cap
+
+    for (int i = 0; i < maxSteps; i++) {
+      if (workBoard.isComplete()) break;
+      final hint = service.findHint(workBoard);
+      if (hint == null) break;
+      steps.add(hint);
+
+      for (final p in hint.placements) {
+        final cell = workBoard.getCell(p.row, p.col);
+        if (!cell.isFixed) {
+          cell.value = p.value;
+          cell.candidates.clear();
+        }
+      }
+      for (final e in hint.eliminations) {
+        workBoard.getCell(e.row, e.col).candidates.remove(e.value);
+      }
+    }
+    return steps;
+  }
+
   /// Fill every empty cell with the value from the stored solution.
   void autoSolve() {
     if (_solution == null) return;

@@ -6,6 +6,7 @@ import '../providers/theme_provider.dart';
 import '../widgets/sudoku_grid.dart';
 import '../widgets/number_pad.dart';
 import '../widgets/hint_sheet.dart';
+import '../widgets/solution_steps_sheet.dart';
 
 class PuzzleScreen extends StatefulWidget {
   const PuzzleScreen({super.key});
@@ -91,6 +92,8 @@ class _PuzzleScreenState extends State<PuzzleScreen> with WidgetsBindingObserver
                 itemBuilder: (context) => [
                   if (!provider.setupMode)
                     const PopupMenuItem(value: 'validate', child: Text('Validate')),
+                  if (!provider.setupMode)
+                    const PopupMenuItem(value: 'solveSteps', child: Text('Solution Steps')),
                   const PopupMenuItem(value: 'save', child: Text('Save Puzzle')),
                   if (!provider.setupMode)
                     const PopupMenuItem(value: 'editClues', child: Text('Edit Clues')),
@@ -113,13 +116,10 @@ class _PuzzleScreenState extends State<PuzzleScreen> with WidgetsBindingObserver
                 SnackBar(
                   content: const Text('Puzzle solved!'),
                   behavior: SnackBarBehavior.floating,
-                  duration: const Duration(seconds: 5),
+                  duration: const Duration(seconds: 6),
                   action: SnackBarAction(
-                    label: 'Undo',
-                    onPressed: () {
-                      _solvedDialogShown = false;
-                      provider.undo();
-                    },
+                    label: 'View Steps',
+                    onPressed: () => _showSolutionSteps(context, provider),
                   ),
                 ),
               );
@@ -651,7 +651,19 @@ class _PuzzleScreenState extends State<PuzzleScreen> with WidgetsBindingObserver
             duration: const Duration(seconds: 2),
           ),
         );
+      case 'solveSteps':
+        _showSolutionSteps(context, provider);
     }
+  }
+
+  void _showSolutionSteps(BuildContext context, PuzzleProvider provider) {
+    final steps = provider.computeSolutionSteps();
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => SolutionStepsSheet(steps: steps),
+    );
   }
 }
 
