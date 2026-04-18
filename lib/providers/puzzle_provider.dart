@@ -512,14 +512,15 @@ class PuzzleProvider extends ChangeNotifier {
 
   /// Generate a random solvable Sudoku puzzle with a unique solution.
   /// Algorithm: fill grid randomly, then remove cells while ensuring uniqueness.
+  /// Targets ~45 empty cells (36 clues) for medium difficulty.
   void loadRandomPuzzle() {
     final random = Random();
 
-    // Step 1: Generate a fully solved grid using randomized backtracking
+    // Step 1: Generate a fully solved grid using randomized backtracking.
     final grid = List.generate(9, (_) => List.filled(9, 0));
     _fillGrid(grid, random);
 
-    // Step 2: Remove cells one by one, ensuring unique solution each time
+    // Step 2: Remove cells one by one, ensuring unique solution each time.
     final positions = <(int, int)>[];
     for (int r = 0; r < 9; r++) {
       for (int c = 0; c < 9; c++) {
@@ -528,21 +529,24 @@ class PuzzleProvider extends ChangeNotifier {
     }
     positions.shuffle(random);
 
-    int attempts = 5; // Higher = harder puzzle (more removals attempted)
+    const targetBlanks = 45;
+    int removed = 0;
+
     for (final (r, c) in positions) {
-      if (attempts <= 0) break;
+      if (removed >= targetBlanks) break;
       if (grid[r][c] == 0) continue;
 
       final backup = grid[r][c];
       grid[r][c] = 0;
 
-      // Check if puzzle still has exactly 1 solution
+      // Check if puzzle still has exactly 1 solution.
       final testBoard = Board.fromGrid(grid);
       final result = SolverService().solve(testBoard);
       if (result.solutionCount != 1) {
-        // Multiple or zero solutions — put it back
+        // Removing this cell breaks uniqueness — put it back.
         grid[r][c] = backup;
-        attempts--;
+      } else {
+        removed++;
       }
     }
 

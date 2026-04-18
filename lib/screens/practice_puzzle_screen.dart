@@ -505,12 +505,12 @@ class _PracticePuzzleScreenState extends State<PracticePuzzleScreen> {
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.pop(context);
-                          // Apply the hint — place the value
                           if (h.placements.isNotEmpty) {
                             final p = h.placements.first;
                             final provider = context.read<PuzzleProvider>();
+                            // Force pencil off so value is placed, not toggled as candidate.
+                            if (provider.pencilMode) provider.togglePencilMode();
                             provider.selectCell(p.row, p.col);
-                            provider.setValue(p.value);
                             _checkAnswer(p.row, p.col, p.value);
                           }
                         },
