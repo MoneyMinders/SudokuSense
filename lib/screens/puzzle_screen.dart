@@ -44,16 +44,30 @@ class _PuzzleScreenState extends State<PuzzleScreen> with WidgetsBindingObserver
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.inactive) {
       provider.pauseTimer();
+      _autoSave(provider);
     } else if (state == AppLifecycleState.resumed) {
       provider.resumeTimer();
     }
   }
 
+  void _autoSave(PuzzleProvider provider) {
+    // Skip setup mode (puzzle isn't ready yet) — savePuzzle itself bails if
+    // there's no loaded puzzle at all.
+    if (provider.setupMode) return;
+    provider.savePuzzle();
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.watch<ThemeProvider>().config;
+    final provider = context.read<PuzzleProvider>();
 
-    return Scaffold(
+    return PopScope(
+      canPop: true,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) _autoSave(provider);
+      },
+      child: Scaffold(
       appBar: AppBar(
         title: Text(
           'SudokuSense',
@@ -269,6 +283,7 @@ class _PuzzleScreenState extends State<PuzzleScreen> with WidgetsBindingObserver
             ],
           );
         },
+      ),
       ),
     );
   }
