@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../data/practice_puzzles.dart';
 import '../providers/theme_provider.dart';
-import 'practice_puzzle_screen.dart';
+import 'practice_intro_screen.dart';
 
 class PracticeListScreen extends StatelessWidget {
   const PracticeListScreen({super.key});
@@ -91,7 +91,7 @@ class _TechniqueCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => PracticePuzzleScreen(group: group),
+              builder: (_) => PracticeIntroScreen(group: group),
             ),
           );
         },
