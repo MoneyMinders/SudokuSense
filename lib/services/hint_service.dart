@@ -56,10 +56,47 @@ class HintService {
     final workBoard = board.deepCopy();
     CandidateService().calculateAllCandidates(workBoard);
 
+    // If the user has already narrowed candidates on the real board (via
+    // pencil marks or earlier hint eliminations), intersect those into the
+    // working board. Without this, each call starts from raw candidates and
+    // the engine re-proposes eliminations the user has already applied.
+    for (var r = 0; r < 9; r++) {
+      for (var c = 0; c < 9; c++) {
+        final userCell = board.getCell(r, c);
+        if (userCell.value != null) continue;
+        if (userCell.candidates.isEmpty) continue;
+        final workCell = workBoard.getCell(r, c);
+        workCell.candidates.removeWhere(
+          (v) => !userCell.candidates.contains(v),
+        );
+      }
+    }
+
     for (final strategy in _strategies) {
       final result = strategy.apply(workBoard);
-      if (result != null) return result;
+      if (result != null) {
+        // Skip hints whose effects the user has already realized — no
+        // useful placements and no eliminations against the real board.
+        if (_isRedundant(result, board)) continue;
+        return result;
+      }
     }
     return null;
+  }
+
+  /// A hint is redundant if every placement is already in place on the real
+  /// board and every elimination targets a candidate the user has already
+  /// removed (or never had).
+  bool _isRedundant(HintResult hint, Board board) {
+    for (final p in hint.placements) {
+      if (board.getCell(p.row, p.col).value != p.value) return false;
+    }
+    for (final e in hint.eliminations) {
+      final cell = board.getCell(e.row, e.col);
+      if (cell.value == null && cell.candidates.contains(e.value)) {
+        return false;
+      }
+    }
+    return true;
   }
 }

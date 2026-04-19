@@ -703,6 +703,7 @@ class PuzzleProvider extends ChangeNotifier {
       currentGrid: _board.toGrid(),
       savedAt: DateTime.now(),
       progress: progress,
+      elapsed: elapsed,
     );
 
     await StorageService().save(puzzle);
@@ -741,6 +742,11 @@ class PuzzleProvider extends ChangeNotifier {
     final result = solver.solve(original);
     _solution = result.solution;
     _solutionCount = result.solutionCount;
+
+    // Resume the timer from where the player left off.
+    _savedElapsed = saved.elapsed;
+    _stopwatch.reset();
+    _stopwatch.start();
 
     // Don't auto-fill candidates — user does it manually via Fill Notes
     notifyListeners();

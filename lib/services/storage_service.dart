@@ -8,6 +8,7 @@ class SavedPuzzle {
   final List<List<int>> currentGrid;
   final DateTime savedAt;
   final double progress;
+  final Duration elapsed;
 
   SavedPuzzle({
     required this.id,
@@ -16,6 +17,7 @@ class SavedPuzzle {
     required this.currentGrid,
     required this.savedAt,
     required this.progress,
+    this.elapsed = Duration.zero,
   });
 
   Map<String, dynamic> toJson() => {
@@ -25,6 +27,7 @@ class SavedPuzzle {
     'currentGrid': currentGrid,
     'savedAt': savedAt.toIso8601String(),
     'progress': progress,
+    'elapsedMs': elapsed.inMilliseconds,
   };
 
   factory SavedPuzzle.fromJson(Map<String, dynamic> json) {
@@ -39,6 +42,10 @@ class SavedPuzzle {
           .toList(),
       savedAt: DateTime.parse(json['savedAt'] as String),
       progress: (json['progress'] as num).toDouble(),
+      // Pre-existing saves have no elapsed field — fall back to zero.
+      elapsed: Duration(
+        milliseconds: (json['elapsedMs'] as num?)?.toInt() ?? 0,
+      ),
     );
   }
 }
