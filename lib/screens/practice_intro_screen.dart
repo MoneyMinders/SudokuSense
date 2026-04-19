@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../data/practice_puzzles.dart';
+import '../models/hint_result.dart';
 import '../providers/theme_provider.dart';
 import '../utils/constants.dart';
 import 'practice_puzzle_screen.dart';
