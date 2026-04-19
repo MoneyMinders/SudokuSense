@@ -4,6 +4,7 @@ import '../data/practice_puzzles.dart';
 import '../models/hint_result.dart';
 import '../providers/theme_provider.dart';
 import '../utils/constants.dart';
+import '../widgets/technique_example_board.dart';
 import 'practice_puzzle_screen.dart';
 
 /// First page for each practice technique: definition + worked example.
@@ -18,7 +19,8 @@ class PracticeIntroScreen extends StatelessWidget {
     final colors = context.watch<ThemeProvider>().config;
     final diff = _difficultyFromLabel(group.difficulty);
     final diffColor = AppColors.difficultyColor(diff);
-    final example = group.puzzles.isNotEmpty ? group.puzzles.first : null;
+    final firstPuzzle = group.puzzles.isNotEmpty ? group.puzzles.first : null;
+    final richExample = group.example;
 
     return Scaffold(
       appBar: AppBar(
@@ -100,15 +102,42 @@ class PracticeIntroScreen extends StatelessWidget {
           ),
           const SizedBox(height: 20),
 
-          // Example
-          if (example != null) ...[
+          // Example — prefer the hand-authored rich example if present, else
+          // fall back to the first drill puzzle's grid with the target cell
+          // highlighted.
+          if (richExample != null) ...[
+            _sectionHeader('Example', colors),
+            const SizedBox(height: 10),
+            TechniqueExampleBoard(example: richExample, colors: colors),
+            const SizedBox(height: 10),
+            _ExampleLegend(example: richExample, colors: colors),
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: colors.highlightedRegion,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                richExample.narration,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontStyle: FontStyle.italic,
+                  fontFamily: 'Serif',
+                  color: colors.candidateText,
+                  height: 1.5,
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+          ] else if (firstPuzzle != null) ...[
             _sectionHeader('Example', colors),
             const SizedBox(height: 10),
             _ExampleBoard(
-              grid: example.grid,
-              highlightRow: example.answerRow,
-              highlightCol: example.answerCol,
-              answerValue: example.answerValue,
+              grid: firstPuzzle.grid,
+              highlightRow: firstPuzzle.answerRow,
+              highlightCol: firstPuzzle.answerCol,
+              answerValue: firstPuzzle.answerValue,
               colors: colors,
             ),
             const SizedBox(height: 10),
@@ -119,7 +148,7 @@ class PracticeIntroScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
-                example.explanation,
+                firstPuzzle.explanation,
                 style: TextStyle(
                   fontSize: 13,
                   fontStyle: FontStyle.italic,
@@ -194,6 +223,59 @@ class PracticeIntroScreen extends StatelessWidget {
       default:
         return Difficulty.medium;
     }
+  }
+}
+
+/// Chips that explain the role-colour mapping used on the rich example
+/// board. Only shows the roles that actually appear in the given example.
+class _ExampleLegend extends StatelessWidget {
+  final TechniqueExample example;
+  final ThemeConfig colors;
+
+  const _ExampleLegend({required this.example, required this.colors});
+
+  static const _labels = {
+    ExampleRole.pivot: ('Pivot', Color(0xFF1976D2)),
+    ExampleRole.pincerA: ('Pincer A', Color(0xFFE65100)),
+    ExampleRole.pincerB: ('Pincer B', Color(0xFF2E7D32)),
+    ExampleRole.target: ('Target', Color(0xFFC62828)),
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final usedRoles = <ExampleRole>{};
+    for (final row in example.cells) {
+      for (final cell in row) {
+        final r = cell.role;
+        if (r != null && _labels.containsKey(r)) usedRoles.add(r);
+      }
+    }
+    if (usedRoles.isEmpty) return const SizedBox.shrink();
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 6,
+      children: usedRoles.map((role) {
+        final (label, color) = _labels[role]!;
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          decoration: BoxDecoration(
+            color: color.withAlpha(24),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: color.withAlpha(120)),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              color: color,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.4,
+            ),
+          ),
+        );
+      }).toList(),
+    );
   }
 }
 

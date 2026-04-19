@@ -28,6 +28,7 @@ class TechniqueGroup {
   final String description;
   final String howTo; // Brief explanation of the technique
   final List<PracticePuzzle> puzzles;
+  final TechniqueExample? example;
 
   const TechniqueGroup({
     required this.name,
@@ -35,7 +36,75 @@ class TechniqueGroup {
     required this.description,
     required this.howTo,
     required this.puzzles,
+    this.example,
   });
+}
+
+/// Role used to style a cell in a technique example.
+enum ExampleRole { clue, pivot, pincerA, pincerB, target, link }
+
+/// A single cell inside a worked example board.
+///  - [value] — a placed number (drawn bold like a clue).
+///  - [candidates] — pencil marks to render as a 3x3 mini-grid inside the cell.
+///  - [role] — styling (border/highlight colour) according to the pattern.
+class ExampleCell {
+  final int? value;
+  final Set<int>? candidates;
+  final ExampleRole? role;
+
+  const ExampleCell({this.value, this.candidates, this.role});
+}
+
+/// An arrow / connector drawn over the example board — used to show the
+/// geometric relationship at the heart of a pattern (pivot → pincer, etc.).
+class ExampleArrow {
+  final int fromRow;
+  final int fromCol;
+  final int toRow;
+  final int toCol;
+
+  const ExampleArrow({
+    required this.fromRow,
+    required this.fromCol,
+    required this.toRow,
+    required this.toCol,
+  });
+}
+
+/// A hand-authored worked example for a technique. Rendered on the first
+/// page of each practice technique so the reader can see the pattern
+/// (candidates, pivot, pincers, target) before attempting drills.
+class TechniqueExample {
+  final List<List<ExampleCell>> cells;
+  final List<ExampleArrow> arrows;
+  final String narration;
+
+  const TechniqueExample({
+    required this.cells,
+    this.arrows = const [],
+    required this.narration,
+  });
+}
+
+// -- Helpers for building example cell grids. Not const so we can use them
+// -- inline in the data file below.
+ExampleCell _val(int n) => ExampleCell(value: n, role: ExampleRole.clue);
+ExampleCell _empty() => const ExampleCell();
+ExampleCell _cand(Set<int> c, ExampleRole r) =>
+    ExampleCell(candidates: c, role: r);
+ExampleCell _target({int? value, Set<int>? candidates}) => ExampleCell(
+      value: value,
+      candidates: candidates,
+      role: ExampleRole.target,
+    );
+
+/// Build a 9x9 example from a row-major list of ExampleCells (length 81).
+List<List<ExampleCell>> _exampleGrid(List<ExampleCell> flat) {
+  assert(flat.length == 81, 'Example grid must have 81 cells');
+  return List.generate(
+    9,
+    (r) => List.generate(9, (c) => flat[r * 9 + c]),
+  );
 }
 
 /// All practice puzzles grouped by technique.
@@ -48,6 +117,15 @@ final List<TechniqueGroup> practiceData = [
     difficulty: 'Easy',
     description: 'A cell has only one possible value left.',
     howTo: 'Look at a cell and check which numbers 1-9 are already in its row, column, and box. If only one number is missing, that\'s the answer.',
+    example: TechniqueExample(
+      cells: _exampleGrid([
+        // Row 1: 1,2,3,5,6,7,8,9 placed — only the middle cell (R1C3) is empty.
+        _val(5), _val(3), _target(candidates: {4}), _val(6), _val(7), _val(8), _val(9), _val(1), _val(2),
+        for (int i = 0; i < 72; i++) _empty(),
+      ]),
+      narration:
+          'Row 1 already contains 1, 2, 3, 5, 6, 7, 8, and 9. The single empty cell R1C3 can only take the one missing digit, 4.',
+    ),
     puzzles: [
       PracticePuzzle(
         id: 'ns1',
@@ -137,6 +215,28 @@ final List<TechniqueGroup> practiceData = [
     difficulty: 'Easy',
     description: 'A number can only go in one cell within a row, column, or box.',
     howTo: 'Pick a number and scan a row, column, or box. If that number can only fit in one empty cell (all others are blocked), that cell must be that number.',
+    example: TechniqueExample(
+      cells: _exampleGrid([
+        // Row 1: 7 already placed at C6 — blocks 7 from row 1 of box 1
+        _empty(), _empty(), _empty(), _empty(), _empty(), _val(7), _empty(), _empty(), _empty(),
+        // Row 2: 7 already placed at C9 — blocks 7 from row 2 of box 1
+        _empty(), _empty(), _empty(), _empty(), _empty(), _empty(), _empty(), _empty(), _val(7),
+        // Row 3: R3C1 is the only legal home for 7 in box 1
+        _target(candidates: {7}), _empty(), _empty(), _empty(), _empty(), _empty(), _empty(), _empty(), _empty(),
+        // Row 4: empty
+        for (int i = 0; i < 9; i++) _empty(),
+        // Row 5: 7 at C2 blocks column 2
+        _empty(), _val(7), _empty(), _empty(), _empty(), _empty(), _empty(), _empty(), _empty(),
+        // Rows 6-7: empty
+        for (int i = 0; i < 18; i++) _empty(),
+        // Row 8: 7 at C3 blocks column 3
+        _empty(), _empty(), _val(7), _empty(), _empty(), _empty(), _empty(), _empty(), _empty(),
+        // Row 9: empty
+        for (int i = 0; i < 9; i++) _empty(),
+      ]),
+      narration:
+          'Box 1 still needs a 7. Rows 1 and 2 already hold their 7 at R1C6 and R2C9, so only row 3 inside the box is free. Columns 2 and 3 are blocked by the 7s at R5C2 and R8C3, so R3C1 is the only cell where 7 can legally go.',
+    ),
     puzzles: [
       PracticePuzzle(
         id: 'hs1',
@@ -229,6 +329,29 @@ final List<TechniqueGroup> practiceData = [
     difficulty: 'Medium',
     description: 'Two cells in a unit share the same two candidates — those values can be eliminated from other cells.',
     howTo: 'Find two cells in the same row, column, or box that both contain exactly the same two candidates (e.g., {3,7} and {3,7}). Remove 3 and 7 from all other cells in that unit.',
+    example: TechniqueExample(
+      cells: _exampleGrid([
+        // Rows 1-4 empty
+        for (int i = 0; i < 36; i++) _empty(),
+        // Row 5 — the pair lives at C1 and C4 (both {3,7}).
+        //   Other row cells still list 3 or 7 as candidates which will be
+        //   eliminated.
+        _cand({3, 7}, ExampleRole.pivot),
+        _cand({3, 5, 7}, ExampleRole.target),
+        _cand({7, 9}, ExampleRole.target),
+        _cand({3, 7}, ExampleRole.pivot),
+        _cand({3, 8}, ExampleRole.target),
+        _empty(), _empty(), _empty(), _empty(),
+        // Rows 6-9 empty
+        for (int i = 0; i < 36; i++) _empty(),
+      ]),
+      arrows: [
+        // Link between the two pair cells to show they share candidates
+        ExampleArrow(fromRow: 4, fromCol: 0, toRow: 4, toCol: 3),
+      ],
+      narration:
+          'R5C1 and R5C4 each have only the candidates {3,7}. Two cells restricted to two values must between them hold exactly those two values — so 3 and 7 are locked into these cells. Every other cell in row 5 can therefore drop 3 and 7 from its candidates, leaving R5C2 with {5}, R5C3 with {9}, and R5C5 with {8}.',
+    ),
     puzzles: [
       PracticePuzzle(
         id: 'np1',
@@ -318,6 +441,30 @@ final List<TechniqueGroup> practiceData = [
     difficulty: 'Medium',
     description: 'A candidate in a box is confined to one row/column, eliminating it from the rest of that row/column.',
     howTo: 'If a number can only appear in one row (or column) within a 3x3 box, that number can be removed from other cells in that row (or column) outside the box.',
+    example: TechniqueExample(
+      cells: _exampleGrid([
+        // Row 1 of box 1 already has 5 at C7 — blocks row 1 for 5
+        _empty(), _empty(), _empty(), _empty(), _empty(), _empty(), _val(5), _empty(), _empty(),
+        // Row 2 of box 1: inside the box, 5 is confined to these 3 cells.
+        // Outside the box (C4..C9) we still show 5 as a candidate to be
+        // eliminated.
+        _cand({5}, ExampleRole.pivot),
+        _cand({5}, ExampleRole.pivot),
+        _cand({5}, ExampleRole.pivot),
+        _cand({5, 8}, ExampleRole.target),
+        _cand({5, 9}, ExampleRole.target),
+        _cand({4, 5}, ExampleRole.target),
+        _cand({5, 7}, ExampleRole.target),
+        _cand({5, 6}, ExampleRole.target),
+        _cand({5, 8}, ExampleRole.target),
+        // Row 3 of box 1 has 5 at C8 — blocks row 3 for 5
+        _empty(), _empty(), _empty(), _empty(), _empty(), _empty(), _empty(), _val(5), _empty(),
+        // Rest empty
+        for (int i = 0; i < 54; i++) _empty(),
+      ]),
+      narration:
+          'Inside box 1, 5 can only land on row 2 — rows 1 and 3 already hold their 5 at R1C7 and R3C8. Since the box must contain a 5 somewhere, it must be on row 2. Every other cell in row 2 (outside box 1) therefore cannot be 5, and 5 is eliminated from those candidates.',
+    ),
     puzzles: [
       PracticePuzzle(
         id: 'lc1',
@@ -410,6 +557,33 @@ final List<TechniqueGroup> practiceData = [
     difficulty: 'Hard',
     description: 'A candidate appears in exactly 2 cells in each of 2 rows, aligned in the same columns.',
     howTo: 'Find a number that appears as a candidate in exactly 2 positions in two different rows, and those positions are in the same two columns. The number can be eliminated from all other cells in those two columns.',
+    example: TechniqueExample(
+      cells: _exampleGrid([
+        // Row 1: digit 4 is a candidate only at C1 and C7 — the pattern corners
+        _empty(), _cand({4}, ExampleRole.pivot), _empty(), _empty(), _empty(), _empty(), _empty(), _cand({4}, ExampleRole.pivot), _empty(),
+        // Rows 2-4: empty (4 is forced out of these rows some other way)
+        for (int i = 0; i < 27; i++) _empty(),
+        // Row 5: digit 4 is again a candidate only at C1 and C7 — other two corners
+        _empty(), _cand({4}, ExampleRole.pivot), _empty(), _empty(), _empty(), _empty(), _empty(), _cand({4}, ExampleRole.pivot), _empty(),
+        // Row 6: targets in C1 and C7 (4 will be eliminated)
+        _empty(), _cand({4, 6}, ExampleRole.target), _empty(), _empty(), _empty(), _empty(), _empty(), _cand({4, 9}, ExampleRole.target), _empty(),
+        // Row 7: empty
+        for (int i = 0; i < 9; i++) _empty(),
+        // Row 8: targets in C1 and C7
+        _empty(), _cand({4, 8}, ExampleRole.target), _empty(), _empty(), _empty(), _empty(), _empty(), _cand({4, 5}, ExampleRole.target), _empty(),
+        // Row 9: empty
+        for (int i = 0; i < 9; i++) _empty(),
+      ]),
+      arrows: [
+        // Draw the rectangle connecting the 4 corners
+        ExampleArrow(fromRow: 0, fromCol: 1, toRow: 0, toCol: 7),
+        ExampleArrow(fromRow: 4, fromCol: 1, toRow: 4, toCol: 7),
+        ExampleArrow(fromRow: 0, fromCol: 1, toRow: 4, toCol: 1),
+        ExampleArrow(fromRow: 0, fromCol: 7, toRow: 4, toCol: 7),
+      ],
+      narration:
+          'Digit 4 is a candidate in only two cells of row 1 (C2 and C8) and only two cells of row 5 (the same C2 and C8). Whichever diagonal the two 4s occupy, each of columns 2 and 8 will already hold one 4 from those rows. No other cell in those columns can be 4 — so 4 is eliminated from R6C2, R6C8, R8C2, R8C8, etc.',
+    ),
     puzzles: [
       PracticePuzzle(
         id: 'xw1',
@@ -502,6 +676,36 @@ final List<TechniqueGroup> practiceData = [
     difficulty: 'Expert',
     description: 'Three bi-value cells form a wing pattern — the shared candidate can be eliminated.',
     howTo: 'Find a pivot cell with candidates {X,Y}. Find two pincer cells: one with {X,Z} and one with {Y,Z}, both seeing the pivot. Any cell that sees BOTH pincers can have Z eliminated.',
+    example: TechniqueExample(
+      cells: _exampleGrid([
+        // Row 1: pincerA at C1 with {3,5}, pivot at C4 with {5,7}
+        _empty(),
+        _cand({3, 5}, ExampleRole.pincerA),
+        _empty(), _empty(),
+        _cand({5, 7}, ExampleRole.pivot),
+        _empty(), _empty(), _empty(), _empty(),
+        // Rows 2-4: empty
+        for (int i = 0; i < 27; i++) _empty(),
+        // Row 5: target at C1 (3 will be eliminated), pincerB at C4 with {3,7}
+        _empty(),
+        _cand({3, 9}, ExampleRole.target),
+        _empty(), _empty(),
+        _cand({3, 7}, ExampleRole.pincerB),
+        _empty(), _empty(), _empty(), _empty(),
+        // Rows 6-9: empty
+        for (int i = 0; i < 36; i++) _empty(),
+      ]),
+      arrows: [
+        // Pivot forces one of the pincers to be 3
+        ExampleArrow(fromRow: 0, fromCol: 4, toRow: 0, toCol: 1),
+        ExampleArrow(fromRow: 0, fromCol: 4, toRow: 4, toCol: 4),
+        // Each pincer "sees" the target
+        ExampleArrow(fromRow: 0, fromCol: 1, toRow: 4, toCol: 1),
+        ExampleArrow(fromRow: 4, fromCol: 4, toRow: 4, toCol: 1),
+      ],
+      narration:
+          'Pivot R1C5 must be 5 or 7. If pivot is 5, pincer R1C2 {3,5} is forced to 3. If pivot is 7, pincer R5C5 {3,7} is forced to 3. Either way, one of the pincers will be 3. R5C2 sees both pincers (column 2 with pincer R1C2, row 5 with pincer R5C5), so R5C2 cannot also be 3 — 3 is eliminated from R5C2.',
+    ),
     puzzles: [
       PracticePuzzle(
         id: 'xy1',
