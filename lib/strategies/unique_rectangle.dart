@@ -91,17 +91,24 @@ class UniqueRectangleStrategy extends Strategy {
           ];
 
           final pairList = pair.toList()..sort();
+          final pairStr = '{${pairList.join(', ')}}';
           return HintResult(
             strategyName: name,
             difficulty: difficulty,
             explanation:
-                'Cells R${rowList[0] + 1}C${colList[0] + 1}, R${rowList[0] + 1}C${colList[1] + 1}, '
-                'R${rowList[1] + 1}C${colList[0] + 1}, R${rowList[1] + 1}C${colList[1] + 1} form '
-                'a Unique Rectangle with candidates {${pairList.join(', ')}}. '
-                'Three corners are bi-value, so the fourth corner at '
-                'R${missingCorner.$1 + 1}C${missingCorner.$2 + 1} '
-                'cannot have only {${pairList.join(', ')}} (would create a deadly pattern). '
-                '${pairList.join(' and ')} can be eliminated from that cell.',
+                'Unique Rectangle with candidates $pairStr across the '
+                'rectangle R${rowList[0] + 1}C${colList[0] + 1}, '
+                'R${rowList[0] + 1}C${colList[1] + 1}, '
+                'R${rowList[1] + 1}C${colList[0] + 1}, '
+                'R${rowList[1] + 1}C${colList[1] + 1}. Three of those corners '
+                'are already restricted to exactly $pairStr. If the fourth '
+                'corner at R${missingCorner.$1 + 1}C${missingCorner.$2 + 1} '
+                'were also restricted to $pairStr, the two digits could be '
+                'swapped between the four corners freely, producing two valid '
+                'sudoku solutions — the puzzle would no longer have a unique '
+                'answer. A valid sudoku cannot sit on such a "deadly pattern", '
+                'so the fourth corner must contain a digit outside $pairStr, '
+                'and ${pairList.join(' and ')} are eliminated from it.',
             highlightedCells: highlightedCells,
             eliminations: eliminations,
           );

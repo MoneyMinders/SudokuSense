@@ -67,8 +67,11 @@ class HiddenSingleStrategy extends Strategy {
           strategyName: name,
           difficulty: difficulty,
           explanation:
-              'In $unitName, the number $num can only go in cell '
-              '(${target.$1 + 1},${target.$2 + 1}).',
+              'In $unitName, $num must appear somewhere, but every empty cell '
+              'in this $unitName except R${target.$1 + 1}C${target.$2 + 1} already '
+              'has $num ruled out — either a conflicting $num sits elsewhere in '
+              'that cell\'s row, column, or 3×3 box. Only R${target.$1 + 1}C${target.$2 + 1} '
+              'still allows $num, so $num must be placed there.',
           placements: [
             Placement(row: target.$1, col: target.$2, value: num),
           ],

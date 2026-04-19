@@ -108,12 +108,19 @@ class ALSXZStrategy extends Strategy {
                 strategyName: name,
                 difficulty: difficulty,
                 explanation:
-                    'ALS-XZ: Set A (${_formatCells(alsA.cells)}) with candidates '
-                    '{${(alsA.candidates.toList()..sort()).join(', ')}} and '
-                    'Set B (${_formatCells(alsB.cells)}) with candidates '
-                    '{${(alsB.candidates.toList()..sort()).join(', ')}} share restricted '
-                    'common candidate $x. Unrestricted common candidate $z '
-                    'can be eliminated from cells that see all $z-cells in both sets.',
+                    'ALS-XZ. Set A at ${_formatCells(alsA.cells)} contains N '
+                    'cells with N+1 candidates {${(alsA.candidates.toList()..sort()).join(', ')}} '
+                    '— an Almost Locked Set. Set B at ${_formatCells(alsB.cells)} '
+                    'is another ALS with candidates {${(alsB.candidates.toList()..sort()).join(', ')}}. '
+                    'Digit $x is the restricted common candidate: every cell '
+                    'holding $x in A sees every cell holding $x in B, so the '
+                    'two sets cannot both place $x internally — exactly one of '
+                    'them will. The ALS that does not place $x is forced to '
+                    'use its remaining candidates fully, and in particular '
+                    'that set must place $z somewhere inside it. Either way, '
+                    '$z lands in one of the cells collected across both sets, '
+                    'so any outside cell that sees every $z-candidate in A ∪ B '
+                    'cannot itself be $z.',
                 highlightedCells: [...alsA.cells, ...alsB.cells],
                 eliminations: eliminations,
               );

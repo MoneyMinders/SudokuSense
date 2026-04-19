@@ -89,14 +89,22 @@ class SwordfishStrategy extends Strategy {
               final lineLabel = isRowBased ? 'rows' : 'columns';
               final crossLabel = isRowBased ? 'columns' : 'rows';
 
+              final linesStr =
+                  [line1, line2, line3].map((l) => l + 1).join(', ');
+              final crossStr = crossList.map((c) => c + 1).join(', ');
               return HintResult(
                 strategyName: name,
                 difficulty: difficulty,
                 explanation:
-                    'Number $digit forms a Swordfish pattern in $lineLabel '
-                    '${[line1, line2, line3].map((l) => l + 1).join(', ')}, '
-                    '$crossLabel ${crossList.map((c) => c + 1).join(', ')}. '
-                    '$digit can be eliminated from other cells in those $crossLabel.',
+                    'Swordfish on digit $digit. Across $lineLabel $linesStr, '
+                    'every occurrence of $digit lies within the same three '
+                    '$crossLabel $crossStr. Each of those $lineLabel needs one '
+                    '$digit and the only cells available fall inside those '
+                    'three $crossLabel — by pigeonhole, the three copies of '
+                    '$digit are distributed one per $crossLabel. That fills every '
+                    'permitted slot for $digit in $crossLabel $crossStr, so '
+                    '$digit cannot appear in any other cell of those '
+                    '$crossLabel and is eliminated from them.',
                 highlightedCells: highlightedCells,
                 eliminations: eliminations,
               );

@@ -75,10 +75,13 @@ class XYWingStrategy extends Strategy {
               strategyName: name,
               difficulty: difficulty,
               explanation:
-                  'XY-Wing: Pivot R${pivot.$1 + 1}C${pivot.$2 + 1} has candidates {$x, $y}. '
-                  'Pincer R${p1.$1 + 1}C${p1.$2 + 1} has {$x, $z}, '
-                  'Pincer R${p2.$1 + 1}C${p2.$2 + 1} has {$y, $z}. '
-                  'Candidate $z can be eliminated from cells that see both pincers.',
+                  'XY-Wing. The pivot R${pivot.$1 + 1}C${pivot.$2 + 1} can only '
+                  'be $x or $y. Pincer R${p1.$1 + 1}C${p1.$2 + 1} can only be '
+                  '$x or $z, and pincer R${p2.$1 + 1}C${p2.$2 + 1} can only be '
+                  '$y or $z. If the pivot is $x, pincer1 is forced to $z. If '
+                  'the pivot is $y, pincer2 is forced to $z. Either way, one of '
+                  'the two pincers is $z — so any cell that sees both pincers '
+                  'shares a unit with the eventual $z and cannot itself be $z.',
               highlightedCells: [pivot, p1, p2],
               eliminations: eliminations,
             );

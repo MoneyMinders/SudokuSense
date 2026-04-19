@@ -79,10 +79,13 @@ class HiddenPairStrategy extends Strategy {
               strategyName: name,
               difficulty: difficulty,
               explanation:
-                  'In $unitName, candidates $pairStr only appear in cells '
-                  '(${posI[0].$1 + 1},${posI[0].$2 + 1}) and '
-                  '(${posI[1].$1 + 1},${posI[1].$2 + 1}). All other '
-                  'candidates can be removed from these cells.',
+                  'Within $unitName, the two digits $pairStr appear as '
+                  'candidates only in R${posI[0].$1 + 1}C${posI[0].$2 + 1} and '
+                  'R${posI[1].$1 + 1}C${posI[1].$2 + 1}. Since every digit must '
+                  'occur exactly once in the $unitName, both digits are forced '
+                  'into this pair of cells — one each. That means these two '
+                  'cells are fully committed to $pairStr, and any other '
+                  'candidate listed inside them can be safely eliminated.',
               eliminations: eliminations,
               highlightedCells: [posI[0], posI[1]],
             );

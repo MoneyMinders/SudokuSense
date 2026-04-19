@@ -165,10 +165,14 @@ class XCyclesStrategy extends Strategy {
             strategyName: name,
             difficulty: difficulty,
             explanation:
-                'X-Cycle on candidate $digit: A cycle with two consecutive '
-                'strong links at R${path[0].$1 + 1}C${path[0].$2 + 1} '
-                'confirms $digit in that cell. $digit can be eliminated '
-                'from all cells that see it.',
+                'X-Cycle on digit $digit. Following candidates for $digit '
+                'around a closed loop that alternates strong and weak links, '
+                'the loop meets with two strong links on either side of '
+                'R${path[0].$1 + 1}C${path[0].$2 + 1} — a "discontinuity". '
+                'Assuming that cell is not $digit breaks both strong links, a '
+                'contradiction, so it must be $digit. Every other cell that '
+                'sees R${path[0].$1 + 1}C${path[0].$2 + 1} therefore cannot '
+                'be $digit.',
             highlightedCells: path,
             eliminations: eliminations,
           );
@@ -179,9 +183,12 @@ class XCyclesStrategy extends Strategy {
           strategyName: name,
           difficulty: difficulty,
           explanation:
-              'X-Cycle on candidate $digit: A cycle with two consecutive '
-              'weak links at R${path[0].$1 + 1}C${path[0].$2 + 1} '
-              'means $digit cannot be in that cell.',
+              'X-Cycle on digit $digit. Around the alternating strong/weak '
+              'loop on $digit, two weak links meet at '
+              'R${path[0].$1 + 1}C${path[0].$2 + 1}. Assuming that cell is '
+              '$digit would force both neighbours to be non-$digit, which '
+              'breaks the cycle\'s alternation. So the cell cannot be $digit '
+              'and $digit is removed from its candidates.',
           highlightedCells: path,
           eliminations: [
             Elimination(row: path[0].$1, col: path[0].$2, value: digit),
@@ -219,9 +226,12 @@ class XCyclesStrategy extends Strategy {
           strategyName: name,
           difficulty: difficulty,
           explanation:
-              'X-Cycle on candidate $digit: An alternating nice loop '
-              'eliminates $digit from cells that see both ends of '
-              'weak links in the cycle.',
+              'X-Cycle on digit $digit. The loop alternates strong and weak '
+              'links on $digit and closes cleanly ("nice loop"). For every '
+              'weak link in the cycle, one of its two endpoints must be '
+              '$digit — any outside cell that sees both endpoints of such a '
+              'link is peers with the eventual $digit and cannot itself be '
+              '$digit, eliminating it.',
           highlightedCells: path,
           eliminations: eliminations,
         );

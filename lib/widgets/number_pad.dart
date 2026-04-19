@@ -27,6 +27,9 @@ class NumberPad extends StatelessWidget {
         Widget buildKey(int number) {
           final placed = _countPlaced(provider, number);
           final isComplete = placed >= 9;
+          // In pencil mode keep the key active so the user can still toggle
+          // candidates for fully-placed digits; in solve mode, dim + disable.
+          final disabled = isComplete && !provider.pencilMode;
 
           return Expanded(
             child: Padding(
@@ -40,7 +43,7 @@ class NumberPad extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(14),
-                    onTap: isComplete
+                    onTap: disabled
                         ? null
                         : () {
                             HapticFeedback.lightImpact();
@@ -50,17 +53,36 @@ class NumberPad extends StatelessWidget {
                               provider.setValue(number);
                             }
                           },
-                    child: Center(
-                      child: Text(
-                        '$number',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w500,
-                          color: isComplete
-                              ? colors.candidateText
-                              : colors.fixedText,
+                    child: Stack(
+                      children: [
+                        Center(
+                          child: Text(
+                            '$number',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w500,
+                              color: isComplete
+                                  ? colors.candidateText
+                                  : colors.fixedText,
+                            ),
+                          ),
                         ),
-                      ),
+                        Positioned(
+                          bottom: 2,
+                          right: 0,
+                          left: 0,
+                          child: Text(
+                            '$placed/9',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 9,
+                              height: 1,
+                              color: colors.candidateText,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

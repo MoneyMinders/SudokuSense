@@ -33,8 +33,12 @@ class ForcingChainsStrategy extends Strategy {
               strategyName: name,
               difficulty: difficulty,
               explanation:
-                  'Forcing Chain: Assuming R${r + 1}C${c + 1} = $a leads to '
-                  'a contradiction. Therefore R${r + 1}C${c + 1} must be $b.',
+                  'Forcing Chain from R${r + 1}C${c + 1}. Tentatively placing '
+                  '$a here forces a sequence of candidate eliminations and '
+                  'forced placements across the board that eventually empties '
+                  'some cell of all its candidates, or forces the same digit '
+                  'into two peers — a contradiction. Since $a is impossible, '
+                  'and the cell only accepts $a or $b, the cell must be $b.',
               highlightedCells: [startPos],
               placements: [Placement(row: r, col: c, value: b)],
             );
@@ -44,8 +48,11 @@ class ForcingChainsStrategy extends Strategy {
               strategyName: name,
               difficulty: difficulty,
               explanation:
-                  'Forcing Chain: Assuming R${r + 1}C${c + 1} = $b leads to '
-                  'a contradiction. Therefore R${r + 1}C${c + 1} must be $a.',
+                  'Forcing Chain from R${r + 1}C${c + 1}. Tentatively placing '
+                  '$b here forces a chain of deductions that ends in a '
+                  'contradiction — some peer unit can no longer place one of '
+                  'its required digits. Since $b is impossible, and the cell '
+                  'only accepts $a or $b, the cell must be $a.',
               highlightedCells: [startPos],
               placements: [Placement(row: r, col: c, value: a)],
             );
@@ -83,9 +90,13 @@ class ForcingChainsStrategy extends Strategy {
             strategyName: name,
             difficulty: difficulty,
             explanation:
-                'Forcing Chain: Whether R${r + 1}C${c + 1} is $a or $b, '
-                'the same conclusion is reached for '
-                '${highlightedCells.skip(1).map((p) => "R${p.$1 + 1}C${p.$2 + 1}").join(", ")}.',
+                'Forcing Chain from R${r + 1}C${c + 1}. Whichever of its two '
+                'candidates ($a or $b) is eventually placed, tracing the '
+                'implications forward leads to the same forced digit in '
+                '${highlightedCells.skip(1).map((p) => "R${p.$1 + 1}C${p.$2 + 1}").join(", ")}. '
+                'Since both branches agree, that placement is settled '
+                'regardless of how R${r + 1}C${c + 1} resolves, and every '
+                'other candidate in those cells can be removed.',
             highlightedCells: highlightedCells,
             eliminations: eliminations,
           );

@@ -280,10 +280,37 @@ class PuzzleProvider extends ChangeNotifier {
       cell.isError = (solutionValue != null && value != solutionValue);
     }
 
+    // When a digit has been placed in all 9 required positions, it can no
+    // longer appear anywhere — purge it from every cell's pencil candidates.
+    if (!cell.isError) {
+      _cleanupCandidatesIfComplete(value);
+    }
+
     // Stop timer if puzzle is now complete
     if (isSolved) _stopwatch.stop();
 
     notifyListeners();
+  }
+
+  /// If [value] now has 9 placements on the board, remove it from every
+  /// other cell's candidate set — those pencil marks are no longer valid.
+  void _cleanupCandidatesIfComplete(int value) {
+    int count = 0;
+    for (int r = 0; r < 9; r++) {
+      for (int c = 0; c < 9; c++) {
+        if (_board.getCell(r, c).value == value) count++;
+      }
+    }
+    if (count < 9) return;
+
+    for (int r = 0; r < 9; r++) {
+      for (int c = 0; c < 9; c++) {
+        final cell = _board.getCell(r, c);
+        if (cell.value == null && cell.candidates.contains(value)) {
+          cell.candidates.remove(value);
+        }
+      }
+    }
   }
 
   /// Toggle a single candidate in the selected cell (pencil mode).

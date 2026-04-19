@@ -34,9 +34,12 @@ class CrossHatchingStrategy extends Strategy {
             strategyName: name,
             difficulty: difficulty,
             explanation:
-                'The number $num can only go in row ${target.$1 + 1}, '
-                'column ${target.$2 + 1} of box ${box + 1} because $num '
-                'already appears in all other possible rows and columns.',
+                'Box ${box + 1} still needs a $num somewhere. Scanning the rows '
+                'and columns that pass through this box, every empty cell except '
+                'R${target.$1 + 1}C${target.$2 + 1} lies on a row or column that '
+                'already contains $num. R${target.$1 + 1}C${target.$2 + 1} is the '
+                'only position left inside the box where $num can legally be '
+                'placed, so $num goes there.',
             placements: [
               Placement(row: target.$1, col: target.$2, value: num),
             ],

@@ -93,8 +93,14 @@ class XWingStrategy extends Strategy {
                 strategyName: name,
                 difficulty: difficulty,
                 explanation:
-                    'Number $digit forms an X-Wing pattern in $lineLabel $l1 and $l2, $crossLabel $c1 and $c2. '
-                    '$digit can be eliminated from all other cells in $crossLabel $c1 and $c2.',
+                    'X-Wing on digit $digit. In $lineLabel $l1 and $l2, $digit '
+                    'can be placed in exactly two cells each, and those cells '
+                    'sit in the same two $crossLabel $c1 and $c2. Whichever way '
+                    'the four corners resolve (one diagonal or the other), each '
+                    'of $l1 and $l2 will place its $digit in one of $c1 or $c2. '
+                    'That consumes the single $digit each of those $crossLabel '
+                    'is allowed, so $digit cannot appear anywhere else in '
+                    '$crossLabel $c1 or $c2 and is eliminated from those cells.',
                 highlightedCells: highlightedCells,
                 eliminations: eliminations,
               );

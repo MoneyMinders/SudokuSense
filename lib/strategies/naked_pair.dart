@@ -84,16 +84,18 @@ class NakedPairStrategy extends Strategy {
           }
 
           if (eliminations.isNotEmpty) {
-            final pairStr = '{${pair.toList()..sort()}}';
+            final pairStr = '{${(pair.toList()..sort()).join(',')}}';
             return HintResult(
               strategyName: name,
               difficulty: difficulty,
               explanation:
-                  'Cells (${pos1.$1 + 1},${pos1.$2 + 1}) and '
-                  '(${pos2.$1 + 1},${pos2.$2 + 1}) in $unitName both contain '
-                  'only candidates $pairStr. These two numbers must go in '
-                  'these two cells, so ${pair.toList()..sort()} can be removed '
-                  'from all other cells in this $unitName.',
+                  'In $unitName, R${pos1.$1 + 1}C${pos1.$2 + 1} and '
+                  'R${pos2.$1 + 1}C${pos2.$2 + 1} both hold only the two '
+                  'candidates $pairStr. Two cells that can each only take one '
+                  'of two values must between them cover both values — so $pairStr '
+                  'are locked into these two cells. No other cell in this '
+                  '$unitName can use either value, and they are removed as '
+                  'candidates from the rest of the $unitName.',
               eliminations: eliminations,
               highlightedCells: [pos1, pos2],
             );

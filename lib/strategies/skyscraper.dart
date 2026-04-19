@@ -98,15 +98,22 @@ class SkyscraperStrategy extends Strategy {
                   roof2,
                 ];
 
+                final axis = isRowBased ? 'rows' : 'columns';
+                final baseAxis = isRowBased ? 'column' : 'row';
                 return HintResult(
                   strategyName: name,
                   difficulty: difficulty,
                   explanation:
-                      'Number $digit forms a Skyscraper pattern. '
-                      'Two ${isRowBased ? "rows" : "columns"} each have $digit in exactly 2 cells, '
-                      'sharing a base at ${isRowBased ? "column" : "row"} ${a1 + 1}. '
-                      'The roof cells at R${roof1.$1 + 1}C${roof1.$2 + 1} and '
-                      'R${roof2.$1 + 1}C${roof2.$2 + 1} eliminate $digit from cells that see both.',
+                      'Skyscraper on digit $digit. Two $axis each restrict '
+                      '$digit to just two cells, and those cells share one '
+                      'endpoint at $baseAxis ${a1 + 1} (the "base"). Since '
+                      'each of those $axis needs one $digit, the two bases '
+                      'cannot both be $digit — at least one of the opposite '
+                      'ends, the "roofs" at R${roof1.$1 + 1}C${roof1.$2 + 1} '
+                      'and R${roof2.$1 + 1}C${roof2.$2 + 1}, must be $digit. '
+                      'Any cell that sees both roofs would conflict with '
+                      'whichever roof is the $digit, so $digit can be removed '
+                      'from every cell seeing both roofs.',
                   highlightedCells: highlightedCells,
                   eliminations: eliminations,
                 );

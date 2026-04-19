@@ -83,12 +83,17 @@ class WWingStrategy extends Strategy {
                 strategyName: name,
                 difficulty: difficulty,
                 explanation:
-                    'W-Wing: Bi-value cells R${cell1Pos.$1 + 1}C${cell1Pos.$2 + 1} '
-                    'and R${cell2Pos.$1 + 1}C${cell2Pos.$2 + 1} both have '
-                    'candidates {${cands.join(', ')}}. They are connected by a '
-                    'strong link on $a between R${linkEnd1.$1 + 1}C${linkEnd1.$2 + 1} '
-                    'and R${linkEnd2.$1 + 1}C${linkEnd2.$2 + 1}. '
-                    'Candidate $b can be eliminated from cells seeing both bi-value cells.',
+                    'W-Wing on {${cands.join(', ')}}. R${cell1Pos.$1 + 1}C${cell1Pos.$2 + 1} '
+                    'and R${cell2Pos.$1 + 1}C${cell2Pos.$2 + 1} each can only '
+                    'be $a or $b, and they do not see each other directly. A '
+                    'strong link on $a connects them through the pair '
+                    'R${linkEnd1.$1 + 1}C${linkEnd1.$2 + 1} ↔ '
+                    'R${linkEnd2.$1 + 1}C${linkEnd2.$2 + 1} — a unit where $a '
+                    'must be in one of exactly those two cells. If both '
+                    'bi-value cells were $a, the strong link between them '
+                    'would be impossible to satisfy. So at least one of the '
+                    'bi-value cells must be $b, and any cell that sees both '
+                    'of them cannot itself be $b.',
                 highlightedCells: [cell1Pos, cell2Pos, linkEnd1, linkEnd2],
                 eliminations: eliminations,
               );

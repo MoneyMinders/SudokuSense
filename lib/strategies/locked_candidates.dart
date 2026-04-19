@@ -46,9 +46,12 @@ class LockedCandidatesPointingStrategy extends Strategy {
               strategyName: name,
               difficulty: difficulty,
               explanation:
-                  'In box ${box + 1}, the candidate $num is confined to '
-                  'row ${row + 1}. It can be removed from the rest of '
-                  'row ${row + 1} outside this box.',
+                  'Inside box ${box + 1}, $num can only go into cells of '
+                  'row ${row + 1}. Since the box must contain $num somewhere, '
+                  '$num is guaranteed to land on row ${row + 1} within this box. '
+                  'That means any other cell in row ${row + 1} — the ones in the '
+                  'two neighbouring boxes — cannot be $num, and $num can be '
+                  'removed from those cells\' candidates.',
               eliminations: eliminations,
               highlightedCells: positions,
             );
@@ -74,9 +77,12 @@ class LockedCandidatesPointingStrategy extends Strategy {
               strategyName: name,
               difficulty: difficulty,
               explanation:
-                  'In box ${box + 1}, the candidate $num is confined to '
-                  'column ${col + 1}. It can be removed from the rest of '
-                  'column ${col + 1} outside this box.',
+                  'Inside box ${box + 1}, $num can only go into cells of '
+                  'column ${col + 1}. Since the box must contain $num somewhere, '
+                  '$num is guaranteed to land on column ${col + 1} within this '
+                  'box. That means any other cell in column ${col + 1} — the '
+                  'ones in the two neighbouring boxes — cannot be $num, and '
+                  '$num can be removed from those cells\' candidates.',
               eliminations: eliminations,
               highlightedCells: positions,
             );
@@ -129,9 +135,12 @@ class LockedCandidatesClaimingStrategy extends Strategy {
               strategyName: name,
               difficulty: difficulty,
               explanation:
-                  'In row ${row + 1}, the candidate $num is confined to '
-                  'box ${box + 1}. It can be removed from the rest of '
-                  'box ${box + 1} outside this row.',
+                  'In row ${row + 1}, $num fits only inside cells belonging to '
+                  'box ${box + 1}. Since the row must contain $num somewhere, '
+                  '$num is guaranteed to land in box ${box + 1}. That pins it '
+                  'to those three cells, so any other cell in box ${box + 1} '
+                  '(outside row ${row + 1}) cannot be $num and $num can be '
+                  'removed from their candidates.',
               eliminations: eliminations,
               highlightedCells: positions,
             );
@@ -170,9 +179,12 @@ class LockedCandidatesClaimingStrategy extends Strategy {
               strategyName: name,
               difficulty: difficulty,
               explanation:
-                  'In column ${col + 1}, the candidate $num is confined to '
-                  'box ${box + 1}. It can be removed from the rest of '
-                  'box ${box + 1} outside this column.',
+                  'In column ${col + 1}, $num fits only inside cells belonging '
+                  'to box ${box + 1}. Since the column must contain $num '
+                  'somewhere, $num is guaranteed to land in box ${box + 1}. '
+                  'That pins it to those three cells, so any other cell in box '
+                  '${box + 1} (outside column ${col + 1}) cannot be $num and '
+                  '$num can be removed from their candidates.',
               eliminations: eliminations,
               highlightedCells: positions,
             );

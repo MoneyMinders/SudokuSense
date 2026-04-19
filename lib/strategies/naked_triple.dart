@@ -76,12 +76,14 @@ class NakedTripleStrategy extends Strategy {
               strategyName: name,
               difficulty: difficulty,
               explanation:
-                  'Cells (${p1.$1 + 1},${p1.$2 + 1}), '
-                  '(${p2.$1 + 1},${p2.$2 + 1}), and '
-                  '(${p3.$1 + 1},${p3.$2 + 1}) in $unitName have '
-                  'candidates that together form the triple $tripleStr. '
-                  'These numbers can be removed from all other cells in '
-                  'this $unitName.',
+                  'In $unitName, R${p1.$1 + 1}C${p1.$2 + 1}, '
+                  'R${p2.$1 + 1}C${p2.$2 + 1}, and R${p3.$1 + 1}C${p3.$2 + 1} '
+                  'together use only the three candidates $tripleStr (each cell '
+                  'holds two or three of these, nothing else). Three cells '
+                  'restricted to three values must between them hold exactly '
+                  'those values, so $tripleStr are locked into these cells and '
+                  'can be removed as candidates from every other cell in the '
+                  '$unitName.',
               eliminations: eliminations,
               highlightedCells: [p1, p2, p3],
             );

@@ -82,13 +82,19 @@ class HiddenTripleStrategy extends Strategy {
           if (eliminations.isNotEmpty) {
             final tripleStr = '{${(tripleValues.toList()..sort()).join(',')}}';
             final posList = unionPositions.toList();
+            final cellsStr = posList
+                .map((p) => 'R${p.$1 + 1}C${p.$2 + 1}')
+                .join(', ');
             return HintResult(
               strategyName: name,
               difficulty: difficulty,
               explanation:
-                  'In $unitName, candidates $tripleStr only appear in cells '
-                  '${posList.map((p) => '(${p.$1 + 1},${p.$2 + 1})').join(', ')}. '
-                  'All other candidates can be removed from these cells.',
+                  'Within $unitName, the three digits $tripleStr can only be '
+                  'placed in $cellsStr. Each of those digits must appear '
+                  'somewhere in the $unitName, and together they fill these '
+                  'three cells exactly — one digit per cell. That locks these '
+                  'cells to $tripleStr, so any other candidate still listed '
+                  'inside them is impossible and can be removed.',
               eliminations: eliminations,
               highlightedCells: posList,
             );

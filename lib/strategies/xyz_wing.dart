@@ -73,11 +73,15 @@ class XYZWingStrategy extends Strategy {
                 strategyName: name,
                 difficulty: difficulty,
                 explanation:
-                    'XYZ-Wing: Pivot R${pivot.$1 + 1}C${pivot.$2 + 1} has '
-                    'candidates {$x, $y, $z}. '
-                    'Pincer R${p1.$1 + 1}C${p1.$2 + 1} has {$x, $z}, '
-                    'Pincer R${p2.$1 + 1}C${p2.$2 + 1} has {$y, $z}. '
-                    'Candidate $z can be eliminated from cells seeing all three.',
+                    'XYZ-Wing. The pivot R${pivot.$1 + 1}C${pivot.$2 + 1} can '
+                    'only be $x, $y, or $z. Pincer R${p1.$1 + 1}C${p1.$2 + 1} '
+                    'holds {$x, $z} and pincer R${p2.$1 + 1}C${p2.$2 + 1} holds '
+                    '{$y, $z}. Whatever the pivot takes, one of the three cells '
+                    'must end up being $z: if pivot = $x then pincer1 = $z, if '
+                    'pivot = $y then pincer2 = $z, and if pivot = $z that '
+                    'covers it directly. Any cell that sees all three of '
+                    'pivot, pincer1, and pincer2 therefore shares a unit with '
+                    'the $z and cannot itself be $z.',
                 highlightedCells: [pivot, p1, p2],
                 eliminations: eliminations,
               );

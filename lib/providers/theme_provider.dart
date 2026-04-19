@@ -134,7 +134,7 @@ class ThemeProvider extends ChangeNotifier {
       gridBorderThin: Color(0xFF706B65),   // Darker — clearly visible cell borders
       fixedText: Color(0xFF1A1A1A),     // Near-black — printed ink
       userText: Color(0xFF4A4A4A),      // Dark gray — pencil marks
-      candidateText: Color(0xFF9A9590), // Faded pencil
+      candidateText: Color(0xFF5F5A55), // Pencil — darker for readability
       errorBg: Color(0x55C0392B),       // Visible red tint for errors
       hintHighlight: Color(0x33558B2F), // Soft green for hints
     ),
@@ -153,7 +153,7 @@ class ThemeProvider extends ChangeNotifier {
       gridBorderThin: Color(0xFF2A2A40),
       fixedText: Color(0xFFE0E0E0),
       userText: Color(0xFF7C6BF0),
-      candidateText: Color(0xFF6A6A80),
+      candidateText: Color(0xFF9E9EB8),
       errorBg: Color(0x33EF5350),
       hintHighlight: Color(0x3381C784),
     ),
@@ -171,7 +171,7 @@ class ThemeProvider extends ChangeNotifier {
       gridBorderThin: Color(0xFF2A2B36),
       fixedText: Color(0xFFF8F8F2),
       userText: Color(0xFFFF79C6),
-      candidateText: Color(0xFF6272A4),
+      candidateText: Color(0xFF9AA6CC),
       errorBg: Color(0x33FF5555),
       hintHighlight: Color(0x3350FA7B),
     ),
@@ -189,7 +189,7 @@ class ThemeProvider extends ChangeNotifier {
       gridBorderThin: Color(0xFF2A2A2A),
       fixedText: Color(0xFFE0E0E0),
       userText: Color(0xFFFFD866),
-      candidateText: Color(0xFF707070),
+      candidateText: Color(0xFFA0A0A0),
       errorBg: Color(0x33F92672),
       hintHighlight: Color(0x33A6E22E),
     ),
@@ -207,7 +207,7 @@ class ThemeProvider extends ChangeNotifier {
       gridBorderThin: Color(0xFF2A2A2A),
       fixedText: Color(0xFFE0E0E0),
       userText: Color(0xFFEF5350),
-      candidateText: Color(0xFF707070),
+      candidateText: Color(0xFFA0A0A0),
       errorBg: Color(0x33FF8A80),
       hintHighlight: Color(0x3381C784),
     ),
@@ -225,7 +225,7 @@ class ThemeProvider extends ChangeNotifier {
       gridBorderThin: Color(0xFF2A2E2E),
       fixedText: Color(0xFFE0E0E0),
       userText: Color(0xFF80CBC4),
-      candidateText: Color(0xFF607070),
+      candidateText: Color(0xFF95A8A8),
       errorBg: Color(0x33EF5350),
       hintHighlight: Color(0x3380CBC4),
     ),
@@ -243,7 +243,7 @@ class ThemeProvider extends ChangeNotifier {
       gridBorderThin: Color(0xFF2A2A25),
       fixedText: Color(0xFFE0E0E0),
       userText: Color(0xFFFFB74D),
-      candidateText: Color(0xFF707060),
+      candidateText: Color(0xFFA09F8A),
       errorBg: Color(0x33DC322F),
       hintHighlight: Color(0x33859900),
     ),
@@ -261,7 +261,7 @@ class ThemeProvider extends ChangeNotifier {
       gridBorderThin: Color(0xFF2C3138),
       fixedText: Color(0xFFABB2BF),
       userText: Color(0xFF56B6C2),
-      candidateText: Color(0xFF636D7C),
+      candidateText: Color(0xFF99A5B6),
       errorBg: Color(0x33E06C75),
       hintHighlight: Color(0x3398C379),
     ),
