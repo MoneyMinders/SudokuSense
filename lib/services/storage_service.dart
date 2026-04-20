@@ -6,6 +6,10 @@ class SavedPuzzle {
   final String name;
   final List<List<int>> originalGrid;
   final List<List<int>> currentGrid;
+  // 9x9 of pencil-mark candidate lists. Empty inner list = no notes for that
+  // cell. Stored so that resuming a puzzle preserves the player's pencil
+  // work exactly as it was when they left.
+  final List<List<List<int>>> currentCandidates;
   final DateTime savedAt;
   final double progress;
   final Duration elapsed;
@@ -18,19 +22,37 @@ class SavedPuzzle {
     required this.savedAt,
     required this.progress,
     this.elapsed = Duration.zero,
-  });
+    List<List<List<int>>>? currentCandidates,
+  }) : currentCandidates = currentCandidates ?? _emptyCandidates();
+
+  static List<List<List<int>>> _emptyCandidates() => List.generate(
+        9,
+        (_) => List.generate(9, (_) => <int>[]),
+      );
 
   Map<String, dynamic> toJson() => {
     'id': id,
     'name': name,
     'originalGrid': originalGrid,
     'currentGrid': currentGrid,
+    'currentCandidates': currentCandidates,
     'savedAt': savedAt.toIso8601String(),
     'progress': progress,
     'elapsedMs': elapsed.inMilliseconds,
   };
 
   factory SavedPuzzle.fromJson(Map<String, dynamic> json) {
+    final rawCandidates = json['currentCandidates'] as List?;
+    final candidates = rawCandidates == null
+        ? _emptyCandidates()
+        : List<List<List<int>>>.generate(
+            9,
+            (r) => List<List<int>>.generate(
+              9,
+              (c) => ((rawCandidates[r] as List)[c] as List).cast<int>().toList(),
+            ),
+          );
+
     return SavedPuzzle(
       id: json['id'] as String,
       name: json['name'] as String,
@@ -40,6 +62,7 @@ class SavedPuzzle {
       currentGrid: (json['currentGrid'] as List)
           .map((row) => (row as List).cast<int>().toList())
           .toList(),
+      currentCandidates: candidates,
       savedAt: DateTime.parse(json['savedAt'] as String),
       progress: (json['progress'] as num).toDouble(),
       // Pre-existing saves have no elapsed field — fall back to zero.

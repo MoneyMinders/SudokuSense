@@ -701,12 +701,24 @@ class PuzzleProvider extends ChangeNotifier {
       name: name ?? 'Puzzle ${DateTime.now().month}/${DateTime.now().day}',
       originalGrid: _originalGrid!,
       currentGrid: _board.toGrid(),
+      currentCandidates: _snapshotCandidates(),
       savedAt: DateTime.now(),
       progress: progress,
       elapsed: elapsed,
     );
 
     await StorageService().save(puzzle);
+  }
+
+  /// Snapshot every cell's pencil candidates as a serialisable 9x9 grid.
+  List<List<List<int>>> _snapshotCandidates() {
+    return List.generate(9, (r) {
+      return List.generate(9, (c) {
+        final cell = _board.getCell(r, c);
+        if (cell.value != null) return <int>[];
+        return cell.candidates.toList()..sort();
+      });
+    });
   }
 
   /// Load a saved puzzle (resumes from where user left off).
@@ -723,10 +735,21 @@ class PuzzleProvider extends ChangeNotifier {
       for (int c = 0; c < 9; c++) {
         final originalVal = saved.originalGrid[r][c];
         final currentVal = saved.currentGrid[r][c];
+        final cell = _board.getCell(r, c);
+
         if (originalVal == 0 && currentVal != 0) {
           // User had entered this value
-          _board.getCell(r, c).value = currentVal;
-          _board.getCell(r, c).isFixed = false;
+          cell.value = currentVal;
+          cell.isFixed = false;
+        }
+
+        // Restore pencil candidates only on cells without a value, so we
+        // never resurrect notes the user had cleared by placing a digit.
+        if (cell.value == null) {
+          final notes = saved.currentCandidates[r][c];
+          if (notes.isNotEmpty) {
+            cell.candidates = notes.toSet();
+          }
         }
       }
     }
